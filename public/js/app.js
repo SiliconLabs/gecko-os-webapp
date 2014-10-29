@@ -19,7 +19,7 @@ var App = {
     self.controller = new App.Models.Controller();
     self.device = new App.Models.Device({
       controller: App.controller,
-      host: 'http://192.168.10.120' //useful for local development with remote device
+      // host: 'http://192.168.10.120' //useful for local development with remote device
     });
 
     self.views.quickstart = new App.Views.QuickStart({

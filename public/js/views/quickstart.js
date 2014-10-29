@@ -255,7 +255,6 @@ App.Views.QuickConnect = Backbone.View.extend({
         if(err){
           //handle err
         }
-        console.log('done - closing');
         self.remove();
       });
   },
