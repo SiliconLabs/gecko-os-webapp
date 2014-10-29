@@ -1,0 +1,141 @@
+@import "mixins.less";
+
+.generate-delay(@n, @i: 1) when (@i =< @n) {
+  &:nth-child(@{i}) {
+    .animation-delay(@i * 40ms);
+  }
+  .generate-delay(@n, (@i + 1));
+}
+
+body .main>div {
+
+  &.loader {
+    position: absolute;
+    display: block;
+    background: rgba(255, 255, 255, 0.5);
+
+    .loading {
+      position: absolute;
+      display: block;
+      width: 85px;
+      height: 85px;
+      top: 50%;
+      left: 50%;
+      margin-top: -42.5px;
+      margin-left: -42.5px;
+      .transform(skew(-5deg,-5deg) rotateY(20deg) rotateX(-15deg));
+
+      .loading-circle {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background-color: #ad2327;
+        border-radius: 12%;
+        .animation(1750ms loading infinite);
+        .transform(scale(0));
+
+        .generate-delay(7);
+
+        &:nth-child(2n) {
+          background-color: #5a5a5b;
+        }
+
+        &:last-child {
+          background-color: #5a5a5b;
+        }
+
+        &.loading-row1 {
+          top: 1.3px;
+
+          &.up {
+            top: -4px;
+          }
+        }
+
+        &.loading-row2 {
+          top: 17.95px;
+
+          &.up {
+            top: 12.65px;
+          }
+        }
+
+        &.loading-row3 {
+          top: 34.55px;
+
+          &.down {
+            top: 39.85px;
+          }
+        }
+
+        &.loading-row4 {
+          top: 54.2px;
+
+          &.down {
+            top: 56.5px;
+          }
+        }
+
+        &.loading-col1 {
+          left: 18.85px;
+
+          &.down {
+            left: 23.85px;
+          }
+        }
+
+        &.loading-col2 {
+          left: 35.5px;
+
+          &.up, &.down {
+            left: 40.5px;
+          }
+        }
+
+        &.loading-col3 {
+          left: 54.15px;
+
+          &.up {
+            left: 57.15px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@-webkit-keyframes loading {
+  0% {.transform(scale(0));}
+  27.28% {.transform(scale(1));}
+  36.36% {.transform(scale(0.86));}
+  54.55% {.transform(scale(0.86));}
+  63.64% {.transform(scale(0));}
+  100% {.transform(scale(0));}
+}
+
+@-moz-keyframes loading {
+  0% {.transform(scale(0));}
+  27.28% {.transform(scale(1));}
+  36.36% {.transform(scale(0.86));}
+  54.55% {.transform(scale(0.86));}
+  63.64% {.transform(scale(0));}
+  100% {.transform(scale(0));}
+}
+
+@-o-keyframes loading {
+  0% {.transform(scale(0));}
+  27.28% {.transform(scale(1));}
+  36.36% {.transform(scale(0.86));}
+  54.55% {.transform(scale(0.86));}
+  63.64% {.transform(scale(0));}
+  100% {.transform(scale(0));}
+}
+
+@keyframes loading {
+  0% {.transform(scale(0));}
+  27.28% {.transform(scale(1));}
+  36.36% {.transform(scale(0.86));}
+  54.55% {.transform(scale(0.86));}
+  63.64% {.transform(scale(0));}
+  100% {.transform(scale(0));}
+}

@@ -1,0 +1,50 @@
+.signal {
+  position: relative;
+  width: 30px;
+  height: 25px;
+
+  .bar {
+    position: absolute;
+    bottom: 0;
+    width: 5px;
+    background: #0b3;
+
+    &:nth-child(1) {
+      height: 10px;
+      left: 0px;
+    }
+
+    &:nth-child(2) {
+      height: 15px;
+      left: 8px;
+    }
+
+    &:nth-child(3) {
+      height: 20px;
+      left: 16px;
+    }
+
+    &:nth-child(4) {
+      height: 25px;
+      left: 24px;
+    }
+
+    &.empty {
+      background: #ddd;
+    }
+  }
+
+  .rssi {
+
+    &, .quickstart .networks .network & {
+      position: absolute;
+      right: 0;
+      bottom: -12px;
+      left: auto;
+      font-size: 8pt;
+      line-height: 8pt;
+      color: #ccc;
+      white-space: nowrap;
+    }
+  }
+}

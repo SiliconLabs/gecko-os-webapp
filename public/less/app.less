@@ -1,0 +1,538 @@
+@import "mixins.less";
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body{
+  margin:0;
+  overflow-x: hidden;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+
+  h1, h2, h4 {
+    font-weight: 400;
+  }
+
+  h1 {
+    margin: 8px 0 32px 0;
+  }
+
+  h4 {
+    margin-bottom: 0px;
+  }
+
+  .nav {
+    left: 0px;
+    top: 0px;
+    position: fixed;
+    z-index: 0;
+    width: 70%;
+    max-width: 280px;
+    height: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    .gradient(#3e3c3d, #2d2c2d);
+
+    ul{
+      list-style: none;
+      margin: 0;
+      width: 100%;
+      padding: 0;
+
+      li{
+        font-size: 14pt;
+        font-weight: 300;
+        border-bottom: 1px solid #222;
+        border-top: 1px solid #444;
+
+        &:hover{
+          background-color: #222;
+        }
+
+        a{
+          display: block;
+          text-decoration: none;
+          padding: 16px;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .overlay{
+      position: fixed;
+      display: none;
+      overflow-x: hidden;
+      overflow-y: auto;
+      z-index: 499;
+      top: 0;
+      right: 0;
+      width: 30%;
+      height: 100%;
+      min-height: 1000px;
+    }
+
+  .main {
+    background: #eee;
+    position: absolute;
+    left: 280px;
+    width: 100%;
+    min-height: 100%;
+    .box-shadow(-10px 0px 9px 0px rgba(0, 0, 0, 0.4));
+    .transition(left 0.125s);
+
+    >div {
+      display: none;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+
+      &.active {
+        display: block;
+        position: absolute;
+      }
+
+      .content{
+        background: #fff;
+        margin: 32px auto;
+        max-width: 720px;
+        padding: 32px;
+        position: relative;
+        .box-shadow(0px 1px 1px rgba(0,0,0,.125));
+
+        .settings{
+          color: #999;
+          margin-bottom: 24px;
+
+          &.enabled{
+            color: #000;
+          }
+        }
+
+        // >div {
+        //   margin-bottom: 24px;
+        // }
+
+        input {
+          width: 100%;
+          padding-left: 8px;
+          font-weight: 300;
+          font-size: 14pt;
+          line-height: 36px;
+          border: 1px solid #ccc;
+          border-radius: 2px;
+
+          &:focus {
+            outline: none;
+          }
+
+          &:disabled{
+            background: #eee;
+          }
+
+          &.ipv4{
+
+            &.invalid{
+              border-color: #c00;
+              background-color: #fee;
+            }
+          }
+        }
+      }
+
+      &.console {
+
+        .terminal {
+          position: absolute;
+          top: 64px;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          margin: 16px 16px 16px 16px;
+          padding: 8px;
+          background: #222;
+          color: #eee;
+          font-family: monospace;
+          border-radius: 2px;
+          .box-shadow(inset 0 0 24px #111);
+          overflow-y: scroll;
+        }
+      }
+    }
+
+    .menu {
+      display: none;
+    }
+  }
+}
+
+a, button {
+
+  &.btn {
+    background: #eee;
+    display: inline-block;
+    text-align: center;
+    margin: 0px;
+    height: 32px;
+    line-height: 32px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    .box-shadow(1px 2px 1px rgba(0,0,0,0.125));
+
+    &:first-child {
+      border-top-left-radius: 2px;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      border-bottom-left-radius: 2px;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      border-bottom-left-radius: 0px;
+    }
+
+    &:active{
+      border: inherit;
+      outline: none;
+    }
+
+    &:focus{
+      border: inherit;
+      outline: none;
+    }
+
+    &.active {
+      background: #428bca;
+      color: #fff;
+      font-weight: 300;
+    }
+
+    &.pressed {
+      .box-shadow(inset 2px 2px 1px rgba(0,0,0,0.125));
+    }
+
+    &.save {
+      border: none;
+      border-radius: 2px;
+      background: #5d9d09;
+      color: #fff;
+    }
+
+    &-lg {
+      height: 48px;
+      line-height: 48px;
+      font-size: 12pt;
+    }
+  }
+}
+
+.btn-bar {
+  margin-top: 24px;
+}
+
+.col-50{
+  display: inline-block;
+  width: 50%;
+}
+
+.col-100 {
+  width: 100%;
+}
+
+.clear {
+  clear: both;
+}
+
+.quickstart {
+
+  h1{
+    margin-bottom: 0;
+  }
+
+  .btn.scan {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    width: 100px;
+
+    &.scanning {
+      display: none;
+    }
+  }
+
+  .wifi-scan{
+
+    &.status {
+      display: none;
+      width: 100%;
+      left: 0;
+      margin-top: 32px;
+      text-align: center;
+      color: #444;
+
+      &.scanning{
+        display: block;
+      }
+    }
+  }
+
+  .networks {
+    display: none;
+    margin-top: 32px;
+
+    .network {
+      position: relative;
+      height: 48px;
+      border: 1px solid #ccc;
+      border-bottom-style: none;
+      border-radius: 2px;
+      cursor: pointer;
+
+      div {
+        display: inline-block;
+        line-height: 48px;
+      }
+
+      &:last-child {
+        border-bottom-style: solid;
+      }
+
+      &:hover {
+        background: #eee;
+      }
+
+      .ssid {
+        width: 66%;
+        padding-left: 16px;
+      }
+
+      .channel {
+        position: absolute;
+        left: 16px;
+        bottom: 4px;
+        line-height: 8pt;
+        color: #ccc;
+        font-size: 8pt;
+      }
+
+      .security {
+        font-size: 10pt;
+      }
+
+      .signal {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        height: 24px;
+        width: 32px;
+      }
+    }
+  }
+
+  .connect {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(125,125,125,0.9);
+
+    h4 {
+      display: inline-block;
+    }
+
+    .content {
+      .box-shadow(0px 1px 16px rgba(0,0,0,.25));
+    }
+
+    .advanced {
+      display: none;
+
+      .static {
+        display: none;
+        margin: -32px 0 32px 0;
+      }
+    }
+
+    .btn {
+
+      &.btn-ip{
+        margin-bottom: 32px;
+      }
+
+      &.save, &.cancel {
+        width: 120px;
+      }
+
+      &.save {
+        position: absolute;
+        right: 32px;
+      }
+    }
+  }
+}
+
+.network-settings {
+
+  .signal {
+    position: absolute;
+    top: 40px;
+    right: 64px;
+  }
+
+  div{
+
+    &.static {
+      display: none;
+    }
+  }
+}
+
+@media(max-width: 768px){
+  body {
+    overflow-x: hidden;
+
+    .nav {
+      max-width: none;
+    }
+
+    .main {
+      left: 0%;
+      background: #fff;
+
+      h1 {
+        text-align: right;
+      }
+
+      &.nav-open{
+        left: 70%;
+        overflow: hidden;
+        height: 100%;
+        width: 30%;
+
+        h1 {
+          text-align: left;
+        }
+
+        .menu{
+          display:none;
+        }
+
+        >div {
+
+          .content {
+          }
+        }
+      }
+
+      >div {
+
+        .content {
+          min-height: 100%;
+          margin: 0;
+          padding: 16px;
+          .box-shadow(none);
+        }
+      }
+
+      .menu {
+        display: block;
+        position: absolute;
+        left: 18px;
+        top: 18px;
+        width: 50px;
+        height: 50px;
+        padding: 12px;
+        cursor: pointer;
+
+        span {
+          display: block;
+          width: 25px;
+          height: 2px;
+          margin: 4px 0;
+          background: #444;
+        }
+      }
+    }
+  }
+
+  .loading {
+    position: fixed !important;
+  }
+
+  .quickstart {
+
+    .btn {
+
+      &.scan {
+        position: relative;
+        top: 32px;
+        right: auto;
+        width: 100%;
+      }
+    }
+
+    .wifi-scan {
+      top: 50%;
+
+      &.status {
+        position: absolute;
+        margin-top: 16px;
+      }
+    }
+
+    .networks {
+      margin-top: 48px;
+
+      .network {
+
+        .ssid {
+          width: 50%;
+          word-wrap: break-word;
+          line-height: 16px;
+        }
+      }
+    }
+
+    .connect {
+
+      .btn {
+
+        &.save{
+          right: 16px;
+        }
+      }
+    }
+  }
+
+  .network-settings {
+
+    .signal {
+      position: absolute;
+      top: 114px;
+      right: 24px;
+
+      .bar{
+
+        &.empty{
+          background: #bbb;
+        }
+      }
+      .rssi {
+        color: #bbb;
+      }
+    }
+  }
+}
+
+

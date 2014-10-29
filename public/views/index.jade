@@ -1,0 +1,43 @@
+doctype html
+html
+  head
+    title WiConnect Web Setup
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable = no")
+    meta(name="apple-mobile-web-app-capable", content="yes")
+    meta(name="apple-mobile-web-app-status-bar-style", content="black")
+    link(rel="icon", href="favicon.ico", type="image/x-icon")
+    link(rel="shortcut icon", href="favicon.ico", type="image/x-icon")
+    link(rel="stylesheet", type="text/css", href="/setup/wiconnect_webgui.css")
+  body
+    div.nav
+      div.logo
+      ul
+        li
+          a(href='quickstart') Quick Start
+        li
+          a(href='network') Network
+        li
+          a(href='system') System
+        li
+          a(href='console') Console
+    div.main
+      div.quickstart
+      div.network-settings
+      div.system
+      div.console
+      div.loader
+        div.loading
+          div.loading-circle.loading-row1.loading-col1
+          div.loading-circle.loading-row1.loading-col2.up
+          div.loading-circle.loading-row2.loading-col2
+          div.loading-circle.loading-row2.loading-col3.up
+          div.loading-circle.loading-row3.loading-col1
+          div.loading-circle.loading-row3.loading-col2.down
+          div.loading-circle.loading-row4.loading-col1.down
+      div.menu
+        span
+        span
+        span
+    div.overlay
+    script(src='/setup/wiconnect_webgui.js')

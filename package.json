@@ -1,0 +1,35 @@
+{
+  "name": "wiconnect_webgui",
+  "description": "WiConnect Web Setup",
+  "version": "0.0.1",
+  "author": {
+    "name": "Andrew Mitchell",
+    "email": "andrew.mitchell@ack.me"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "main": "run.js",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "scripts": {
+    "test": "grunt test",
+    "start": "node run"
+  },
+  "dependencies": {
+    "express": "latest",
+    "jade": "^1.7.0",
+    "less": "^1.7.5"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jade": "^0.12.0",
+    "grunt-contrib-less": "^0.11.4",
+    "grunt-contrib-uglify": "^0.6.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-compress": "^0.12.0",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

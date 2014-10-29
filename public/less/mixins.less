@@ -1,0 +1,48 @@
+.transition(@transition) {
+  -webkit-transition: @transition;
+  -moz-transition:    @transition;
+  -ms-transition:     @transition;
+  -o-transition:      @transition;
+  transition:         @transition;
+}
+
+.transform(@transform) {
+  -webkit-transform: @transform;
+  -moz-transform:    @transform;
+  -ms-transform:     @transform;
+  -o-transform:      @transform;
+  transform:         @transform;
+}
+
+.box-shadow(@shadow) {
+  -webkit-box-shadow: @shadow;
+  -moz-box-shadow:    @shadow;
+  -ms-box-shadow:     @shadow;
+  -o-box-shadow:      @shadow;
+  box-shadow:         @shadow;
+}
+
+.gradient(@start, @end) {
+  background: @start;
+  background: -moz-linear-gradient(top, @start 0%, @end 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@start), color-stop(100%,@end));
+  background: -webkit-linear-gradient(top, @start 0%, @end 100%);
+  background: -o-linear-gradient(top, @start 0%, @end 100%);
+  background: -ms-linear-gradient(top, @start 0%, @end 100%);
+  background: linear-gradient(to bottom, @start 0%, @end 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='@start', endColorstr='@end',GradientType=0 );
+}
+
+.animation(@animation) {
+  -webkit-animation:  @animation;
+  -moz-animation:     @animation;
+  -o-animation:       @animation;
+  animation:          @animation;
+}
+
+.animation-delay(@delay) {
+  -webkit-animation-delay:  @delay;
+  -moz-animation-delay:     @delay;
+  -o-animation-delay:       @delay;
+  animation-delay:          @delay;
+}
