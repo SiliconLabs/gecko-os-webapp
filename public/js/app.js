@@ -22,6 +22,8 @@ var App = {
       // host: 'http://192.168.10.120' //useful for local development with remote device
     });
 
+    self.device.init();
+
     self.views.quickstart = new App.Views.QuickStart({
       el: $('.quickstart'),
       controller: App.controller,

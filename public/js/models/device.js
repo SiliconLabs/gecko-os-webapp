@@ -6,6 +6,7 @@ App.Models.Device = Backbone.Model.extend({
   commands: [],
   variables: {},
   defaults: {
+    auto_join: '',
     board: '',
     date: '',
     dhcp: '',
@@ -21,13 +22,21 @@ App.Models.Device = Backbone.Model.extend({
     uuid: '',
     version: ''
   },
+
   initialize: function(opts) {
     var self = this;
 
     this.controller = opts.controller;
+  },
 
-    async.applyEachSeries(
-      [this.getCommands, this.getVariables],
+  init: function() {
+    var self = this;
+
+    async.applyEachSeries([
+        this.basicInfo,
+        this.getCommands,
+        this.getVariables
+      ],
       self,
       function(err) {
         if(err){
@@ -42,24 +51,24 @@ App.Models.Device = Backbone.Model.extend({
       attempt = 1;
     }
 
-    cmd.self.controller.loading(true);
+    App.controller.loading(true);
 
     cmd.ret = (cmd.ret === true); //ret - return if exists
 
-    if(cmd.ret && cmd.self.device.get(cmd.property)){
+    if(cmd.ret && App.device.get(cmd.property)){
       return next();
     }
 
-    $.ajax({url: cmd.self.device.get('host') + '/command/' + cmd.cmd})
+    $.ajax({url: App.device.get('host') + '/command/' + cmd.cmd})
       .fail(function(){
-        if(attempt >= cmd.self.controller.get('retries')){
+        if(attempt >= App.controller.get('retries')){
           return next(new Error());
         }
-        cmd.self.device.getCommand(cmd, next, (attempt+1));
+        App.device.getCommand(cmd, next, (attempt+1));
       })
       .done(function(data){
         if(data.response){
-          cmd.self.device.set(cmd.property, data.response);
+          App.device.set(cmd.property, data.response);
         }
         next();
       });
@@ -70,25 +79,38 @@ App.Models.Device = Backbone.Model.extend({
       attempt = 1;
     }
 
-    cmd.self.controller.loading(true);
+    App.controller.loading(true);
 
     $.ajax({
         type: "POST",
         contentType: 'application/json',
         dataType: 'json',
-        url: cmd.self.device.get('host') + '/command',
-        data: JSON.stringify(cmd.cmd)
+        url: App.device.get('host') + '/command',
+        data: JSON.stringify(cmd)
       })
       .fail(function(){
-        if(attempt >= cmd.self.controller.get('retries')){
+        if(attempt >= App.controller.get('retries')){
           return next(new Error());
         }
 
-        cmd.self.device.postCommand(cmd, next, (attempt+1));
+        App.device.postCommand(cmd, next, (attempt+1));
       })
       .done(function(){
         next();
       });
+  },
+
+  basicInfo: function(self, next) {
+    var cmds = [
+      {property: 'auto_join', cmd: 'get wl o e', ret: false },
+      {property: 'ip', cmd: 'get ne i', ret: false }
+    ];
+
+    async.eachSeries(
+      cmds,
+      self.getCommand,
+      next
+    );
   },
 
   getCommands: function(self, next, attempt) {

@@ -58,9 +58,9 @@ App.Views.NetworkSettings = Backbone.View.extend({
     });
 
     var cmds = [
-      {property: 'ssid', cmd: 'get wl s', self: self, ret: false },
-      {property: 'rssi', cmd: 'rssi', self: self, ret: false },
-      {property: 'dhcp', cmd: 'get ne d e', self: self, ret: false }
+      {property: 'ssid', cmd: 'get wl s', ret: false },
+      {property: 'rssi', cmd: 'rssi', ret: false },
+      {property: 'dhcp', cmd: 'get ne d e', ret: false }
     ];
 
     async.eachSeries(
@@ -139,12 +139,12 @@ App.Views.NetworkSettings = Backbone.View.extend({
       var netmask = $(this.el).find('input[name="netmask"]').val();
 
       cmds = [
-        {cmd: {flags:0, command:'set ne d e 0'}, self: self},
-        {cmd: {flags:0, command:'set st i ' + ip}, self: self},
-        {cmd: {flags:0, command:'set st g ' + gateway}, self: self},
-        {cmd: {flags:0, command:'set st d ' + dns}, self: self},
-        {cmd: {flags:0, command:'set st n ' + netmask}, self: self},
-        {cmd: {flags:0, command:'save'}, self: self}
+        {flags:0, command:'set ne d e 0'},
+        {flags:0, command:'set st i ' + ip},
+        {flags:0, command:'set st g ' + gateway},
+        {flags:0, command:'set st d ' + dns},
+        {flags:0, command:'set st n ' + netmask},
+        {flags:0, command:'save'}
       ];
     }
 
@@ -206,16 +206,16 @@ App.Views.NetworkSettingsView = Backbone.View.extend({
 
     if(this.device.get('dhcp')){
       cmds = [
-        {property: 'netmask', cmd: 'get ne n', self: self, ret: false },
-        {property: 'ip', cmd: 'get ne i', self: self, ret: false },
-        {property: 'gateway', cmd: 'get ne g', self: self, ret: false }
+        {property: 'netmask', cmd: 'get ne n', ret: false },
+        {property: 'ip', cmd: 'get ne i', ret: false },
+        {property: 'gateway', cmd: 'get ne g', ret: false }
       ];
     } else {
       cmds = [
-        {property: 'netmask', cmd: 'get st n', self: self, ret: false },
-        {property: 'ip', cmd: 'get st i', self: self, ret: false },
-        {property: 'gateway', cmd: 'get st g', self: self, ret: false },
-        {property: 'dns', cmd: 'get st d', self: self, ret: false }
+        {property: 'netmask', cmd: 'get st n', ret: false },
+        {property: 'ip', cmd: 'get st i', ret: false },
+        {property: 'gateway', cmd: 'get st g', ret: false },
+        {property: 'dns', cmd: 'get st d', ret: false }
       ];
     }
 

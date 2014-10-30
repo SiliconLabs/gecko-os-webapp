@@ -72,8 +72,8 @@ App.Views.System = Backbone.View.extend({
       function() {
 
         var cmds = [
-          {property: 'mac', cmd: 'get wl m', self: self, ret: true},
-          {property: 'uuid', cmd: 'get sy u', self: self, ret: true}
+          {property: 'mac', cmd: 'get wl m', ret: true},
+          {property: 'uuid', cmd: 'get sy u', ret: true}
         ];
 
         async.eachSeries(

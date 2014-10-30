@@ -222,8 +222,8 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var passkey = $(this.el).find('input[name="passkey"]').val();
     cmds = [
-      {cmd: {flags:0, command:'set wl s \"' + self.network.ssid + '\"'}, self: self},
-      {cmd: {flags:0, command:'set wl p \"' + passkey + '\"'}, self: self}
+      {flags:0, command:'set wl s \"' + self.network.ssid + '\"'},
+      {flags:0, command:'set wl p \"' + passkey + '\"'}
     ];
 
     if(advanced){
@@ -237,14 +237,14 @@ App.Views.QuickConnect = Backbone.View.extend({
         var dns     = $(this.el).find('input[name="dns"]').val();
         var netmask = $(this.el).find('input[name="netmask"]').val();
 
-        cmds.push({cmd: {flags:0, command:'set st i ' + ip}, self: self});
-        cmds.push({cmd: {flags:0, command:'set st g ' + gateway}, self: self});
-        cmds.push({cmd: {flags:0, command:'set st d ' + dns}, self: self});
-        cmds.push({cmd: {flags:0, command:'set st n ' + netmask}, self: self});
+        cmds.push({flags:0, command:'set st i ' + ip});
+        cmds.push({flags:0, command:'set st g ' + gateway});
+        cmds.push({flags:0, command:'set st d ' + dns});
+        cmds.push({flags:0, command:'set st n ' + netmask});
       }
     }
 
-    cmds.push({cmd: {flags:0, command:'save'}, self: self});
+    cmds.push({flags:0, command:'save'});
 
     async.eachSeries(
       cmds,
