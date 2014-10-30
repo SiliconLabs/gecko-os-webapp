@@ -12,25 +12,14 @@
 
 Will run a local nodejs server on port 5002 for testing
 
-### Development Options
+```grunt watch```
 
-The WiConnect GUI has been primarily developed using Jade HTML templating `http://jade-lang.com/` and LESS CSS pre-processing language `http://lesscss.org/`
+Will start a task that listens for file changes, and compile/compress HTML, CSS and JS
 
-If you are unfamiliar with Jade and wish to write traditional HTML run the following grunt task:
+When developing on a local server and communicating with a remote device, set the option `host:'[device IP]'` when creating the device model in `/public/js/app.js`. Install the following chrome extension to allow cross origin requests. POST requests will not work when running a local server that communicates with a remote device
 
-```grunt no-jade```
+[chrome extension cross origin ajax requests](https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi?hl=en)
 
-This will create the file `public/views/index.html` for development.
-
-#### N.B. running this grunt task again will overwrite any changes made to `index.html`
-
-If you are unfamiliar with LESS and wish to write traditional CSS run the following grunt task:
-
-```grunt no-less```
-
-This will create the file `public/css/wiconnect-webgui.css` for development.
-
-#### N.B. running this grunt task again will overwrite any changes made to `wiconnect-webgui.css`
 
 ## Build / Compile
 
