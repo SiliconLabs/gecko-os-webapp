@@ -24,6 +24,7 @@ App.Views.Loader = Backbone.View.extend({
   },
   events: {},
   render: function(){
+    $('.loader').removeClass('initial');
     this.$el.html(this.template());
   },
 });
