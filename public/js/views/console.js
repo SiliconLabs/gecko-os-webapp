@@ -9,7 +9,7 @@ App.Views.Console = Backbone.View.extend({
 <div class="terminal">\
   <output></output>\
   <div id="input-line" class="input-line">\
-    <div class="prompt">&gt;</div><div><input class="cmdline" autofocus /></div>\
+    <div class="prompt">&gt;</div><div><input class="cmdline" autofocus spellcheck="false" autocapitalize="off" /></div>\
   </div>\
 </div>'),
   history: [],
@@ -187,6 +187,8 @@ App.Views.Console = Backbone.View.extend({
       self.newPrompt.classList.add('line');
       self.newPrompt.autofocus = false;
       self.newPrompt.readOnly = true;
+      self.newPrompt.spellcheck = false;
+      self.newPrompt.autocapitalize = "off";
 
       var cmd, args;
 
