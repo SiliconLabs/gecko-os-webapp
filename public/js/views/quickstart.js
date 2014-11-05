@@ -183,6 +183,8 @@ App.Views.QuickConnect = Backbone.View.extend({
     'click .save': 'onSave'
   },
   onCancel: function() {
+    $('.quickstart>.content').show();
+
     this.remove();
   },
   onIPv4: function(e) {
@@ -255,11 +257,15 @@ App.Views.QuickConnect = Backbone.View.extend({
         if(err){
           //handle err
         }
+        $('.quickstart>.content').show();
         self.remove();
       });
   },
 
   render: function() {
     this.$el.html(this.template(this.network));
+    if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
+      $('.quickstart>.content').hide();
+    }
   }
 });
