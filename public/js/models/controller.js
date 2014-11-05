@@ -19,7 +19,7 @@ App.Models.Controller = Backbone.Model.extend({
 
     var resizer = _.debounce(this.resize, 100);
     $(window).on('resize', resizer);
-    $(window).on('orientationchange', this.resize());
+    $(window).on('orientationchange', this.resize);
     $(window).on('keyup', this.onKey);
 
     this.cmds = [];
@@ -69,7 +69,7 @@ App.Models.Controller = Backbone.Model.extend({
     } else {
       $('.main')
         .removeAttr('style')
-        .find('>.active')
+        .find('>div:not(.loader)')
           .removeAttr('style');
       if(!App.menu) {
         $('.nav').hide();
