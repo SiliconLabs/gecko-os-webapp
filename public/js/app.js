@@ -73,8 +73,10 @@ var App = {
 
   onMenu: function() {
     if(!App.menu){
-
       $('.main>.active').css({width: App.controller.get('width')});
+      $('.nav').fadeIn(225);
+    } else {
+      $('.nav').fadeOut(375);
     }
     $('.main').toggleClass('nav-open');
     $('.overlay').toggle();

@@ -58,18 +58,22 @@ App.Models.Controller = Backbone.Model.extend({
       size = 'small';
     }
 
+    if(_.contains(['large', 'extra'], size) && (height < 660)){
+      size = 'medium';
+      tray = false;
+    }
+
     if(_.contains(['large', 'extra'], size)) {
       $('.main').css({width: width - parseInt($('.nav').width())});
+      $('.nav').show();
     } else {
       $('.main')
         .removeAttr('style')
         .find('>.active')
           .removeAttr('style');
-    }
-
-    if(_.contains(['large', 'extra'], size) && (height < 660)){
-      size = 'medium';
-      tray = false;
+      if(!App.menu) {
+        $('.nav').hide();
+      }
     }
 
     $('body')
