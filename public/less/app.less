@@ -85,7 +85,7 @@ body{
     width: 100%;
     min-height: 100%;
     .box-shadow(-10px 0px 9px 0px rgba(0, 0, 0, 0.4));
-    .transition(left 0.125s);
+    .transition(left 0.225s);
 
     >div {
       display: none;
@@ -128,6 +128,7 @@ body{
           line-height: 36px;
           border: 1px solid #ccc;
           border-radius: 2px;
+          -webkit-appearance: none;
 
           &:focus {
             outline: none;
@@ -384,10 +385,17 @@ a, button {
 
 .network-settings {
 
+  .content {
+
+    &>div {
+      position: relative;
+    }
+  }
+
   .signal {
     position: absolute;
-    top: 40px;
-    right: 64px;
+    top: -72px;
+    right: 0;
   }
 
   div{
@@ -403,6 +411,7 @@ a, button {
     overflow-x: hidden;
 
     .nav {
+      display: none;
       max-width: none;
     }
 
@@ -524,8 +533,9 @@ a, button {
 
     .signal {
       position: absolute;
-      top: 114px;
-      right: 24px;
+      top: 4px;
+      right: 0;
+      height: 0;
 
       .bar{
 
@@ -540,4 +550,19 @@ a, button {
   }
 }
 
+@media(max-width: 320px){
+  body {
 
+    .main {
+
+      h1 {
+        margin-top: 6px;
+        font-size: 22pt;
+      }
+
+      .menu {
+        left: 8px;
+      }
+    }
+  }
+}
