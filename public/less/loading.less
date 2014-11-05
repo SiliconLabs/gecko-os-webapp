@@ -1,7 +1,7 @@
 @import "mixins.less";
 
 .generate-delay(@n, @i: 1) when (@i =< @n) {
-  &:nth-child(@{i}) {
+  &:nth-of-type(@{i}) {
     .animation-delay(@i * 40ms);
   }
   .generate-delay(@n, (@i + 1));
@@ -13,6 +13,7 @@ body .main>div {
     position: absolute;
     display: block;
     background: rgba(255, 255, 255, 0.5);
+    border: 1px solid #fff; //iOS hack
 
     &.initial {
       position: fixed;
