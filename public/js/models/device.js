@@ -5,6 +5,7 @@
 App.Models.Device = Backbone.Model.extend({
   commands: [],
   variables: {},
+  files: [],
   defaults: {
     auto_join: '',
     board: '',
@@ -59,14 +60,18 @@ App.Models.Device = Backbone.Model.extend({
       return next();
     }
 
-    $.ajax({url: App.device.get('host') + '/command/' + cmd.cmd})
-      .fail(function(){
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: App.device.get('host') + '/command/' + cmd.cmd
+      })
+      .fail(function() {
         if(attempt >= App.controller.get('retries')){
           return next(new Error());
         }
         App.device.getCommand(cmd, next, (attempt+1));
       })
-      .done(function(data){
+      .done(function(data) {
         if(data.response){
           App.device.set(cmd.property, data.response);
         }
@@ -82,7 +87,7 @@ App.Models.Device = Backbone.Model.extend({
     App.controller.loading(true);
 
     $.ajax({
-        type: "POST",
+        type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         url: App.device.get('host') + '/command',

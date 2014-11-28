@@ -18,8 +18,8 @@ var App = {
 
     self.controller = new App.Models.Controller();
     self.device = new App.Models.Device({
-      controller: App.controller,
-      // host: 'http://192.168.10.120' //useful for local development with remote device
+      controller: App.controller
+      // host: 'http://10.5.6.153' //useful for local development with remote device
     });
 
     self.device.init();
@@ -44,6 +44,12 @@ var App = {
 
     self.views.console = new App.Views.Console({
       el: $('.console'),
+      controller: App.controller,
+      device: App.device
+    });
+
+    self.views.browser = new App.Views.FileBrowser({
+      el: $('.browser'),
       controller: App.controller,
       device: App.device
     });

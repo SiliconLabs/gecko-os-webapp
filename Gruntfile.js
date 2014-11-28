@@ -29,7 +29,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/setup/wiconnect_webgui.css': 'public/less/*.less'
+          'out/wiconnect_webgui.css': 'public/less/*.less'
         }
       }
     },
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
         mangle: false,
         compress: true,
         files: {
-          'out/setup/wiconnect_webgui.js':
+          'out/wiconnect_webgui.js':
             [
               'public/vendor/jquery/dist/jquery.min.js',
               'public/vendor/underscore/underscore-min.js',
@@ -66,8 +66,8 @@ module.exports = function(grunt) {
         },
         expand: true,
         files: {
-          'out/setup/wiconnect_webgui.js.gz': 'out/setup/wiconnect_webgui.js',
-          'out/setup/wiconnect_webgui.css.gz': 'out/setup/wiconnect_webgui.css'
+          'out/wiconnect_webgui.js.gz': 'out/wiconnect_webgui.js',
+          'out/wiconnect_webgui.css.gz': 'out/wiconnect_webgui.css'
         }
       }
     },

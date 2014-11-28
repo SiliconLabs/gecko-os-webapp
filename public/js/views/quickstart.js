@@ -8,17 +8,17 @@ App.Views.QuickStart = Backbone.View.extend({
   views: [],
   template: _.template('\
 <div class="content">\
-  <h1>Quick Start</h1>\
-  <button class="btn btn-lg active scan">Scan</button>\
-  <div class="wifi-scan wifi-logo">\
-    <div class="wifi-bar"></div>\
-    <div class="wifi-bar"></div>\
-    <div class="wifi-bar"></div>\
-    <div class="wifi-bar"></div>\
-  </div>\
-  <div class="wifi-scan status">Scanning</div>\
-  <div class="networks"></div>\
-  <div class="clear"></div>\
+<h1>Quick Start</h1>\
+<button class="btn btn-lg active scan">Scan</button>\
+<div class="wifi-scan wifi-logo">\
+<div class="wifi-bar"></div>\
+<div class="wifi-bar"></div>\
+<div class="wifi-bar"></div>\
+<div class="wifi-bar"></div>\
+</div>\
+<div class="wifi-scan status">Scanning</div>\
+<div class="networks"></div>\
+<div class="clear"></div>\
 </div>'),
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose', 'onScan', 'onResults');
@@ -115,51 +115,51 @@ App.Views.QuickConnect = Backbone.View.extend({
   views: [],
   template: _.template('\
 <div class="content">\
-  <h2><%- ssid %></h2>\
-  <div>\
-    <h4>BSSID</h4>\
-    <input name="bssid" value="<%- bssid %>" disabled></input>\
-  </div>\
-  <div>\
-    <h4>Passkey</h4>\
-    <input name="passkey" type="password" value=""></input>\
-  </div>\
-  <div>\
-    <div class="show-advanced">\
-      <input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
-      <label for="show-advanced"></label>\
-    </div>\
-    <h4>Show Advanced Settings</h4>\
-  </div>\
-  <div class="advanced">\
-    <div>\
-      <button class="btn btn-lg btn-ip btn-dhcp active pressed col-50">DHCP</button>\
+<h2><%- ssid %></h2>\
+<div>\
+<h4>BSSID</h4>\
+<input name="bssid" value="<%- bssid %>" disabled></input>\
+</div>\
+<div>\
+<h4>Passkey</h4>\
+<input name="passkey" type="password" value=""></input>\
+</div>\
+<div>\
+<div class="wiconnect-cbx">\
+<input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
+<label for="show-advanced"></label>\
+</div>\
+<h4>Show Advanced Settings</h4>\
+</div>\
+<div class="advanced">\
+<div>\
+<button class="btn btn-lg btn-ip btn-dhcp active pressed col-50">DHCP</button>\
 <button class="btn btn-lg btn-ip btn-static col-50">Static</button>\
-    </div>\
-    <div class="static">\
-      <div>\
-        <h4>IP</h4>\
-        <input name="ip" class="ipv4" value=""></input>\
-      </div>\
-      <div>\
-        <h4>Gateway</h4>\
-        <input name="gateway" class="ipv4" value=""></input>\
-      </div>\
-      <div>\
-        <h4>DNS</h4>\
-        <input name="dns" class="ipv4" value=""></input>\
-      </div>\
-      <div>\
-        <h4>Netmask</h4>\
-        <input name="netmask" class="ipv4" value=""></input>\
-      </div>\
-    </div>\
-  </div>\
-  <div>\
-    <button class="btn btn-lg cancel">Cancel</button>\
+</div>\
+<div class="static">\
+<div>\
+<h4>IP</h4>\
+<input name="ip" class="ipv4" value=""></input>\
+</div>\
+<div>\
+<h4>Gateway</h4>\
+<input name="gateway" class="ipv4" value=""></input>\
+</div>\
+<div>\
+<h4>DNS</h4>\
+<input name="dns" class="ipv4" value=""></input>\
+</div>\
+<div>\
+<h4>Netmask</h4>\
+<input name="netmask" class="ipv4" value=""></input>\
+</div>\
+</div>\
+</div>\
+<div>\
+<button class="btn btn-lg cancel">Cancel</button>\
 <button class="btn btn-lg save">Connect</button>\
-  </div>\
-  <div class="clear"></div>\
+</div>\
+<div class="clear"></div>\
 </div>'),
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose', 'onCancel', 'onIPv4', 'onAdvanced', 'onAddressing', 'onSave');
@@ -231,7 +231,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     if(advanced){
       var dhcp = _.contains($(this.el).find('button.btn-ip.active')[0].classList, 'btn-dhcp');
 
-      cmds.push({cmd: {flags:0, command: 'set ne d e ' + (dhcp ? 1 : 0)}, self: self});
+      cmds.push({flags:0, command: 'set ne d e ' + (dhcp ? 1 : 0)});
 
       if(!dhcp){
         var ip      = $(this.el).find('input[name="ip"]').val();

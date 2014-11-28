@@ -7,10 +7,10 @@ App.Views.Console = Backbone.View.extend({
   template: _.template('\
 <h1>Console</h1>\
 <div class="terminal">\
-  <output></output>\
-  <div id="input-line" class="input-line">\
-    <div class="prompt">&gt;</div><div><input class="cmdline" autofocus spellcheck="false" autocapitalize="off" /></div>\
-  </div>\
+<output></output>\
+<div id="input-line" class="input-line">\
+<div class="prompt">&gt;</div><div><input class="cmdline" autofocus spellcheck="false" autocapitalize="off" /></div>\
+</div>\
 </div>'),
   history: [],
   initialize: function(opts) {
@@ -224,6 +224,7 @@ App.Views.Console = Backbone.View.extend({
 
         case 'get':
         case 'help':
+        case 'ls':
         case 'scan':
         case 'version':
           self.getCommand((cmd + '%20' + args.join('%20')), self.cmdLine.scrollIntoView);

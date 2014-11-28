@@ -8,19 +8,19 @@ App.Views.NetworkSettings = Backbone.View.extend({
   views: [],
   template: _.template('\
 <div class="content">\
-  <h1>Network Settings</h1>\
-  <div>\
-    <h4>SSID</h4>\
-    <div class="signal"></div>\
-    <input name="ssid" value="<%- ssid %>" disabled></input>\
-  </div>\
-  <div class="btn-bar">\
-    <button class="btn btn-lg btn-ip dhcp col-50 <%= (dhcp) ? "active pressed": "" %>">DHCP</button>\
+<h1>Network Settings</h1>\
+<div>\
+<h4>SSID</h4>\
+<div class="signal"></div>\
+<input name="ssid" value="<%- ssid %>" disabled></input>\
+</div>\
+<div class="btn-bar">\
+<button class="btn btn-lg btn-ip dhcp col-50 <%= (dhcp) ? "active pressed": "" %>">DHCP</button>\
 <button class="btn btn-lg btn-ip static col-50 <%= (!dhcp) ? "active pressed": "" %>">Static</button>\
-  </div>\
-  <div class="settings"></div>\
-  <button class="btn btn-lg save col-100">Save</button>\
-  <div class="clear"></div>\
+</div>\
+<div class="settings"></div>\
+<button class="btn btn-lg save col-100">Save</button>\
+<div class="clear"></div>\
 </div>'),
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose', 'onButton', 'showLoader', 'hideLoader', 'onSave');
@@ -53,9 +53,6 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
     //draw empty
     this.$el.html(this.template(this.device.toJSON())).addClass('active');
-    this.loader = new App.Views.Loader({
-      el: $(self.el).find('.loading')
-    });
 
     var cmds = [
       {property: 'ssid', cmd: 'get wl s', ret: false },
@@ -165,22 +162,22 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
 App.Views.NetworkSettingsView = Backbone.View.extend({
   template: _.template('\
-    <div>\
-      <h4>IP</h4>\
-      <input name="ip" value="<%- ip %>" disabled></input>\
-    </div>\
-    <div>\
-      <h4>Gateway</h4>\
-      <input name="gateway" value="<%- gateway %>" disabled></input>\
-    </div>\
-    <div class="static">\
-      <h4>DNS</h4>\
-      <input name="dns" value="<%- dns %>" disabled></input>\
-    </div>\
-    <div>\
-      <h4>Netmask</h4>\
-      <input name="netmask" value="<%- netmask %>" disabled></input>\
-    </div>'),
+<div>\
+<h4>IP</h4>\
+<input name="ip" value="<%- ip %>" disabled></input>\
+</div>\
+<div>\
+<h4>Gateway</h4>\
+<input name="gateway" value="<%- gateway %>" disabled></input>\
+</div>\
+<div class="static">\
+<h4>DNS</h4>\
+<input name="dns" value="<%- dns %>" disabled></input>\
+</div>\
+<div>\
+<h4>Netmask</h4>\
+<input name="netmask" value="<%- netmask %>" disabled></input>\
+</div>'),
 
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose');

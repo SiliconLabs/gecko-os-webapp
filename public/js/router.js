@@ -34,6 +34,12 @@ App.Router = Backbone.Router.extend ({
     App.controller.set({
       view: 'console'
     });
+  },
+
+  browser: function() {
+    App.controller.set({
+      view: 'browser'
+    });
   }
 
 });

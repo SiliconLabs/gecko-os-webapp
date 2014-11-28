@@ -8,32 +8,32 @@ App.Views.System = Backbone.View.extend({
   views: [],
   template: _.template('\
 <div class="content">\
-  <h1>System</h1>\
-  <div>\
-    <h4>Version</h4>\
-    <input name="version" value="<%- version %>" disabled></input>\
-  </div>\
-  <div>\
-    <h4>Build Date</h4>\
-    <input name="date" value="<%- date %>" disabled></input>\
-  </div>\
-  <div>\
-    <h4>Module</h4>\
-    <input name="module" value="<%- module %>" disabled></input>\
-  </div>\
-  <div>\
-    <h4>Board</h4>\
-    <input name="board" value="<%- board %>" disabled></input>\
-  </div>\
-  <div>\
-    <h4>MAC</h4>\
-    <input name="mac" value="<%- mac %>" disabled></input>\
-  </div>\
-  <div>\
-    <h4>Hardware ID</h4>\
-    <input name="uuid" value="<%- uuid %>" disabled></input>\
-  </div>\
-  <div class="clear"></div>\
+<h1>System</h1>\
+<div>\
+<h4>Version</h4>\
+<input name="version" value="<%- version %>" disabled></input>\
+</div>\
+<div>\
+<h4>Build Date</h4>\
+<input name="date" value="<%- date %>" disabled></input>\
+</div>\
+<div>\
+<h4>Module</h4>\
+<input name="module" value="<%- module %>" disabled></input>\
+</div>\
+<div>\
+<h4>Board</h4>\
+<input name="board" value="<%- board %>" disabled></input>\
+</div>\
+<div>\
+<h4>MAC</h4>\
+<input name="mac" value="<%- mac %>" disabled></input>\
+</div>\
+<div>\
+<h4>Hardware ID</h4>\
+<input name="uuid" value="<%- uuid %>" disabled></input>\
+</div>\
+<div class="clear"></div>\
 </div>'),
 
   initialize: function(opts){

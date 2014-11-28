@@ -7,10 +7,10 @@ App.Views.Network = Backbone.View.extend({
   els: [],
   views: [],
   template: _.template('\
-  <div class="ssid"><%- ssid %></div>\
-  <div class="channel">Channel <%- channel %></div>\
-  <div class="security"><%- security %></div>\
-  <div class="signal"></div>'),
+<div class="ssid"><%- ssid %></div>\
+<div class="channel">Channel <%- channel %></div>\
+<div class="security"><%- security %></div>\
+<div class="signal"></div>'),
 
   initialize: function(opts) {
     _.bindAll(this, 'render', 'onClose');

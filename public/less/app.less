@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+input[type="file"]::-webkit-file-upload-button {
+  cursor: pointer;
+}
+
 body{
   margin:0;
   overflow-x: hidden;
@@ -96,7 +100,7 @@ body{
 
       &.active {
         display: block;
-        position: absolute;
+        // position: absolute;
       }
 
       .content{
@@ -237,6 +241,12 @@ a, button {
       height: 48px;
       line-height: 48px;
       font-size: 12pt;
+    }
+
+    &-sm {
+      height: 24px;
+      line-height: 24px;
+      font-size: 10pt;
     }
   }
 }
