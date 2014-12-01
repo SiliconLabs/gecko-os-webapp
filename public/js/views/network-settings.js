@@ -64,14 +64,29 @@ App.Views.NetworkSettings = Backbone.View.extend({
     var cmds = [
       {property: 'ssid', cmd: 'get wl s', ret: false },
       {property: 'rssi', cmd: 'rssi', ret: false },
-      {property: 'dhcp', cmd: 'get ne d e', ret: false }
+      {property: 'dhcp', cmd: 'get ne d e', ret: false },
+      {property: 'auto_join', cmd: 'get wl o e', ret: false }
     ];
 
     async.eachSeries(
       cmds,
       self.device.getCommand,
       function() {
+        var auto_join = self.device.get('auto_join').replace('\r\n','');
         var dhcp = self.device.get('dhcp').replace('\r\n','');
+
+        switch(auto_join){
+          case '0':
+          case 'off':
+          case 'false':
+            auto_join = false;
+            break;
+          case '1':
+          case 'on':
+          case 'true':
+            auto_join = true;
+            break;
+        }
 
         switch(dhcp){
           case '0':
@@ -86,7 +101,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
             break;
         }
 
-        self.device.set({dhcp: dhcp});
+        self.device.set({auto_join: auto_join, dhcp: dhcp});
 
         self.$el.html(self.template(self.device.toJSON())).addClass('active');
 

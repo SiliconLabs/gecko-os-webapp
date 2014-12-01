@@ -137,7 +137,6 @@ App.Models.Device = Backbone.Model.extend({
     var self = this;
 
     var cmds = [
-      {property: 'auto_join', cmd: 'get wl o e', ret: false },
       {property: 'ip', cmd: 'get ne i', ret: false },
       {property: 'web_setup', cmd: 'setup status', ret: false}
     ];
@@ -150,21 +149,7 @@ App.Models.Device = Backbone.Model.extend({
           //handle err
         }
 
-        var auto_join = self.get('auto_join').replace('\r\n','');
         var web_setup = self.get('web_setup').replace('\r\n','');
-
-        switch(auto_join){
-          case '0':
-          case 'off':
-          case 'false':
-            auto_join = false;
-            break;
-          case '1':
-          case 'on':
-          case 'true':
-            auto_join = true;
-            break;
-        }
 
         switch(web_setup){
           case '0':
@@ -179,7 +164,7 @@ App.Models.Device = Backbone.Model.extend({
             break;
         }
 
-        self.set({auto_join: auto_join, web_setup: web_setup});
+        self.set({web_setup: web_setup});
 
         next();
       }
