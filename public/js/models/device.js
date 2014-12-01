@@ -21,7 +21,8 @@ App.Models.Device = Backbone.Model.extend({
     rssi: '',
     ssid: '',
     uuid: '',
-    version: ''
+    version: '',
+    web_setup: ''
   },
   checkInInterval: 45,
 
@@ -34,8 +35,6 @@ App.Models.Device = Backbone.Model.extend({
       'basicInfo', 'getCommands', 'getVariables', 'getNetworks', 'getVersion');
 
     this.controller = opts.controller;
-
-    setTimeout(self.checkIn, self.checkInInterval * 1000);
   },
 
   init: function() {
@@ -51,6 +50,11 @@ App.Models.Device = Backbone.Model.extend({
         if(err){
           // handle err
         }
+
+        if(self.get('web_setup') === '1') {
+          setTimeout(self.checkIn, self.checkInInterval * 1000);
+        }
+
         self.controller.loading(false);
       });
   },
@@ -133,7 +137,8 @@ App.Models.Device = Backbone.Model.extend({
   basicInfo: function(self, next) {
     var cmds = [
       {property: 'auto_join', cmd: 'get wl o e', ret: false },
-      {property: 'ip', cmd: 'get ne i', ret: false }
+      {property: 'ip', cmd: 'get ne i', ret: false },
+      {property: 'web_setup', cmd: 'setup status', ret: false}
     ];
 
     async.eachSeries(
