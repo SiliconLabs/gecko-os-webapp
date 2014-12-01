@@ -21,7 +21,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 <div class="content">\
 <h1>Files</h1>\
 <div id="dropbox">Drop files here<br><span>or</span><br>\
-<div class="add-btn">Click to add files<input type="file" multiple name="file-select" class="file-select"></div>\
+<div class="add-btn">Click to add files<input type="file" multiple="multiple" name="file-select" class="file-select"></div>\
 <div class="overwrite">\
 <h4>overwrite existing files</h4>\
 <div class="wiconnect-cbx secondary small">\
@@ -39,7 +39,7 @@ App.Views.FileBrowser = Backbone.View.extend({
   initialize: function(opts){
     _.bindAll(this, 'render', 'setupEvents', 'onClose', 'onDelete',
               'onDragleave', 'onDragenter', 'onDragover', 'onDrop',
-              'readFiles', 'showFiles', 'deleteFile',
+              'readFiles', 'showFiles',
               'processUploads');
 
     this.delegateEvents();
@@ -154,27 +154,28 @@ App.Views.FileBrowser = Backbone.View.extend({
     self.controller.loading(false);
   },
 
-  deleteFile: function(fileID) {
-    var self = this;
-
-    var file = _.findWhere(self.device.files, {id: fileID});
-
-    if(typeof file === 'undefined'){
-      return;
-    }
-
-    self.device.postCommand(
-      {flags:0, command:'fde \"' + file.filename + '\"'},
-      function(err) {
-        if(err){
-          // handle err
-        }
-        self.render();
-      });
+  onDelete: function(e) {
+    // this.deleteFile($(e.currentTarget).data('id'));
+    //
+    this.deleteModal = new App.Views.DeleteModal({
+      fileID: $(e.currentTarget).data('id'),
+      device: this.device,
+      controller: this.controller,
+      el: $('<div />')
+        .addClass('confirm-delete modal')
+        .appendTo(this.$el)
+    });
+    this.deleteModal.on('modalDelete', this.modalDelete, this);
+    this.deleteModal.on('modalCancel', this.modalCancel, this);
   },
 
-  onDelete: function(e) {
-    this.deleteFile($(e.currentTarget).data('id'));
+  modalDelete: function() {
+    this.modalCancel();
+    this.render();
+  },
+
+  modalCancel: function() {
+    this.deleteModal.stopListening();
   },
 
   onDragenter: function(e) {
@@ -280,5 +281,76 @@ App.Views.FileBrowser = Backbone.View.extend({
           });
 
       });
+  }
+});
+
+
+
+App.Views.DeleteModal = Backbone.View.extend({
+  template: _.template('\
+<div class="content">\
+<h2>Are you sure you want to delete "<%= filename%>"?</h2>\
+<div>\
+<button class="btn btn-lg cancel">Cancel</button>\
+<button class="btn btn-lg delete">Delete</button>\
+</div>\
+<div class="clear"></div>\
+</div>'),
+  initialize: function(opts) {
+    _.bindAll(this,
+              'render', 'onClose',
+              'onCancel', 'onDelete');
+
+    var self = this;
+
+    this.fileID = opts.fileID;
+    this.device = opts.device;
+    this.controller = opts.controller;
+
+    this.file = _.findWhere(self.device.files, {id: self.fileID});
+
+    this.render();
+  },
+
+  onClose: function() {
+    this.stopListening();
+  },
+
+  events: {
+    'click .cancel': 'onCancel',
+    'click .delete': 'onDelete'
+  },
+
+  onCancel: function() {
+    this.trigger('modalCancel');
+    this.remove();
+  },
+
+  onDelete: function() {
+    this.deleteFile();
+  },
+
+  deleteFile: function() {
+    var self = this;
+
+    if(typeof self.file === 'undefined'){
+      self.onCancel();
+    }
+
+    self.device.postCommand(
+      {flags:0, command:'fde \"' + self.file.filename + '\"'},
+      function(err) {
+        if(err){
+          // handle err
+        }
+        self.trigger('modalDelete');
+        self.remove();
+      });
+  },
+
+  render: function() {
+    var self = this;
+
+    this.$el.html(this.template({filename: self.file.filename}));
   }
 });

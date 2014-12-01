@@ -179,6 +179,48 @@ body{
     .menu {
       display: none;
     }
+
+    .modal {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background: rgba(125,125,125,0.9);
+
+      h4 {
+        display: inline-block;
+      }
+
+      .content {
+        .box-shadow(0px 1px 16px rgba(0,0,0,.25));
+      }
+
+      .advanced {
+        display: none;
+
+        .static {
+          display: none;
+          margin: -32px 0 32px 0;
+        }
+      }
+
+      .btn {
+
+        &.btn-ip{
+          margin-bottom: 32px;
+        }
+
+        &.save, &.delete, &.cancel {
+          width: 120px;
+        }
+
+        &.save, &.delete {
+          position: absolute;
+          right: 32px;
+        }
+      }
+    }
   }
 }
 
@@ -195,6 +237,7 @@ a, button {
     border-radius: 2px;
     cursor: pointer;
     .box-shadow(1px 2px 1px rgba(0,0,0,0.125));
+    .transition(box-shadow 0.3s);
 
     &:first-child {
       border-top-left-radius: 2px;
@@ -220,6 +263,10 @@ a, button {
       outline: none;
     }
 
+    &:hover {
+      .box-shadow(1px 2px 1px rgba(0,0,0,0.25));
+    }
+
     &.active {
       background: #428bca;
       color: #fff;
@@ -234,6 +281,13 @@ a, button {
       border: none;
       border-radius: 2px;
       background: #5d9d09;
+      color: #fff;
+    }
+
+    &.delete {
+      border: none;
+      border-radius: 2px;
+      background: #ad2327;
       color: #fff;
     }
 
@@ -353,48 +407,6 @@ a, button {
       }
     }
   }
-
-  .connect {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    background: rgba(125,125,125,0.9);
-
-    h4 {
-      display: inline-block;
-    }
-
-    .content {
-      .box-shadow(0px 1px 16px rgba(0,0,0,.25));
-    }
-
-    .advanced {
-      display: none;
-
-      .static {
-        display: none;
-        margin: -32px 0 32px 0;
-      }
-    }
-
-    .btn {
-
-      &.btn-ip{
-        margin-bottom: 32px;
-      }
-
-      &.save, &.cancel {
-        width: 120px;
-      }
-
-      &.save {
-        position: absolute;
-        right: 32px;
-      }
-    }
-  }
 }
 
 .network-settings {
@@ -498,6 +510,21 @@ a, button {
           background: #444;
         }
       }
+
+      .modal {
+
+        h2 {
+          margin-top: 12px;
+          text-align: right;
+        }
+
+        .btn {
+
+          &.save{
+            right: 16px;
+          }
+        }
+      }
     }
   }
 
@@ -539,21 +566,6 @@ a, button {
           width: 50%;
           word-wrap: break-word;
           line-height: 16px;
-        }
-      }
-    }
-
-    .connect {
-
-      h2 {
-        margin-top: 12px;
-        text-align: right;
-      }
-
-      .btn {
-
-        &.save{
-          right: 16px;
         }
       }
     }

@@ -93,7 +93,7 @@ App.Views.QuickStart = Backbone.View.extend({
       controller: this.controller,
       network: _.findWhere(this.networks, {id: $(e.currentTarget).data('network')}),
       el: $('<div />')
-        .addClass('connect')
+        .addClass('connect modal')
         .appendTo(this.$el)
     });
 
