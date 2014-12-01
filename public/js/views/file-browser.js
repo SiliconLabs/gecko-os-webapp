@@ -21,7 +21,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 <div class="content">\
 <h1>Files</h1>\
 <div id="dropbox">Drop files here<br><span>or</span><br>\
-<div class="add-btn">Click to add files<input type="file"></div>\
+<div class="add-btn">Click to add files<input type="file" multiple name="file-select" class="file-select"></div>\
 <div class="overwrite">\
 <h4>overwrite existing files</h4>\
 <div class="wiconnect-cbx secondary small">\
@@ -72,7 +72,8 @@ App.Views.FileBrowser = Backbone.View.extend({
 
   events: {
     //drag and drop events need to be handled outside backbone to access event.dataTransfer
-    'click .fs-file .status' : 'onDelete'
+    'click .fs-file .status' : 'onDelete',
+    'change .file-select' : 'onFile'
   },
 
   render: function(){
@@ -178,7 +179,7 @@ App.Views.FileBrowser = Backbone.View.extend({
     }
 
     self.device.postCommand(
-      {flags:0, command:'fde ' + file.filename},
+      {flags:0, command:'fde \"' + file.filename + '\"'},
       function(err) {
         if(err){
           // handle err
@@ -218,6 +219,13 @@ App.Views.FileBrowser = Backbone.View.extend({
     $(e.target).addClass('dropped').removeClass('over').text('files added successfully');
 
     this.processUploads(e.dataTransfer.files);
+  },
+
+  onFile: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    this.processUploads(e.currentTarget.files);
   },
 
   processUploads: function(files) {
