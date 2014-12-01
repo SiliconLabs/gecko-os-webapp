@@ -40,18 +40,17 @@ App.Models.Device = Backbone.Model.extend({
   init: function() {
     var self = this;
 
-    async.applyEachSeries([
+    async.series([
         this.basicInfo,
         this.getCommands,
         this.getVariables
       ],
-      self,
       function(err) {
         if(err){
           // handle err
         }
 
-        if(self.get('web_setup') === '1') {
+        if(self.get('web_setup')) {
           setTimeout(self.checkIn, self.checkInInterval * 1000);
         }
 
@@ -134,7 +133,9 @@ App.Models.Device = Backbone.Model.extend({
       });
   },
 
-  basicInfo: function(self, next) {
+  basicInfo: function(next) {
+    var self = this;
+
     var cmds = [
       {property: 'auto_join', cmd: 'get wl o e', ret: false },
       {property: 'ip', cmd: 'get ne i', ret: false },
@@ -144,11 +145,50 @@ App.Models.Device = Backbone.Model.extend({
     async.eachSeries(
       cmds,
       self.getCommand,
-      next
+      function(err) {
+        if(err) {
+          //handle err
+        }
+
+        var auto_join = self.get('auto_join').replace('\r\n','');
+        var web_setup = self.get('web_setup').replace('\r\n','');
+
+        switch(auto_join){
+          case '0':
+          case 'off':
+          case 'false':
+            auto_join = false;
+            break;
+          case '1':
+          case 'on':
+          case 'true':
+            auto_join = true;
+            break;
+        }
+
+        switch(web_setup){
+          case '0':
+          case 'off':
+          case 'false':
+            web_setup = false;
+            break;
+          case '1':
+          case 'on':
+          case 'true':
+            web_setup = true;
+            break;
+        }
+
+        self.set({auto_join: auto_join, web_setup: web_setup});
+
+        next();
+      }
     );
   },
 
-  getCommands: function(self, next, attempt) {
+  getCommands: function(next, attempt) {
+    var self = this;
+
     if(typeof attempt === 'undefined') {
       attempt = 1;
     }
@@ -178,7 +218,9 @@ App.Models.Device = Backbone.Model.extend({
       });
   },
 
-  getVariables: function(self, next, attempt) {
+  getVariables: function(next, attempt) {
+    var self = this;
+
     if(typeof attempt === 'undefined') {
       attempt = 1;
     }
