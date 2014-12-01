@@ -141,7 +141,7 @@ App.Views.FileBrowser = Backbone.View.extend({
               flags: parseInt(line[3], 16),
               size: Number(line[5]),
               version: line[6],
-              filename: line[7]
+              filename: _.rest(line, 7).join(' ')
             });
           });
         }
@@ -241,7 +241,7 @@ App.Views.FileBrowser = Backbone.View.extend({
         var bin = e.target.result;
         commands.push({
           flags: 4,
-          command: 'fcr ' + thisFile.name + ' ' + e.total,
+          command: 'fcr \"' + thisFile.name + '\" ' + e.total,
           data: btoa(bin)
         });
         return done();
