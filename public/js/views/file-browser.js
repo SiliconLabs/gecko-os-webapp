@@ -275,9 +275,5 @@ App.Views.FileBrowser = Backbone.View.extend({
           });
 
       });
-  },
-
-  doUploads: function() {
-
   }
 });

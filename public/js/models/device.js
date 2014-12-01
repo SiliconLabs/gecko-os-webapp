@@ -23,11 +23,19 @@ App.Models.Device = Backbone.Model.extend({
     uuid: '',
     version: ''
   },
+  checkInInterval: 45,
 
   initialize: function(opts) {
     var self = this;
 
+    _.bindAll(this,
+      'init', 'checkIn',
+      'getCommand', 'postCommand',
+      'basicInfo', 'getCommands', 'getVariables', 'getNetworks', 'getVersion');
+
     this.controller = opts.controller;
+
+    setTimeout(self.checkIn, self.checkInInterval * 1000);
   },
 
   init: function() {
@@ -47,7 +55,22 @@ App.Models.Device = Backbone.Model.extend({
       });
   },
 
+  checkIn: function() {
+    var self = this;
+
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: self.get('host') + '/command/version'
+      })
+      .done(function(){
+        setTimeout(self.checkIn, self.checkInInterval * 1000);
+      });
+  },
+
   getCommand: function(cmd, next, attempt) {
+    var self = this;
+
     if(typeof attempt === 'undefined') {
       attempt = 1;
     }
@@ -56,30 +79,32 @@ App.Models.Device = Backbone.Model.extend({
 
     cmd.ret = (cmd.ret === true); //ret - return if exists
 
-    if(cmd.ret && App.device.get(cmd.property)){
+    if(cmd.ret && self.get(cmd.property)){
       return next();
     }
 
     $.ajax({
         type: 'GET',
         contentType: 'application/json',
-        url: App.device.get('host') + '/command/' + cmd.cmd
+        url: self.get('host') + '/command/' + cmd.cmd
       })
       .fail(function() {
         if(attempt >= App.controller.get('retries')){
           return next(new Error());
         }
-        App.device.getCommand(cmd, next, (attempt+1));
+        self.getCommand(cmd, next, (attempt+1));
       })
       .done(function(data) {
         if(data.response){
-          App.device.set(cmd.property, data.response);
+          self.set(cmd.property, data.response);
         }
         next();
       });
   },
 
   postCommand: function(cmd, next, attempt) {
+    var self = this;
+
     if(typeof attempt === 'undefined') {
       attempt = 1;
     }
@@ -90,7 +115,7 @@ App.Models.Device = Backbone.Model.extend({
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
-        url: App.device.get('host') + '/command',
+        url: self.get('host') + '/command',
         data: JSON.stringify(cmd)
       })
       .fail(function(){
@@ -98,7 +123,7 @@ App.Models.Device = Backbone.Model.extend({
           return next(new Error());
         }
 
-        App.device.postCommand(cmd, next, (attempt+1));
+        self.postCommand(cmd, next, (attempt+1));
       })
       .done(function(){
         next();
@@ -123,7 +148,11 @@ App.Models.Device = Backbone.Model.extend({
       attempt = 1;
     }
 
-    $.ajax({url: self.get('host') + '/command/help commands'})
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: self.get('host') + '/command/help commands'
+      })
       .fail(function(){
         if(attempt >= self.controller.get('retries')){
           return next(new Error());
@@ -149,7 +178,11 @@ App.Models.Device = Backbone.Model.extend({
       attempt = 1;
     }
 
-    $.ajax({url: self.get('host') + '/command/help variables'})
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: self.get('host') + '/command/help variables'
+      })
       .fail(function(){
         if(attempt >= self.controller.get('retries')){
           return next(new Error());
@@ -194,7 +227,11 @@ App.Models.Device = Backbone.Model.extend({
       attempt = 1;
     }
 
-    $.ajax({url: self.device.get('host') + '/command/scan -v'})
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: self.device.get('host') + '/command/scan -v'
+      })
       .fail(function(){
         if(attempt >= self.controller.get('retries')){
           self.render();
@@ -244,7 +281,11 @@ App.Models.Device = Backbone.Model.extend({
       attempt = 1;
     }
 
-    $.ajax({url: self.device.get('host') + '/command/version'})
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: self.device.get('host') + '/command/version'
+      })
       .fail(function(){
         if(attempt >= self.controller.get('retries')){
           return next(new Error());
