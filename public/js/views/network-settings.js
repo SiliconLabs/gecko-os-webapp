@@ -14,6 +14,13 @@ App.Views.NetworkSettings = Backbone.View.extend({
 <div class="signal"></div>\
 <input name="ssid" value="<%- ssid %>" disabled></input>\
 </div>\
+<div class="auto-connect">\
+<div class="wiconnect-cbx">\
+<input type="checkbox" value="None" id="auto-connect" name="auto-connect" <%= (auto_join) ? "checked" : ""%> />\
+<label for="auto-connect"></label>\
+</div>\
+<h4>Automatically connect to network</h4>\
+</div>\
 <div class="btn-bar">\
 <button class="btn btn-lg btn-ip dhcp col-50 <%= (dhcp) ? "active pressed": "" %>">DHCP</button>\
 <button class="btn btn-lg btn-ip static col-50 <%= (!dhcp) ? "active pressed": "" %>">Static</button>\
@@ -123,10 +130,13 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
     var cmds = [];
 
+    var auto_join = $(this.el).find('input[name="auto-connect"]').is(':checked') ? '1' : '0';
+
     if(self.device.get('dhcp')){
       cmds = [
-        {cmd: {flags:0, command:'set ne d e 1'}, self: self},
-        {cmd: {flags:0, command:'save'}, self: self}
+        {flags:0, command:'set ne d e 1'},
+        {flags:0, command:'set wl o e ' + auto_join},
+        {flags:0, command:'save'}
       ];
     } else {
 
@@ -137,6 +147,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
       cmds = [
         {flags:0, command:'set ne d e 0'},
+        {flags:0, command:'set wl o e ' + auto_join},
         {flags:0, command:'set st i ' + ip},
         {flags:0, command:'set st g ' + gateway},
         {flags:0, command:'set st d ' + dns},
