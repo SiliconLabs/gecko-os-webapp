@@ -11,7 +11,7 @@ App.Views.FileBrowser = Backbone.View.extend({
   overwrite: false,
 
   fileTemplate: _.template('\
-<div class="file <%= state %>">\
+<div class="file <%= state %>" data-queue="<%= id %>">\
 <div class="name"><%= filename %></div>\
 <div class="size"><%= size %> bytes</div>\
 <div class="status" data-id="<%= id %>"></div>\
@@ -32,21 +32,6 @@ App.Views.FileBrowser = Backbone.View.extend({
 </div>\
 <div class="file-queue">\
 <h3>Upload queue</h3>\
-<div class="file uploaded">\
-<div class="name">uploaded.jpg</div>\
-<div class="size">12 bytes</div>\
-<div class="status"></div>\
-</div>\
-<div class="file uploading">\
-<div class="name">uploading.png</div>\
-<div class="size">12 bytes</div>\
-<div class="status"></div>\
-</div>\
-<div class="file">\
-<div class="name">waiting.zip</div>\
-<div class="size">12 bytes</div>\
-<div class="status"></div>\
-</div>\
 </div>\
 <div id="file-system" class="file-system"></div>\
 </div>'),
@@ -256,9 +241,21 @@ App.Views.FileBrowser = Backbone.View.extend({
       };
     };
 
+    $(self.el).find('.file-queue').show('fast');
+
     async.eachSeries(
       files,
       function(file, next) {
+
+        var thisFile = {
+          id: 0,
+          state: 'uploading',
+          filename: file.name,
+          size: file.size
+        };
+
+        $(self.el).find('.file-queue').append(self.fileTemplate(thisFile));
+
         var thisReader = new FileReader();
 
         thisReader.onload = handleFile(cmds, file, next);
