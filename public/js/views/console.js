@@ -11,6 +11,9 @@ App.Views.Console = Backbone.View.extend({
 <div id="input-line" class="input-line">\
 <div class="prompt">&gt;</div><div><input class="cmdline" autofocus spellcheck="false" autocapitalize="off" /></div>\
 </div>\
+<div id="next-line" class="input-line">\
+<div><input class="nextline" spellcheck="false" autocapitalize="off" /></div>\
+</div>\
 </div>'),
   history: [],
   initialize: function(opts) {
@@ -34,7 +37,8 @@ App.Views.Console = Backbone.View.extend({
     'click #input-line>.cmdline': 'onClick',
     'click .terminal': 'onClick',
     'keyup #input-line .cmdline': 'historyHandler',
-    'keydown #input-line .cmdline': 'onCommand'
+    'keydown #input-line .cmdline': 'onCommand',
+    'keydown #next-line .nextline': 'onNext'
   },
   render: function() {
     if(this.controller.get('view') !== 'console'){
@@ -181,6 +185,9 @@ App.Views.Console = Backbone.View.extend({
         this.historyPosition = this.history.length;
       }
 
+      //focus on next line to show command being processed
+      $(this.el).find('.nextline').focus();
+
       // Duplicate current input and append to output section.
       self.newPrompt = this.cmdLine.parentNode.parentNode.cloneNode(true);
       self.newPrompt.removeAttribute('id');
@@ -250,8 +257,14 @@ App.Views.Console = Backbone.View.extend({
     var self = this;
 
     $.ajax({url: self.device.get('host') + '/command/' + cmd})
-      .fail(function(){
+      .fail(function(res){
         if(attempt >= self.controller.get('retries')){
+          self.output.appendChild(self.newPrompt);
+          self.cmdLine.value = ''; // Clear/setup line for next input.
+          self.cmdLine.focus();
+
+          self.printOutput('Error: GET command/' + cmd + ' ' + res.status + ': ' + res.statusText + '');
+
           return;
         }
         self.getCommand(cmd, (attempt+1));
@@ -259,6 +272,7 @@ App.Views.Console = Backbone.View.extend({
       .done(function(res){
         self.output.appendChild(self.newPrompt);
         self.cmdLine.value = ''; // Clear/setup line for next input.
+        self.cmdLine.focus();
 
         _.each(res.response.split('\r\n'), function(line){
           self.printOutput(line);
@@ -284,6 +298,8 @@ App.Views.Console = Backbone.View.extend({
         if(attempt >= self.controller.get('retries')){
           self.output.appendChild(self.newPrompt);
           self.cmdLine.value = '';
+          self.cmdLine.focus();
+
           self.printOutput('Error: POST command/' + cmd + ' ' + res.status + ': ' + res.statusText + '');
 
           return;
@@ -294,11 +310,17 @@ App.Views.Console = Backbone.View.extend({
       .done(function(res) {
         self.output.appendChild(self.newPrompt);
         self.cmdLine.value = ''; // Clear/setup line for next input.
+        self.cmdLine.focus();
 
         _.each(res.response.split('\r\n'), function(line){
           self.printOutput(line);
         });
       });
+  },
+
+  onNext: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
   },
 
   clear: function() {
