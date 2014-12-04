@@ -3,12 +3,12 @@
 /*jshint browser:true */
 /*jshint strict:false */
 
-App.Views.QuickStart = Backbone.View.extend({
+App.Views.Connect = Backbone.View.extend({
   els: [],
   views: [],
   template: _.template('\
 <div class="content">\
-<h1>Quick Start</h1>\
+<h1>Connect</h1>\
 <button class="btn btn-lg active scan">Scan</button>\
 <div class="wifi-scan wifi-logo">\
 <div class="wifi-bar"></div>\
@@ -43,7 +43,7 @@ App.Views.QuickStart = Backbone.View.extend({
     // this.controller.set({queue:this.controller.cmds.push('new')});
     if(this.connectView){
       this.connectView.onClose();
-      $(this.el).find('.connect').empty();
+      $(this.el).find('.connect-modal').empty();
     }
 
     this.$('.scan')
@@ -93,13 +93,13 @@ App.Views.QuickStart = Backbone.View.extend({
       controller: this.controller,
       network: _.findWhere(this.networks, {id: $(e.currentTarget).data('network')}),
       el: $('<div />')
-        .addClass('connect modal')
+        .addClass('connect-modal modal')
         .appendTo(this.$el)
     });
 
   },
   render: function() {
-    if(this.controller.get('view') !== 'quickstart'){
+    if(this.controller.get('view') !== 'connect'){
       $(this.el).removeClass('active');
       return;
     }
@@ -183,7 +183,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     'click .save': 'onSave'
   },
   onCancel: function() {
-    $('.quickstart>.content').show();
+    $('.connect>.content').show();
 
     this.remove();
   },
@@ -275,7 +275,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         if(err){
           //handle err
         }
-        $('.quickstart>.content').show();
+        $('.connect>.content').show();
         self.remove();
       });
   },
@@ -283,7 +283,7 @@ App.Views.QuickConnect = Backbone.View.extend({
   render: function() {
     this.$el.html(this.template(this.network));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
-      $('.quickstart>.content').hide();
+      $('.connect>.content').hide();
     }
   },
 
@@ -297,6 +297,5 @@ App.Views.QuickConnect = Backbone.View.extend({
       .done(function() {
         top.location = 'http://wiconnect.local';
       });
-
   }
 });

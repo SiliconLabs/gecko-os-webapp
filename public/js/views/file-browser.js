@@ -213,6 +213,8 @@ App.Views.FileBrowser = Backbone.View.extend({
     e.stopPropagation();
     e.preventDefault();
 
+    this.overwrite = $($('#overwrite')[0]).is(':checked');
+
     this.processUploads(e.currentTarget.files);
   },
 
@@ -230,7 +232,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
           commands.push({
             flags: 0,
-            command: 'fde ' + thisFile.name
+            command: 'fde \"' + thisFile.name + '\"'
           });
         }
 

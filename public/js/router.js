@@ -4,7 +4,7 @@
 
 App.Router = Backbone.Router.extend ({
   routes: {
-    "": "quickstart"
+    "": "connect",
     // "quick-start": "quickstart",
     // "network-settings": "network",
     // "system": "system",
@@ -12,9 +12,9 @@ App.Router = Backbone.Router.extend ({
     // "*default": "quickstart"
   },
 
-  quickstart: function() {
+  connect: function() {
     App.controller.set({
-      view: 'quickstart'
+      view: 'connect'
     });
   },
 
@@ -39,6 +39,12 @@ App.Router = Backbone.Router.extend ({
   browser: function() {
     App.controller.set({
       view: 'browser'
+    });
+  },
+
+  gohackme: function() {
+    App.controller.set({
+      view: 'gohackme'
     });
   }
 

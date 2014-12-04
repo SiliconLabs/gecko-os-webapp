@@ -13,6 +13,7 @@ App.Models.Device = Backbone.Model.extend({
     dhcp: '',
     dns: '',
     gateway: '',
+    ghm_activated: '',
     host: '',
     ip: '',
     mac: '',

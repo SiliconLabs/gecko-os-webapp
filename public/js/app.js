@@ -25,13 +25,13 @@ var App = {
     self.controller = new App.Models.Controller();
     self.device = new App.Models.Device({
       controller: App.controller
-      // host: 'http://10.5.6.153' //useful for local development with remote device
+      // host: 'http://10.5.6.107' //useful for local development with remote device
     });
 
     self.device.init();
 
-    self.views.quickstart = new App.Views.QuickStart({
-      el: $('.quickstart'),
+    self.views.connect = new App.Views.Connect({
+      el: $('.connect'),
       controller: App.controller,
       device: App.device
     });
@@ -56,6 +56,12 @@ var App = {
 
     self.views.browser = new App.Views.FileBrowser({
       el: $('.browser'),
+      controller: App.controller,
+      device: App.device
+    });
+
+    self.views.gohackme = new App.Views.GoHACKme({
+      el: $('.gohackme'),
       controller: App.controller,
       device: App.device
     });
