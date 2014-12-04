@@ -162,7 +162,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 <div class="clear"></div>\
 </div>'),
   initialize: function(opts){
-    _.bindAll(this, 'render', 'onClose', 'onCancel', 'onIPv4', 'onAdvanced', 'onAddressing', 'onSave');
+    _.bindAll(this, 'render', 'onClose', 'onCancel', 'onIPv4', 'onAdvanced', 'onAddressing', 'onSave', 'onSetupExit');
     this.delegateEvents();
 
     this.network = opts.network;
@@ -246,12 +246,30 @@ App.Views.QuickConnect = Backbone.View.extend({
       }
     }
 
+    if(self.device.get('web_setup')) {
+      cmds.push({flags:0, command:'set wl o e 1'});
+      cmds.push({flags:0, command:'set ht s e 1'});
+      cmds.push({flags:0, command:'set md e 1'});
+      cmds.push({flags:0, command:'set md n wiconnect'});
+      cmds.push({flags:0, command:'set md s http'});
+    }
+
     cmds.push({flags:0, command:'save'});
+
+    if(self.device.get('web_setup')) {
+      cmds.push({flags:0, command:'reboot'});
+    }
 
     async.eachSeries(
       cmds,
       self.device.postCommand,
       function(err) {
+        if(self.device.get('web_setup')){
+          self.remove();
+          self.onSetupExit();
+          return;
+        }
+
         self.controller.loading(false);
 
         if(err){
@@ -267,5 +285,18 @@ App.Views.QuickConnect = Backbone.View.extend({
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
       $('.quickstart>.content').hide();
     }
+  },
+
+  onSetupExit: function() {
+    var self = this;
+
+    $.ajax({url: 'http://wiconnect.local/command/ver', type: 'GET', contentType: 'json'})
+      .fail(function() {
+        setTimeout(self.onSetupExit, 1000);
+      })
+      .done(function() {
+        top.location = 'http://wiconnect.local';
+      });
+
   }
 });
