@@ -93,6 +93,20 @@ module.exports = function(grunt) {
           interupt: true
         }
       }
+    },
+    tagrelease: {
+      file: 'package.json',
+      commit:  true,
+      message: 'Release %version%',
+      prefix:  'v',
+      annotate: false,
+    },
+    bumpup: {
+        file: 'package.json'
+    },
+    "git-describe": {
+      options: {},
+      build: {}
     }
   });
 
@@ -103,9 +117,25 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-git-describe');
+  grunt.loadNpmTasks('grunt-bumpup');
+  grunt.loadNpmTasks('grunt-tagrelease');
 
   grunt.event.on('watch', function(action, filepath, target) {
     grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
+  });
+
+  grunt.event.once('git-describe', function (rev) {
+    var pkg = grunt.file.readJSON('package.json');
+    grunt.file.write(
+      'public/js/version.js',
+      'var _webgui = '
+        + '{'
+          + 'date:"' + new Date().toISOString() + '", '
+          + 'hash:"' + rev.object + '", '
+          + 'version: "' + pkg.version +'"'
+        +'};',
+      {encoding: 'utf8'})
   });
 
   grunt.registerTask('no-jade', []); //TBC
@@ -113,7 +143,9 @@ module.exports = function(grunt) {
 
   grunt.registerTask('lint', ['jshint']);
 
-  grunt.registerTask('build', ['lint', 'uglify:build', 'less:build', 'jade:build', 'compress:build']);
+  grunt.registerTask('embed-hash', ['git-describe']);
+
+  grunt.registerTask('build', ['embed-hash', 'lint', 'uglify:build', 'less:build', 'jade:build', 'compress:build']);
 
   grunt.registerTask('server', 'Start express server', function() {
     require('./server.js').listen(5002, function () {
@@ -123,4 +155,18 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['build', 'server']);
 
+  grunt.registerTask('release', function(type) {
+    //grunt release:patch
+    //grunt release:minor
+    //grunt release:major
+
+    type = type ? type : 'patch';
+
+    grunt.task.run('bumpup:' + type);
+    grunt.task.run('build');
+    grunt.task.run('tagrelease');
+    grunt.log.writeln('--------------------------------------');
+    grunt.log.writeln('Ignore tagrelease deprecation message.');
+    grunt.log.writeln('--------------------------------------');
+  });
 }

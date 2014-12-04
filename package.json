@@ -1,7 +1,7 @@
 {
   "name": "wiconnect_webgui",
   "description": "WiConnect Web Setup",
-  "version": "0.0.1",
+  "version": "0.8.0",
   "author": {
     "name": "Andrew Mitchell",
     "email": "andrew.mitchell@ack.me"
@@ -30,6 +30,9 @@
     "grunt-contrib-uglify": "^0.6.0",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-compress": "^0.12.0",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-git-describe": "^2.3.2",
+    "grunt-bumpup": "^0.6.2",
+    "grunt-tagrelease": "^0.3.3"
   }
 }
