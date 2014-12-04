@@ -10,8 +10,9 @@
 body .main>div {
 
   &.loader {
-    position: absolute;
+    position: fixed;
     display: block;
+    left: 280px;
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(255, 255, 255, 0); //iOS hack
 
@@ -104,6 +105,21 @@ body .main>div {
             left: 57.15px;
           }
         }
+      }
+    }
+  }
+}
+
+@media(max-width: 768px){
+
+  body .main>div {
+
+    &.loader {
+      position: fixed !important;
+      left: 0;
+
+      .loading {
+        position: fixed !important;
       }
     }
   }
