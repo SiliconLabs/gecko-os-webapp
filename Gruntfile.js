@@ -125,6 +125,15 @@ module.exports = function(grunt) {
     "git-describe": {
       options: {},
       build: {}
+    },
+    shell: {
+      options: {
+        stdout: true,
+        stderr: true
+      },
+      pushTags: {
+        command: 'git push origin --tags'
+      }
     }
   });
 
@@ -138,6 +147,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-git-describe');
   grunt.loadNpmTasks('grunt-bumpup');
   grunt.loadNpmTasks('grunt-tagrelease');
+  grunt.loadNpmTasks('grunt-shell');
 
   grunt.event.on('watch', function(action, filepath, target) {
     grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
@@ -185,7 +195,7 @@ module.exports = function(grunt) {
       grunt.file.mkdir('out/release/')
     }
 
-    grunt.task.run(['bumpup:' + type, 'build', 'compress:release', 'tagrelease']);
+    grunt.task.run(['bumpup:' + type, 'build', 'compress:release', 'tagrelease', 'shell:pushTags']);
 
     grunt.log.writeln('--------------------------------------');
     grunt.log.writeln('Ignore tagrelease deprecation message.');

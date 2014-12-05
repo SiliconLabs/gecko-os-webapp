@@ -33,6 +33,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-git-describe": "^2.3.2",
     "grunt-bumpup": "^0.6.2",
-    "grunt-tagrelease": "^0.3.3"
+    "grunt-tagrelease": "^0.3.3",
+    "grunt-shell": "^1.1.1"
   }
 }
