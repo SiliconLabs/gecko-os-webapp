@@ -149,10 +149,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-tagrelease');
   grunt.loadNpmTasks('grunt-shell');
 
-  grunt.event.on('watch', function(action, filepath, target) {
-    grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
-  });
-
   grunt.event.once('git-describe', function (rev) {
     var pkg = grunt.file.readJSON('package.json');
     grunt.file.write(
@@ -206,6 +202,10 @@ module.exports = function(grunt) {
     require('./server.js').listen(5002, function () {
       grunt.log.writeln('Web server running at http://localhost:5002.');
     }).on('close', this.async());
+  });
+
+  grunt.event.on('watch', function(action, filepath, target) {
+    grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
   });
 
   grunt.registerTask('default', ['build', 'server']);
