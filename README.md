@@ -3,13 +3,13 @@
 ## Installation
 
 The WiConnect WebGUI uses the following development tools:
--NodeJS
--Grunt
--Bower
+* NodeJS
+* Grunt
+* Bower
 
 To develop, build or run the WebGUI on your local machine, these will need to be installed. Instructions for installation of these tools:
--[Windows](docs/windows-install.md)
--[Linux](docs/linux-install.md)
+* [Windows](docs/windows-install.md)
+* [Linux](docs/linux-install.md)
 
 After pulling the repo, run the following commands in a terminal to download and install required packages:
 ```
