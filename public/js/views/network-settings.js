@@ -71,7 +71,11 @@ App.Views.NetworkSettings = Backbone.View.extend({
     async.eachSeries(
       cmds,
       self.device.getCommand,
-      function() {
+      function(err) {
+        if(err){
+          //handle err
+        }
+
         var auto_join = self.device.get('auto_join').replace('\r\n','');
         var dhcp = self.device.get('dhcp').replace('\r\n','');
 
