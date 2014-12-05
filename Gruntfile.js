@@ -69,6 +69,24 @@ module.exports = function(grunt) {
           'out/wiconnect_webgui.js.gz': 'out/wiconnect_webgui.js',
           'out/wiconnect_webgui.css.gz': 'out/wiconnect_webgui.css'
         }
+      },
+      release: {
+        options: {
+          archive: function () {
+            var pkg = grunt.file.readJSON('package.json');
+            return 'out/release/Release-' + pkg.version + '.zip';
+          }
+        },
+        files: [
+          {
+            expand: true,
+            src: [
+              'out/index.html',
+              'out/wiconnect_webgui.js.gz',
+              'out/wiconnect_webgui.css.gz'
+            ]
+          }
+        ]
       }
     },
     watch: {
@@ -145,7 +163,34 @@ module.exports = function(grunt) {
 
   grunt.registerTask('embed-hash', ['git-describe']);
 
-  grunt.registerTask('build', ['embed-hash', 'lint', 'uglify:build', 'less:build', 'jade:build', 'compress:build']);
+  grunt.registerTask('build', function() {
+
+    if(!grunt.file.isDir('out/')) {
+      grunt.log.writeln('Created output directory.');
+      grunt.file.mkdir('out/')
+    }
+
+    grunt.task.run([
+      'embed-hash', 'lint',
+      'uglify:build', 'less:build', 'jade:build',
+      'compress:build'
+    ]);
+  });
+
+  grunt.registerTask('release', function(type) {
+    type = type ? type : 'patch';
+
+    if(!grunt.file.isDir('out/release/')) {
+      grunt.log.writeln('Created release directory.');
+      grunt.file.mkdir('out/release/')
+    }
+
+    grunt.task.run(['bumpup:' + type, 'build', 'compress:release', 'tagrelease']);
+
+    grunt.log.writeln('--------------------------------------');
+    grunt.log.writeln('Ignore tagrelease deprecation message.');
+    grunt.log.writeln('--------------------------------------');
+  });
 
   grunt.registerTask('server', 'Start express server', function() {
     require('./server.js').listen(5002, function () {
@@ -154,19 +199,4 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['build', 'server']);
-
-  grunt.registerTask('release', function(type) {
-    //grunt release:patch
-    //grunt release:minor
-    //grunt release:major
-
-    type = type ? type : 'patch';
-
-    grunt.task.run('bumpup:' + type);
-    grunt.task.run('build');
-    grunt.task.run('tagrelease');
-    grunt.log.writeln('--------------------------------------');
-    grunt.log.writeln('Ignore tagrelease deprecation message.');
-    grunt.log.writeln('--------------------------------------');
-  });
 }

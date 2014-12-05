@@ -1,4 +1,7 @@
 /public/vendor/
 /node_modules/
-/out/
-
+/out/index.html
+/out/wiconnect_webgui.js
+/out/wiconnect_webgui.js.gz
+/out/wiconnect_webgui.css
+/out/wiconnect_webgui.css.gz
