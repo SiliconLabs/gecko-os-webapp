@@ -257,28 +257,32 @@ App.Views.Console = Backbone.View.extend({
 
     var self = this;
 
-    $.ajax({url: self.device.get('host') + '/command/' + cmd})
-      .fail(function(res){
-        if(attempt >= self.controller.get('retries')){
-          self.output.appendChild(self.newPrompt);
-          self.cmdLine.value = ''; // Clear/setup line for next input.
-          self.cmdLine.focus();
+    var fail = function(resp, next) {
+      self.output.appendChild(self.newPrompt);
+      self.cmdLine.value = ''; // Clear/setup line for next input.
+      self.cmdLine.focus();
 
-          self.printOutput('Error: GET command/' + cmd + ' ' + res.status + ': ' + res.statusText + '');
+      self.printOutput('Error: GET command/' + cmd + ' ' + resp.status + ': ' + resp.statusText + '');
+    };
 
-          return;
-        }
-        self.getCommand(cmd, (attempt+1));
-      })
-      .done(function(res){
-        self.output.appendChild(self.newPrompt);
-        self.cmdLine.value = ''; // Clear/setup line for next input.
-        self.cmdLine.focus();
+    var done = function(resp, next) {
+      self.output.appendChild(self.newPrompt);
+      self.cmdLine.value = ''; // Clear/setup line for next input.
+      self.cmdLine.focus();
 
-        _.each(res.response.split('\r\n'), function(line){
-          self.printOutput(line);
-        });
+      _.each(resp.response.split('\r\n'), function(line){
+        self.printOutput(line);
       });
+    };
+
+    var command = {
+      cmd: cmd,
+      fail: fail,
+      done: done
+    };
+
+    self.device.getCommand(command);
+
   },
 
   postCommand: function(cmd, attempt) {
@@ -288,35 +292,32 @@ App.Views.Console = Backbone.View.extend({
 
     var self = this;
 
-    $.ajax({
-        type: "POST",
-        contentType: 'application/json',
-        dataType: 'json',
-        url: self.device.get('host') + '/command',
-        data: JSON.stringify({flags:0, command: cmd})
-      })
-      .fail(function(res){
-        if(attempt >= self.controller.get('retries')){
-          self.output.appendChild(self.newPrompt);
-          self.cmdLine.value = '';
-          self.cmdLine.focus();
+    var fail = function(resp, next) {
+      self.output.appendChild(self.newPrompt);
+      self.cmdLine.value = '';
+      self.cmdLine.focus();
 
-          self.printOutput('Error: POST command/' + cmd + ' ' + res.status + ': ' + res.statusText + '');
+      self.printOutput('Error: POST command/' + cmd + ' ' + resp.status + ': ' + resp.statusText + '');
+    };
 
-          return;
-        }
+    var done = function(resp, next) {
+      self.output.appendChild(self.newPrompt);
+      self.cmdLine.value = ''; // Clear/setup line for next input.
+      self.cmdLine.focus();
 
-        self.postCommand(cmd, (attempt+1));
-      })
-      .done(function(res) {
-        self.output.appendChild(self.newPrompt);
-        self.cmdLine.value = ''; // Clear/setup line for next input.
-        self.cmdLine.focus();
-
-        _.each(res.response.split('\r\n'), function(line){
-          self.printOutput(line);
-        });
+      _.each(resp.response.split('\r\n'), function(line){
+        self.printOutput(line);
       });
+    };
+
+    var command = {
+      cmd: {flags:0, command: cmd},
+      done: done,
+      fail: fail
+    };
+
+    self.device.postCommand(command);
+
   },
 
   onNext: function(e) {

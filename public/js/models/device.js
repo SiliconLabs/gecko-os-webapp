@@ -33,7 +33,7 @@ App.Models.Device = Backbone.Model.extend({
     _.bindAll(this,
       'init', 'checkIn',
       'getCommand', 'postCommand',
-      'basicInfo', 'getCommands', 'getVariables', 'getNetworks', 'getVersion');
+      'basicInfo');
 
     this.controller = opts.controller;
   },
@@ -41,10 +41,10 @@ App.Models.Device = Backbone.Model.extend({
   init: function() {
     var self = this;
 
+    self.controller.loading(true);
+
     async.series([
-        this.basicInfo,
-        this.getCommands,
-        this.getVariables
+        this.basicInfo
       ],
       function(err) {
         if(err){
@@ -62,24 +62,31 @@ App.Models.Device = Backbone.Model.extend({
   checkIn: function() {
     var self = this;
 
-    $.ajax({
-        type: 'GET',
-        contentType: 'application/json',
-        url: self.get('host') + '/command/version'
-      })
-      .done(function(){
-        setTimeout(self.checkIn, self.checkInInterval * 1000);
-      });
+    var done = function(resp, next) {
+      setTimeout(self.checkIn, self.checkInInterval * 1000);
+    };
+
+    var cmd = {
+      cmd: 'ver',
+      done: done
+    };
+
+    self.getCommand(cmd);
   },
 
+  //cmd: {
+  //      cmd: 'version',
+  //      [property]: 'version', //optional - backbone property name to store returned value
+  //      [ret]: true, //optional - return immidiate if property already contains value, prevents excessive requests
+  //      [fail]: function(resp, next), //optional - function to execute on ajax failure, will be passed ajax RESPonse and callback reference
+  //      [done]: function(resp, next), //optional - function to execute on ajax completion, will be passed ajax RESPonse and callback reference
+  //    }
   getCommand: function(cmd, next, attempt) {
     var self = this;
 
     if(typeof attempt === 'undefined') {
       attempt = 1;
     }
-
-    App.controller.loading(true);
 
     cmd.ret = (cmd.ret === true); //ret - return if exists
 
@@ -91,21 +98,41 @@ App.Models.Device = Backbone.Model.extend({
         type: 'GET',
         contentType: 'application/json',
         url: self.get('host') + '/command/' + cmd.cmd
+        //put auth here
       })
-      .fail(function() {
+      .fail(function(resp) {
+        //handle auth failure here
+        //
         if(attempt >= App.controller.get('retries')){
-          return next(new Error());
+          var fail = (typeof cmd.fail === 'function') ? cmd.fail(resp, next) : next(new Error());
+
+          if(typeof fail === 'function') {
+            return fail();
+          }
+
+          return;
         }
         self.getCommand(cmd, next, (attempt+1));
       })
-      .done(function(data) {
-        if(data.response){
-          self.set(cmd.property, data.response);
+      .done(function(resp) {
+        if(cmd.property && resp.response){
+          self.set(cmd.property, resp.response);
         }
-        next();
+
+        var done = (typeof cmd.done === 'function') ? cmd.done(resp, next): next();
+
+        if(typeof done === 'function') {
+          done();
+        }
+
       });
   },
 
+  //cmd: {
+  //      cmd: {flags: 0, command: 'nup'},
+  //      [fail]: function(resp, next), //optional - function to execute on ajax failure, will be passed ajax RESPonse and callback reference
+  //      [done]: function(resp, next), //optional - function to execute on ajax completion, will be passed ajax RESPonse and callback reference
+  //    }
   postCommand: function(cmd, next, attempt) {
     var self = this;
 
@@ -113,33 +140,91 @@ App.Models.Device = Backbone.Model.extend({
       attempt = 1;
     }
 
-    App.controller.loading(true);
-
     $.ajax({
         type: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         url: self.get('host') + '/command',
-        data: JSON.stringify(cmd)
+        data: JSON.stringify(cmd.cmd)
+        //put auth here
       })
-      .fail(function(){
+      .fail(function(resp){
+        //handle auth failure here
+        //
         if(attempt >= App.controller.get('retries')){
-          return next(new Error());
+          var fail = (typeof cmd.fail === 'function') ? cmd.fail(resp, next) : next(new Error());
+
+          if(typeof fail === 'function') {
+            return fail();
+          }
+
+          return;
         }
 
         self.postCommand(cmd, next, (attempt+1));
       })
-      .done(function(){
-        next();
+      .done(function(resp){
+        var done = (typeof cmd.done === 'function') ? cmd.done(resp, next): next();
+
+        if(typeof done === 'function') {
+          done();
+        }
       });
   },
 
   basicInfo: function(next) {
     var self = this;
 
+    var parseCommands = function(resp, done) {
+      if(resp.response){
+        _.each(resp.response.split('\r\n'), function(line){
+          if(line.length === 0) {
+            return;
+          }
+          self.commands.push(line.split(':')[0].trim());
+        });
+      }
+
+      done();
+    };
+
+    var parseVariables = function(resp, done) {
+      if(resp.response){
+        _.each(resp.response.split('\r\n'), function(line){
+          if(line.length === 0) {
+            return;
+          }
+
+          //replace multiple whitespace chars with single space before splitting
+          var thisVar = line.replace(/\s{2,}/g, ' ').split(' ')[1].trim();
+
+          if(thisVar.length === 0) {
+            return;
+          }
+
+          if(thisVar.indexOf('.') < 0) {
+            self.variables[line.split(' ')[1].trim()] = {};
+            return;
+          }
+
+          var obj = self.variables;
+          _.each(thisVar.split('.'), function(part){
+            if(!obj[part]){
+              obj[part] = {};
+            }
+            obj = obj[part];
+          });
+        });
+      }
+
+      done();
+    };
+
     var cmds = [
       {property: 'ip', cmd: 'get ne i', ret: false },
-      {property: 'web_setup', cmd: 'setup status', ret: false}
+      {property: 'web_setup', cmd: 'setup status', ret: false},
+      {cmd: 'help commands', done: parseCommands},
+      {cmd: 'help variables', done: parseVariables}
     ];
 
     async.eachSeries(
@@ -170,175 +255,6 @@ App.Models.Device = Backbone.Model.extend({
         next();
       }
     );
-  },
-
-  getCommands: function(next, attempt) {
-    var self = this;
-
-    if(typeof attempt === 'undefined') {
-      attempt = 1;
-    }
-
-    $.ajax({
-        type: 'GET',
-        contentType: 'application/json',
-        url: self.get('host') + '/command/help commands'
-      })
-      .fail(function(){
-        if(attempt >= self.controller.get('retries')){
-          return next(new Error());
-        }
-        self.getCommands(self, next, (attempt+1));
-      })
-      .done(function(data){
-        if(data.response){
-          _.each(data.response.split('\r\n'), function(line){
-            if(line.length === 0) {
-              return;
-            }
-            self.commands.push(line.split(':')[0].trim());
-          });
-        }
-
-        next();
-      });
-  },
-
-  getVariables: function(next, attempt) {
-    var self = this;
-
-    if(typeof attempt === 'undefined') {
-      attempt = 1;
-    }
-
-    $.ajax({
-        type: 'GET',
-        contentType: 'application/json',
-        url: self.get('host') + '/command/help variables'
-      })
-      .fail(function(){
-        if(attempt >= self.controller.get('retries')){
-          return next(new Error());
-        }
-        self.getVariables(self, next, (attempt+1));
-      })
-      .done(function(data){
-        if(data.response){
-          _.each(data.response.split('\r\n'), function(line){
-            if(line.length === 0) {
-              return;
-            }
-
-            //replace multiple whitespace chars with single space before splitting
-            var thisVar = line.replace(/\s{2,}/g, ' ').split(' ')[1].trim();
-
-            if(thisVar.length === 0) {
-              return;
-            }
-
-            if(thisVar.indexOf('.') < 0) {
-              self.variables[line.split(' ')[1].trim()] = {};
-              return;
-            }
-
-            var obj = self.variables;
-            _.each(thisVar.split('.'), function(part){
-              if(!obj[part]){
-                obj[part] = {};
-              }
-              obj = obj[part];
-            });
-          });
-        }
-
-        next();
-      });
-  },
-
-  getNetworks: function(self, onResults, attempt) {
-    if(typeof attempt === 'undefined') {
-      attempt = 1;
-    }
-
-    $.ajax({
-        type: 'GET',
-        contentType: 'application/json',
-        url: self.device.get('host') + '/command/scan -v'
-      })
-      .fail(function(){
-        if(attempt >= self.controller.get('retries')){
-          self.render();
-          return;
-        }
-        self.device.getNetworks(self, onResults, (attempt+1));
-      })
-      .done(function(data){
-        _.each(data.response.split('\r\n'), function(line) {
-          if(line.length === 0) {
-            return;
-          }
-
-          line = line.replace(/\s{2,}/g, ' ').split(' ');
-
-          if(line[0] === '!') {
-            return;
-          }
-
-          if(Number(line[8]) === 0) {
-            //hidden ssid
-            return;
-          }
-
-          var network = {
-            id: Number(line[1]),
-            channel: Number(line[2]),
-            rssi: Number(line[3]),
-            bssid: line[4],
-            security: line[6],
-            ssid: _.rest(line, 9).join(' ')
-          };
-
-          self.networks.push(network);
-        });
-
-        onResults();
-      });
-  },
-
-  getVersion: function(self, next, attempt) {
-    if(self.device.get('version')){
-      return next();
-    }
-
-    if(typeof attempt === 'undefined') {
-      attempt = 1;
-    }
-
-    $.ajax({
-        type: 'GET',
-        contentType: 'application/json',
-        url: self.device.get('host') + '/command/version'
-      })
-      .fail(function(){
-        if(attempt >= self.controller.get('retries')){
-          return next(new Error());
-        }
-        self.device.getVersion(self, next, (attempt+1));
-      })
-      .done(function(data){
-
-        var version = data.response.split(',')[0],
-            dateModule = data.response.split(',')[1].trim().replace('Built:','').split(' for '),
-            board = data.response.split(',')[2];
-
-        self.device.set({
-          version: version,
-          date: dateModule[0],
-          module: dateModule[1],
-          board: board.trim().replace('Board:', '')
-        });
-
-        next();
-      });
   }
+
 });

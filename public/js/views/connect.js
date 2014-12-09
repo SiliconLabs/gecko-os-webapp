@@ -55,7 +55,45 @@ App.Views.Connect = Backbone.View.extend({
     this.$('.networks').empty();
     this.$('.wifi-scan').addClass('scanning');
 
-    this.device.getNetworks(self, self.onResults);
+    var scanComplete = function(resp, next) {
+      _.each(resp.response.split('\r\n'), function(line) {
+        if(line.length === 0) {
+          return;
+        }
+
+        line = line.replace(/\s{2,}/g, ' ').split(' ');
+
+        if(line[0] === '!') {
+          return;
+        }
+
+        if(Number(line[8]) === 0) {
+          //hidden ssid
+          return;
+        }
+
+        var network = {
+          id: Number(line[1]),
+          channel: Number(line[2]),
+          rssi: Number(line[3]),
+          bssid: line[4],
+          security: line[6],
+          ssid: _.rest(line, 9).join(' ')
+        };
+
+        self.networks.push(network);
+      });
+
+      self.onResults();
+    };
+
+    var cmd = {
+      cmd: 'scan -v',
+      done: scanComplete
+    };
+
+    this.device.getCommand(cmd);
+
   },
   onResults: function() {
     var self = this;
@@ -290,7 +328,7 @@ App.Views.QuickConnect = Backbone.View.extend({
   onSetupExit: function() {
     var self = this;
 
-    $.ajax({url: 'http://wiconnect.local/command/ver', type: 'GET', contentType: 'json'})
+    $.ajax({url: 'http://wiconnect.local/command/ver', type: 'GET', contentType: 'application/json'})
       .fail(function() {
         setTimeout(self.onSetupExit, 1000);
       })

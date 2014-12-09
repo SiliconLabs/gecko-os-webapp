@@ -58,6 +58,8 @@ App.Views.NetworkSettings = Backbone.View.extend({
       return;
     }
 
+    self.controller.loading(true);
+
     //draw empty
     this.$el.html(this.template(this.device.toJSON())).addClass('active');
 
@@ -146,6 +148,8 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
   onSave: function() {
     var self = this;
+
+    self.controller.loading(true);
 
     var cmds = [];
 

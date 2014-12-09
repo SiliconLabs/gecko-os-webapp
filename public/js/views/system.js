@@ -61,17 +61,28 @@ App.Views.System = Backbone.View.extend({
       return;
     }
 
+    self.controller.loading(true);
+
     //draw empty
     self.$el.html(self.template(self.device.toJSON())).addClass('active');
     self.views.push(new App.Views.Loader({
       el: $(self.el).find('.loading')
     }));
 
-    self.device.getVersion(
-      self,
-      function() {
 
-        var cmds = [
+    var parseVersion = function(resp, next) {
+      var version = resp.response.split(',')[0],
+          dateModule = resp.response.split(',')[1].trim().replace('Built:','').split(' for '),
+          board = resp.response.split(',')[2];
+
+      self.device.set({
+        version: version,
+        date: dateModule[0],
+        module: dateModule[1],
+        board: board.trim().replace('Board:', '')
+      });
+
+      var cmds = [
           {property: 'mac', cmd: 'get wl m', ret: true},
           {property: 'uuid', cmd: 'get sy u', ret: true}
         ];
@@ -84,6 +95,13 @@ App.Views.System = Backbone.View.extend({
 
             self.$el.html(self.template(self.device.toJSON()));
           });
-    });
+    };
+
+    var cmd = {
+      cmd: 'ver',
+      done: parseVersion
+    };
+
+    self.device.getCommand(cmd);
   }
 });

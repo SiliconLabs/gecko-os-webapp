@@ -99,43 +99,39 @@ App.Views.FileBrowser = Backbone.View.extend({
       attempt = 1;
     }
 
-    $.ajax({
-        type: 'GET',
-        contentType: 'application/json',
-        url: App.device.get('host') + '/command/ls%20-v'
-      })
-      .fail(function() {
-        if(attempt >= self.controller.get('retries')){
-          return next(new Error());
-        }
-        self.readFiles(next, (attempt+1));
-      })
-      .done(function(data) {
-        if(data.response){
-          _.each(data.response.split('\r\n'), function(line){
-            if(line.length === 0) {
-              return;
-            }
+    var done = function(resp, done) {
+      if(resp.response){
+        _.each(resp.response.split('\r\n'), function(line){
+          if(line.length === 0) {
+            return;
+          }
 
-            line = line.replace(/\s{2,}/g, ' ').split(' '); //replace multiple spaces with a single space
+          line = line.replace(/\s{2,}/g, ' ').split(' '); //replace multiple spaces with a single space
 
-            if(line[0] === '!') {
-              return;
-            }
+          if(line[0] === '!') {
+            return;
+          }
 
-            self.device.files.push({
-              id: Number(line[1]),
-              type: line[2],
-              flags: parseInt(line[3], 16),
-              size: Number(line[5]),
-              version: line[6],
-              filename: _.rest(line, 7).join(' ')
-            });
+          self.device.files.push({
+            id: Number(line[1]),
+            type: line[2],
+            flags: parseInt(line[3], 16),
+            size: Number(line[5]),
+            version: line[6],
+            filename: _.rest(line, 7).join(' ')
           });
-        }
+        });
+      }
 
-        next();
-      });
+      next();
+    };
+
+    var cmd = {
+      cmd: 'ls%20-v',
+      done: done
+    };
+
+    self.device.getCommand(cmd);
   },
 
   showFiles: function() {
