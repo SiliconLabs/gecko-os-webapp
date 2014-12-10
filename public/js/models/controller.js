@@ -3,6 +3,7 @@
 /*jshint strict:false */
 
 App.Models.Controller = Backbone.Model.extend({
+  views: {},
   defaults: {
     loading: true,
     size: null,
@@ -15,7 +16,7 @@ App.Models.Controller = Backbone.Model.extend({
     retries: 3
   },
   initialize: function(opts) {
-    _.bindAll(this, 'resize', 'onClose', 'loading');
+    _.bindAll(this, 'resize', 'onClose', 'loading', 'modal');
 
     var resizer = _.debounce(this.resize, 100);
     $(window).on('resize', resizer);
@@ -90,6 +91,17 @@ App.Models.Controller = Backbone.Model.extend({
     } else {
       $('.loader').hide();
     }
+  },
+  modal: function(content) {
+    if(this.views.modal){
+      this.views.modal.remove();
+    }
+
+    this.views.modal = new App.Views.Modal({
+      el: $('<div id="system-modal" />')
+            .appendTo($('.main')),
+      content: content
+    });
   }
 });
 

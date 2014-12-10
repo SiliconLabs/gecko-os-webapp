@@ -40,7 +40,6 @@ App.Views.Connect = Backbone.View.extend({
   onScan: function() {
     var self = this;
 
-    // this.controller.set({queue:this.controller.cmds.push('new')});
     if(this.connectView){
       this.connectView.onClose();
       $(this.el).find('.connect-modal').empty();
@@ -328,12 +327,28 @@ App.Views.QuickConnect = Backbone.View.extend({
   onSetupExit: function() {
     var self = this;
 
-    $.ajax({url: 'http://wiconnect.local/command/ver', type: 'GET', contentType: 'application/json'})
+    if(typeof self.attempt === 'undefined') {
+      self.attempt = 1;
+    }
+
+    self.controller.modal('<h2>Device rebooting. Attempting to reconnect...</h2>');
+
+    if(navigator.platform.indexOf('Android') >= 0) {
+      //display androind no mdns message
+    }
+
+    var host = (navigator.platform === 'Win32') ? 'wiconnect' : 'wiconnect.local';
+
+    $.ajax({url: 'http://' + host + '/command/ver', type: 'GET', contentType: 'application/json'})
       .fail(function() {
+        if(self.attempt > 60){
+          self.controller.modal('<h2>Unable to reconnect to device.<br><br> Please check the device state and try to reconnect manually.</h2>');
+        }
+        self.attempt += 1;
         setTimeout(self.onSetupExit, 1000);
       })
       .done(function() {
-        top.location = 'http://wiconnect.local';
+        top.location = 'http://' + host;
       });
   }
 });

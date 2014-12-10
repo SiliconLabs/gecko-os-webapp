@@ -50,10 +50,15 @@ body{
       padding: 0;
 
       li{
+        display: none;
         font-size: 14pt;
         font-weight: 300;
         border-bottom: 1px solid #222;
         border-top: 1px solid #444;
+
+        &.setup {
+          display: block;
+        }
 
         &:hover{
           background-color: #222;
