@@ -16,7 +16,7 @@ App.Models.Controller = Backbone.Model.extend({
     retries: 3
   },
   initialize: function(opts) {
-    _.bindAll(this, 'resize', 'onClose', 'loading', 'modal');
+    _.bindAll(this, 'resize', 'onClose', 'onKey', 'loading', 'modal', 'closeModal');
 
     var resizer = _.debounce(this.resize, 100);
     $(window).on('resize', resizer);
@@ -29,6 +29,11 @@ App.Models.Controller = Backbone.Model.extend({
   },
   onClose: function(){
     $(window).off('keyup', this.onKey);
+  },
+  onKey: function(e) {
+    if (this.views.modal && e.keyCode === 27) {
+      this.closeModal();
+    }
   },
   resize: function(e){
 
@@ -95,17 +100,6 @@ App.Models.Controller = Backbone.Model.extend({
   modal: function(args) {
     var self = this;
 
-    var removeModal = function(next) {
-      if(!self.views.modal){
-        return next();
-      }
-
-      $(self.views.modal.el).fadeOut(125, function(){
-        self.views.modal.remove();
-        next();
-      });
-    };
-
     var addModal = function(next) {
       if(!args || !args.content){
         return next();
@@ -119,8 +113,22 @@ App.Models.Controller = Backbone.Model.extend({
       next();
     };
 
-    async.series([removeModal, addModal], function(err){});
+    async.series([self.closeModal, addModal], function(err){});
 
+  },
+  closeModal: function(next) {
+    var self = this;
+
+    if(!self.views.modal){
+        return next();
+      }
+
+      $(self.views.modal.el).fadeOut(125, function(){
+        self.views.modal.remove();
+        if(typeof next === 'function') {
+          next();
+        }
+      });
   }
 });
 

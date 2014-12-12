@@ -98,11 +98,8 @@ App.Models.Device = Backbone.Model.extend({
         type: 'GET',
         contentType: 'application/json',
         url: self.get('host') + '/command/' + cmd.cmd
-        //put auth here
       })
       .fail(function(resp) {
-        //handle auth failure here
-        //
         if(attempt >= App.controller.get('retries')){
           var fail = (typeof cmd.fail === 'function') ? cmd.fail(resp, next) : next(new Error());
 
@@ -146,11 +143,8 @@ App.Models.Device = Backbone.Model.extend({
         dataType: 'json',
         url: self.get('host') + '/command',
         data: JSON.stringify(cmd.cmd)
-        //put auth here
       })
       .fail(function(resp){
-        //handle auth failure here
-        //
         if(attempt >= App.controller.get('retries')){
           var fail = (typeof cmd.fail === 'function') ? cmd.fail(resp, next) : next(new Error());
 

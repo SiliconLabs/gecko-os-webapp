@@ -259,16 +259,20 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var advanced = $($(this.el).find('input[name="show-advanced"]')[0]).is(':checked');
 
+    var fail = function() {
+
+    };
+
     var passkey = $(this.el).find('input[name="passkey"]').val();
     cmds = [
-      {flags:0, command:'set wl s \"' + self.network.ssid + '\"'},
-      {flags:0, command:'set wl p \"' + passkey + '\"'}
+      {cmd:{flags:0, command:'set wl s \"' + self.network.ssid + '\"'}},
+      {cmd:{flags:0, command:'set wl p \"' + passkey + '\"'}}
     ];
 
     if(advanced){
       var dhcp = _.contains($(this.el).find('button.btn-ip.active')[0].classList, 'btn-dhcp');
 
-      cmds.push({flags:0, command: 'set ne d e ' + (dhcp ? 1 : 0)});
+      cmds.push({cmd:{flags:0, command: 'set ne d e ' + (dhcp ? 1 : 0)}});
 
       if(!dhcp){
         var ip      = $(this.el).find('input[name="ip"]').val();
@@ -276,26 +280,30 @@ App.Views.QuickConnect = Backbone.View.extend({
         var dns     = $(this.el).find('input[name="dns"]').val();
         var netmask = $(this.el).find('input[name="netmask"]').val();
 
-        cmds.push({flags:0, command:'set st i ' + ip});
-        cmds.push({flags:0, command:'set st g ' + gateway});
-        cmds.push({flags:0, command:'set st d ' + dns});
-        cmds.push({flags:0, command:'set st n ' + netmask});
+        cmds.push({cmd:{flags:0, command:'set st i ' + ip}});
+        cmds.push({cmd:{flags:0, command:'set st g ' + gateway}});
+        cmds.push({cmd:{flags:0, command:'set st d ' + dns}});
+        cmds.push({cmd:{flags:0, command:'set st n ' + netmask}});
       }
     }
 
     if(self.device.get('web_setup')) {
-      cmds.push({flags:0, command:'set wl o e 1'});
-      cmds.push({flags:0, command:'set ht s e 1'});
-      cmds.push({flags:0, command:'set md e 1'});
-      cmds.push({flags:0, command:'set md n wiconnect'});
-      cmds.push({flags:0, command:'set md s http'});
+      cmds.push({cmd:{flags:0, command:'set wl o e 1'}});
+      cmds.push({cmd:{flags:0, command:'set ht s e 1'}});
+      cmds.push({cmd:{flags:0, command:'set md e 1'}});
+      cmds.push({cmd:{flags:0, command:'set md n wiconnect'}});
+      cmds.push({cmd:{flags:0, command:'set md s http'}});
     }
 
-    cmds.push({flags:0, command:'save'});
+    cmds.push({cmd:{flags:0, command:'save'}});
 
     if(self.device.get('web_setup')) {
-      cmds.push({flags:0, command:'reboot'});
+      cmds.push({cmd:{flags:0, command:'reboot'}});
+      self.controller.modal({content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
+    } else {
+      self.controller.loading(true);
     }
+
 
     async.eachSeries(
       cmds,
@@ -307,11 +315,12 @@ App.Views.QuickConnect = Backbone.View.extend({
           return;
         }
 
-        self.controller.loading(false);
-
         if(err){
           //handle err
         }
+
+        self.controller.loading(false);
+
         $('.connect>.content').show();
         self.remove();
       });
@@ -327,11 +336,13 @@ App.Views.QuickConnect = Backbone.View.extend({
   onSetupExit: function() {
     var self = this;
 
-    if(typeof self.attempt === 'undefined') {
-      self.attempt = 1;
+    if(typeof self.setup === 'undefined') {
+      self.setup = {
+        attempt: 0,
+        retries: 90
+      };
     }
 
-    self.controller.modal({content:'<h2>Device rebooting. Attempting to reconnect...</h2>'});
 
     if(navigator.platform.indexOf('Android') >= 0) {
       //display androind no mdns message
@@ -341,10 +352,13 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     $.ajax({url: 'http://' + host + '/command/ver', type: 'GET', contentType: 'application/json'})
       .fail(function() {
-        if(self.attempt > 60){
-          self.controller.modal('<h2>Unable to reconnect to device.<br><br> Please check the device state and try to reconnect manually.</h2>');
+        if(self.setup.attempt > self.setup.retries){
+          return self.controller.modal({content:'<h2>Unable to reconnect to device.<br><br> Please check you are connected to<br>\'' + self.network.ssid + '\'</h2>'});
         }
-        self.attempt += 1;
+
+        self.setup.attempt += 1;
+        $('.progress').css({width: String((self.setup.attempt / self.setup.retries)*100) + '%'});
+
         setTimeout(self.onSetupExit, 1000);
       })
       .done(function() {
