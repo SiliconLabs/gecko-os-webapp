@@ -138,7 +138,7 @@ App.Views.FileBrowser = Backbone.View.extend({
     var self = this;
 
     _.each(
-      _.filter(self.device.files, function(file) { return file.type[0] === 'e';}), //only external flash
+      _.filter(self.device.files, function(file) { return file.type[0] !== 'i';}), //not internal flash
       function(file) {
         file.state = '';
 
