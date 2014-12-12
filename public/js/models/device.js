@@ -52,10 +52,10 @@ App.Models.Device = Backbone.Model.extend({
         }
 
         if(self.get('web_setup')) {
+          self.controller.loading(false);
           setTimeout(self.checkIn, self.checkInInterval * 1000);
         }
 
-        self.controller.loading(false);
       });
   },
 
@@ -248,11 +248,11 @@ App.Models.Device = Backbone.Model.extend({
 
         if(web_setup){
           $('.nav ul li.setup').show('fast');
+          self.controller.set('view','connect');
         } else {
           $('.nav ul li').show('fast');
+          self.controller.set('view','network');
         }
-
-        self.controller.set('view','connect');
 
         next();
       }
