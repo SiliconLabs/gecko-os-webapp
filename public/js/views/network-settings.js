@@ -157,9 +157,9 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
     if(self.device.get('dhcp')){
       cmds = [
-        {flags:0, command:'set ne d e 1'},
-        {flags:0, command:'set wl o e ' + auto_join},
-        {flags:0, command:'save'}
+        {cmd:{flags:0, command:'set ne d e 1'}},
+        {cmd:{flags:0, command:'set wl o e ' + auto_join}},
+        {cmd:{flags:0, command:'save'}}
       ];
     } else {
 
@@ -169,13 +169,13 @@ App.Views.NetworkSettings = Backbone.View.extend({
       var netmask = $(this.el).find('input[name="netmask"]').val();
 
       cmds = [
-        {flags:0, command:'set ne d e 0'},
-        {flags:0, command:'set wl o e ' + auto_join},
-        {flags:0, command:'set st i ' + ip},
-        {flags:0, command:'set st g ' + gateway},
-        {flags:0, command:'set st d ' + dns},
-        {flags:0, command:'set st n ' + netmask},
-        {flags:0, command:'save'}
+        {cmd:{flags:0, command:'set ne d e 0'}},
+        {cmd:{flags:0, command:'set wl o e ' + auto_join}},
+        {cmd:{flags:0, command:'set st i ' + ip}},
+        {cmd:{flags:0, command:'set st g ' + gateway}},
+        {cmd:{flags:0, command:'set st d ' + dns}},
+        {cmd:{flags:0, command:'set st n ' + netmask}},
+        {cmd:{flags:0, command:'save'}}
       ];
     }
 

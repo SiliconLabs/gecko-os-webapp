@@ -218,6 +218,8 @@ App.Views.FileBrowser = Backbone.View.extend({
     var self = this;
     var cmds = [];
 
+    self.controller.loading(true);
+
     var handleFile = function(commands, thisFile, done) {
       return function(e) {
 
@@ -226,18 +228,18 @@ App.Views.FileBrowser = Backbone.View.extend({
             return done();
           }
 
-          commands.push({
+          commands.push({cmd:{
             flags: 0,
             command: 'fde \"' + thisFile.name + '\"'
-          });
+          }});
         }
 
         var bin = e.target.result;
-        commands.push({
+        commands.push({cmd:{
           flags: 4,
           command: 'fcr \"' + thisFile.name + '\" ' + e.total,
           data: btoa(bin)
-        });
+        }});
         return done();
       };
     };
@@ -338,7 +340,7 @@ App.Views.DeleteModal = Backbone.View.extend({
     }
 
     self.device.postCommand(
-      {flags:0, command:'fde \"' + self.file.filename + '\"'},
+      {cmd:{flags:0, command:'fde \"' + self.file.filename + '\"'}},
       function(err) {
         if(err){
           // handle err

@@ -98,8 +98,8 @@ to monitor and control your device from the cloud.</h4>\
     var password =  $(this.el).find('input[name="password"]').val();
 
     var cmds = [
-      {flags:0, command:'gca download -s'},
-      {flags:0, command:'gac \"' + email + '\" \"' + password + '\"'}
+      {cmd:{flags:0, command:'gca download -s'}},
+      {cmd:{flags:0, command:'gac \"' + email + '\" \"' + password + '\"'}}
     ];
 
     async.eachSeries(
