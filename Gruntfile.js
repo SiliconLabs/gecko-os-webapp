@@ -99,7 +99,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: ['public/js/*.js', 'public/js/**/*.js'],
-        tasks: ['jshint', 'uglify:build', 'compress:build'],
+        tasks: ['jshint', 'git-describe', 'uglify:build', 'compress:build'],
         options: {
           interupt: true
         }
