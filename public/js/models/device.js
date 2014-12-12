@@ -252,9 +252,13 @@ App.Models.Device = Backbone.Model.extend({
 
         self.set({web_setup: web_setup});
 
-        if(!web_setup){
-          $('.nav ul li').not('.setup').show('fast');
+        if(web_setup){
+          $('.nav ul li.setup').show('fast');
+        } else {
+          $('.nav ul li').show('fast');
         }
+
+        self.controller.set('view','connect');
 
         next();
       }

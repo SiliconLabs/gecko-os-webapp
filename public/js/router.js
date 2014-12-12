@@ -4,7 +4,7 @@
 
 App.Router = Backbone.Router.extend ({
   routes: {
-    "": "connect",
+    "": "",
     // "quick-start": "quickstart",
     // "network-settings": "network",
     // "system": "system",
