@@ -51,6 +51,8 @@ App.Views.Console = Backbone.View.extend({
     this.output = $(this.el).find('output')[0];
     this.cmdLine = $(this.el).find('#input-line .cmdline')[0];
 
+    this.cmdLine.focus();
+
   },
   onClick: function(e) {
     this.cmdLine.value = this.cmdLine.value;
