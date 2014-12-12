@@ -331,7 +331,7 @@ App.Views.QuickConnect = Backbone.View.extend({
       self.attempt = 1;
     }
 
-    self.controller.modal('<h2>Device rebooting. Attempting to reconnect...</h2>');
+    self.controller.modal({content:'<h2>Device rebooting. Attempting to reconnect...</h2>'});
 
     if(navigator.platform.indexOf('Android') >= 0) {
       //display androind no mdns message

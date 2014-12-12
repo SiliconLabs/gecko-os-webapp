@@ -1,4 +1,4 @@
-/*global $:true, Backbone:true, _:true, App:true */
+/*global $:true, Backbone:true, _:true, App:true, async:true */
 /*jshint browser:true */
 /*jshint strict:false */
 
@@ -92,16 +92,35 @@ App.Models.Controller = Backbone.Model.extend({
       $('.loader').hide();
     }
   },
-  modal: function(content) {
-    if(this.views.modal){
-      this.views.modal.remove();
-    }
+  modal: function(args) {
+    var self = this;
 
-    this.views.modal = new App.Views.Modal({
-      el: $('<div id="system-modal" />')
-            .appendTo($('.main')),
-      content: content
-    });
+    var removeModal = function(next) {
+      if(!self.views.modal){
+        return next();
+      }
+
+      $(self.views.modal.el).fadeOut(125, function(){
+        self.views.modal.remove();
+        next();
+      });
+    };
+
+    var addModal = function(next) {
+      if(!args || !args.content){
+        return next();
+      }
+
+      self.views.modal = new App.Views.Modal({
+        el: $('<div id="system-modal" />')
+              .appendTo($('.main')),
+        content: args.content
+      });
+      next();
+    };
+
+    async.series([removeModal, addModal], function(err){});
+
   }
 });
 

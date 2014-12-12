@@ -30,5 +30,7 @@ App.Views.Modal = Backbone.View.extend({
     this.$el.html(this.template({
       content: self.content
     }));
+
+    this.$el.fadeIn(125);
   }
 });
