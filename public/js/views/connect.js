@@ -293,6 +293,7 @@ App.Views.QuickConnect = Backbone.View.extend({
       cmds.push({cmd:{flags:0, command:'set md e 1'}});
       cmds.push({cmd:{flags:0, command:'set md n wiconnect'}});
       cmds.push({cmd:{flags:0, command:'set md s http'}});
+      cmds.push({cmd:{flags:0, command:'set ht s c *'}});
     }
 
     cmds.push({cmd:{flags:0, command:'save'}});
