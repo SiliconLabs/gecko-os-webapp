@@ -305,10 +305,13 @@ App.Views.QuickConnect = Backbone.View.extend({
     cmds.push({cmd:{flags:0, command:'save'}});
 
     if(self.device.get('web_setup')) {
+      $('.networks').empty(); //clear network list
       cmds.push({cmd:{flags:0, command:'reboot'}});
+      self.controller.modal({content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
+    } else {
+      self.controller.loading(true);
     }
 
-    self.controller.loading(true);
 
     async.eachSeries(
       cmds,
@@ -316,7 +319,6 @@ App.Views.QuickConnect = Backbone.View.extend({
       function(err) {
         if(self.device.get('web_setup')){
           self.remove();
-          self.controller.modal({content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
           self.onSetupExit();
           return;
         }
