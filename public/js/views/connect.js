@@ -136,12 +136,18 @@ App.Views.Connect = Backbone.View.extend({
 
   },
   render: function() {
+    var self = this;
+
     if(this.controller.get('view') !== 'connect'){
       $(this.el).removeClass('active');
       return;
     }
 
     this.$el.html(this.template()).addClass('active');
+
+    if(self.device.get('web_setup')) {
+      self.onScan();
+    }
   }
 });
 
@@ -345,7 +351,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 
 
     if(navigator.platform.indexOf('Android') >= 0) {
-      //display androind no mdns message
+      return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android, an Android app will be available soon. In the meantime, enter the IP address of your device into a browser.</h2>'});
     }
 
     var host = (navigator.platform === 'Win32') ? 'wiconnect' : 'wiconnect.local';
