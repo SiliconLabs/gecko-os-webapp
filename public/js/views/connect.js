@@ -363,7 +363,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     if(typeof self.setup === 'undefined') {
       self.setup = {
         attempt: 0,
-        retries: 90
+        retries: 30
       };
     }
 
