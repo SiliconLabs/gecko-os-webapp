@@ -5,6 +5,7 @@
 
 App.Views.Modal = Backbone.View.extend({
   template: _.template('\
+<div class="modal-background"></div>\
 <div class="modal">\
 <div class="content">\
 <%= content %>\
@@ -16,8 +17,13 @@ App.Views.Modal = Backbone.View.extend({
     this.delegateEvents();
 
     this.content = opts.content;
+    this.controller = opts.controller;
 
     this.render();
+  },
+
+  events: {
+    'click .modal-background': 'removeModal'
   },
 
   onClose: function() {
@@ -32,5 +38,9 @@ App.Views.Modal = Backbone.View.extend({
     }));
 
     this.$el.fadeIn(125);
+  },
+
+  removeModal: function() {
+    this.controller.closeModal();
   }
 });
