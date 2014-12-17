@@ -23,6 +23,13 @@ App.Models.Controller = Backbone.Model.extend({
     $(window).on('orientationchange', this.resize);
     $(window).on('keyup', this.onKey);
 
+    $(document).ajaxError(function(event, jqxhr, settings, exception ) {
+      if ( jqxhr.status === 401 ) {
+        $( "div.log" ).text( "Triggered ajaxError handler." );
+        self.modal({content:'Operation not allowed'});
+      }
+    });
+
     this.cmds = [];
 
     this.resize();
