@@ -167,12 +167,19 @@ App.Views.QuickConnect = Backbone.View.extend({
 <h4>Passkey</h4>\
 <input name="passkey" type="password" value=""></input>\
 </div>\
+<div class="right">\
+<h5>show passkey</h5>\
+<div class="wiconnect-cbx secondary small">\
+<input type="checkbox" value="show-passkey" id="show-passkey" name="show-passkey" />\
+<label for="show-passkey"></label>\
+</div>\
+</div>\
 <div>\
 <div class="wiconnect-cbx">\
 <input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
 <label for="show-advanced"></label>\
 </div>\
-<h4>Show Advanced Settings</h4>\
+<h4>Advanced Settings</h4>\
 </div>\
 <div class="advanced">\
 <div>\
@@ -218,7 +225,8 @@ App.Views.QuickConnect = Backbone.View.extend({
     this.stopListening();
   },
   events: {
-    'change input[type=checkbox]': 'onAdvanced',
+    'change #show-advanced': 'onAdvanced',
+    'change #show-passkey': 'onPasskey',
     'click .btn-ip': 'onAddressing',
     'blur .ipv4': 'onIPv4',
     'keyup .ipv4.invalid': 'onIPv4',
@@ -240,6 +248,14 @@ App.Views.QuickConnect = Backbone.View.extend({
     }
 
     thisAdd.removeClass('invalid');
+  },
+
+  onPasskey: function(e) {
+    if($(this.el).find('#show-passkey').is(':checked')) {
+      $(this.el).find('input[name="passkey"]').attr('type', 'text');
+      return;
+    }
+    $(this.el).find('input[name="passkey"]').attr('type', 'password');
   },
 
   onAdvanced: function(e) {
