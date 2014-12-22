@@ -16,6 +16,8 @@ App.Models.Controller = Backbone.Model.extend({
     retries: 3
   },
   initialize: function(opts) {
+    var self = this;
+
     _.bindAll(this, 'resize', 'onClose', 'onKey', 'loading', 'modal', 'closeModal');
 
     var resizer = _.debounce(this.resize, 100);
