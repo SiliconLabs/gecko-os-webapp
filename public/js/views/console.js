@@ -187,9 +187,6 @@ App.Views.Console = Backbone.View.extend({
         this.historyPosition = this.history.length;
       }
 
-      //focus on next line to show command being processed
-      $(this.el).find('.nextline').focus();
-
       // Duplicate current input and append to output section.
       self.newPrompt = this.cmdLine.parentNode.parentNode.cloneNode(true);
       self.newPrompt.removeAttribute('id');
@@ -208,6 +205,9 @@ App.Views.Console = Backbone.View.extend({
         });
         cmd = args[0].toLowerCase();
         args = args.splice(1); // Remove cmd from arg list.
+
+        //focus on next line to show command being processed
+        $(this.el).find('.nextline').focus();
       }
 
       switch (cmd) {
