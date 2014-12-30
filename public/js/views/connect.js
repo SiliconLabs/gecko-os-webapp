@@ -359,10 +359,13 @@ App.Views.QuickConnect = Backbone.View.extend({
   },
 
   render: function() {
+    var self = this;
+
     this.$el.html(this.template(this.network));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
       $('.connect>.content').hide();
     }
+
     if(!self.device.get('web_setup')) {
       $('.reconnect').hide();
     }
