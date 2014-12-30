@@ -174,6 +174,13 @@ App.Views.QuickConnect = Backbone.View.extend({
 <label for="show-passkey"></label>\
 </div>\
 </div>\
+<div class="reconnect">\
+<div class="wiconnect-cbx small-margin">\
+<input type="checkbox" value="None" id="reconnect" name="reconnect" checked="checked" />\
+<label for="reconnect"></label>\
+</div>\
+<h4>Reconnect to device on <%- ssid %> network</h4>\
+</div>\
 <div>\
 <div class="wiconnect-cbx">\
 <input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
@@ -279,11 +286,9 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var cmds = [];
 
+    self.reconnect = $($(this.el).find('input[name="reconnect"]')[0]).is(':checked');
+
     var advanced = $($(this.el).find('input[name="show-advanced"]')[0]).is(':checked');
-
-    var fail = function() {
-
-    };
 
     var passkey = $(this.el).find('input[name="passkey"]').val();
     cmds = [
@@ -311,11 +316,14 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     if(self.device.get('web_setup')) {
       cmds.push({cmd:{flags:0, command:'set wl o e 1'}});
-      cmds.push({cmd:{flags:0, command:'set ht s e 1'}});
-      cmds.push({cmd:{flags:0, command:'set md e 1'}});
-      cmds.push({cmd:{flags:0, command:'set md n wiconnect'}});
-      cmds.push({cmd:{flags:0, command:'set md s http'}});
-      cmds.push({cmd:{flags:0, command:'set ht s c *'}});
+
+      if(self.reconnect){
+        cmds.push({cmd:{flags:0, command:'set ht s e 1'}});
+        cmds.push({cmd:{flags:0, command:'set md e 1'}});
+        cmds.push({cmd:{flags:0, command:'set md n wiconnect'}});
+        cmds.push({cmd:{flags:0, command:'set md s http'}});
+        cmds.push({cmd:{flags:0, command:'set ht s c *'}});
+      }
     }
 
     cmds.push({cmd:{flags:0, command:'save'}});
@@ -323,7 +331,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     if(self.device.get('web_setup')) {
       $('.networks').empty(); //clear network list
       cmds.push({cmd:{flags:0, command:'reboot'}});
-      self.controller.modal({content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
+      self.controller.modal({systemModal: true, content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
     } else {
       self.controller.loading(true);
     }
@@ -355,21 +363,27 @@ App.Views.QuickConnect = Backbone.View.extend({
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
       $('.connect>.content').hide();
     }
+    if(!self.device.get('web_setup')) {
+      $('.reconnect').hide();
+    }
   },
 
   onSetupExit: function() {
     var self = this;
+
+    if(!self.reconnect){
+      return self.controller.modal({content:'<h2>Device is now connecting to ' + this.network.ssid + '.</h2><h2>Setup is now complete.</h2>'});
+    }
+
+    if(navigator.platform.indexOf('Android') >= 0) {
+      return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android, an Android app will be available soon. In the meantime, enter the IP address of your device into a browser.</h2>'});
+    }
 
     if(typeof self.setup === 'undefined') {
       self.setup = {
         attempt: 0,
         retries: 30
       };
-    }
-
-
-    if(navigator.platform.indexOf('Android') >= 0) {
-      return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android, an Android app will be available soon. In the meantime, enter the IP address of your device into a browser.</h2>'});
     }
 
     var host = (navigator.platform === 'Win32') ? 'wiconnect' : 'wiconnect.local';
