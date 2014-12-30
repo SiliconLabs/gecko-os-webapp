@@ -176,10 +176,10 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 <div class="reconnect">\
 <div class="wiconnect-cbx small-margin">\
-<input type="checkbox" value="None" id="reconnect" name="reconnect" checked="checked" />\
+<input type="checkbox" value="None" id="reconnect" name="reconnect"/>\
 <label for="reconnect"></label>\
 </div>\
-<h4>Reconnect to device on <%- ssid %> network</h4>\
+<h4>Reconnect to device</h4>\
 </div>\
 <div>\
 <div class="wiconnect-cbx">\
