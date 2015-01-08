@@ -389,9 +389,15 @@ App.Views.QuickConnect = Backbone.View.extend({
       };
     }
 
-    var host = (navigator.platform === 'Win32') ? 'wiconnect' : 'wiconnect.local';
+    // var host = (navigator.platform === 'Win32') ? 'wiconnect' : 'wiconnect.local';
+    var host = 'wiconnect.local';
 
-    $.ajax({url: 'http://' + host + '/command/ver', type: 'GET', contentType: 'application/json'})
+    $.ajax({
+        url: 'http://' + host + '/command/ver',
+        type: 'GET',
+        contentType: 'application/json',
+        timeout: 2000
+      })
       .fail(function() {
         if(self.setup.attempt > self.setup.retries){
           return self.controller.modal({content:'<h2>Unable to reconnect to device.<br><br> Please check you are connected to<br>\'' + self.network.ssid + '\'</h2>'});
