@@ -339,14 +339,17 @@ App.Views.DeleteModal = Backbone.View.extend({
       self.onCancel();
     }
 
+    self.controller.loading(true);
+    self.remove();
+
     self.device.postCommand(
       {cmd:{flags:0, command:'fde \"' + self.file.filename + '\"'}},
       function(err) {
         if(err){
           // handle err
         }
+        self.controller.loading(false);
         self.trigger('modalDelete');
-        self.remove();
       });
   },
 
