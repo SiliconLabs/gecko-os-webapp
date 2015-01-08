@@ -40,8 +40,10 @@ App.Models.Controller = Backbone.Model.extend({
     $(window).off('keyup', this.onKey);
   },
   onKey: function(e) {
-    if (this.views.modal && e.keyCode === 27) {
-      this.closeModal();
+    if (e.keyCode === 27) {
+      if(this.views.modal && !this.views.modal.isSystemModal()) {
+        this.closeModal();
+      }
     }
   },
   resize: function(e){
@@ -118,6 +120,7 @@ App.Models.Controller = Backbone.Model.extend({
         el: $('<div id="system-modal" />')
               .appendTo($('.main')),
         content: args.content,
+        systemModal: args.systemModal,
         controller: self
       });
       next();

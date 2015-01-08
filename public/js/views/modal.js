@@ -5,25 +5,26 @@
 
 App.Views.Modal = Backbone.View.extend({
   template: _.template('\
-<div class="modal-background"></div>\
-<div class="modal">\
+<div class="modal-background <%= systemModal ? "system-modal" : "" %>"></div>\
+<div class="modal <%= systemModal ? "system-modal" : "" %>">\
 <div class="content">\
 <%= content %>\
 </div>\
 </div>'),
 
   initialize: function(opts) {
-    _.bindAll(this, 'render', 'onClose');
+    _.bindAll(this, 'render', 'onClose', 'removeModal', 'isSystemModal');
     this.delegateEvents();
 
     this.content = opts.content;
     this.controller = opts.controller;
+    this.systemModal = opts.systemModal;
 
     this.render();
   },
 
   events: {
-    'click .modal-background': 'removeModal'
+    'click .modal-background:not(.system-modal)': 'removeModal'
   },
 
   onClose: function() {
@@ -34,7 +35,8 @@ App.Views.Modal = Backbone.View.extend({
     var self = this;
 
     this.$el.html(this.template({
-      content: self.content
+      content: self.content,
+      systemModal: self.systemModal
     }));
 
     this.$el.fadeIn(125);
@@ -42,5 +44,9 @@ App.Views.Modal = Backbone.View.extend({
 
   removeModal: function() {
     this.controller.closeModal();
+  },
+
+  isSystemModal: function() {
+    return this.systemModal;
   }
 });
