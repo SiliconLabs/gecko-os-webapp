@@ -237,6 +237,7 @@ App.Views.Console = Backbone.View.extend({
         case 'ls':
         case 'scan':
         case 'version':
+        case 'ver':
           self.getCommand((cmd + '%20' + args.join('%20')), self.cmdLine.scrollIntoView);
           break;
 
