@@ -17,6 +17,7 @@
     "jquery": "^1.10.0",
     "backbone": "^1.x",
     "underscore": "^1.7.0",
-    "async": "~0.9.0"
+    "async": "~0.9.0",
+    "superagent": "~0.21.0"
   }
 }

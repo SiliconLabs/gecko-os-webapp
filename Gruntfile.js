@@ -44,6 +44,9 @@ module.exports = function(grunt) {
       build: {
         mangle: false,
         compress: true,
+        options: {
+          sourceMap: true,
+        },
         files: {
           'out/wiconnect_webgui.js':
             [
@@ -51,6 +54,8 @@ module.exports = function(grunt) {
               'public/vendor/underscore/underscore-min.js',
               'public/vendor/backbone/backbone.js',
               'public/vendor/async/lib/async.js',
+              'public/vendor/superagent/superagent.js',
+              'public/vendor/wiconnect.js',
               'public/js/*.js',
               'public/js/*/*.js'
             ]
@@ -98,7 +103,7 @@ module.exports = function(grunt) {
         }
       },
       js: {
-        files: ['public/js/*.js', 'public/js/**/*.js'],
+        files: ['public/js/*.js', 'public/js/**/*.js', 'public/vendor/wiconnect.js'],
         tasks: ['jshint', 'git-describe', 'uglify:build', 'compress:build'],
         options: {
           interupt: true
@@ -159,7 +164,7 @@ module.exports = function(grunt) {
           + 'hash:"' + rev.object + '", '
           + 'version: "' + pkg.version +'"'
         +'};',
-      {encoding: 'utf8'})
+      {encoding: 'utf8'});
   });
 
   grunt.registerTask('no-jade', []); //TBC
