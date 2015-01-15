@@ -1,4 +1,4 @@
-/*global Backbone:true, $:true, _:true, async:true, App:true */
+/*global Backbone:true, $:true, _:true, async:true, App:true, WiConnectDevice: true */
 /*jshint multistr:true */
 /*jshint browser:true */
 /*jshint strict:false */
@@ -99,9 +99,9 @@ App.Views.FileBrowser = Backbone.View.extend({
       attempt = 1;
     }
 
-    var done = function(resp, done) {
-      if(resp.response){
-        _.each(resp.response.split('\r\n'), function(line){
+    var done = function(err, res) {
+      if(res.response){
+        _.each(res.response.split('\r\n'), function(line){
           if(line.length === 0) {
             return;
           }
@@ -126,12 +126,7 @@ App.Views.FileBrowser = Backbone.View.extend({
       next();
     };
 
-    var cmd = {
-      cmd: 'ls%20-v',
-      done: done
-    };
-
-    self.device.getCommand(cmd);
+    self.device.wiconnect.ls({args: '-v'}, done);
   },
 
   showFiles: function() {
@@ -228,18 +223,15 @@ App.Views.FileBrowser = Backbone.View.extend({
             return done();
           }
 
-          commands.push({cmd:{
-            flags: 0,
-            command: 'fde \"' + thisFile.name + '\"'
-          }});
+          commands.push({cmd: 'fde', args: {args: thisFile.name}});
         }
 
-        var bin = e.target.result;
-        commands.push({cmd:{
+        commands.push({cmd: 'fcr', args: {
           flags: 4,
-          command: 'fcr \"' + thisFile.name + '\" ' + e.total,
-          data: btoa(bin)
+          filename: thisFile.name,
+          data: e.target.result
         }});
+
         return done();
       };
     };
@@ -263,7 +255,8 @@ App.Views.FileBrowser = Backbone.View.extend({
 
         thisReader.onload = handleFile(cmds, file, next);
 
-        thisReader.readAsBinaryString(file);
+        // thisReader.readAsBinaryString(file);
+        thisReader.readAsArrayBuffer(file);
       },
       function(err) {
         if(err) {
@@ -272,7 +265,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
         async.eachSeries(
           cmds,
-          self.device.postCommand,
+          self.device.issueCommand,
           function(err) {
             self.controller.loading(false);
 
@@ -342,8 +335,8 @@ App.Views.DeleteModal = Backbone.View.extend({
     self.controller.loading(true);
     self.remove();
 
-    self.device.postCommand(
-      {cmd:{flags:0, command:'fde \"' + self.file.filename + '\"'}},
+    self.device.wiconnect.fde(
+      {args: self.file.filename, flags: 0},
       function(err) {
         if(err){
           // handle err
@@ -351,6 +344,7 @@ App.Views.DeleteModal = Backbone.View.extend({
         self.controller.loading(false);
         self.trigger('modalDelete');
       });
+
   },
 
   render: function() {
@@ -359,3 +353,5 @@ App.Views.DeleteModal = Backbone.View.extend({
     this.$el.html(this.template({filename: self.file.filename}));
   }
 });
+
+

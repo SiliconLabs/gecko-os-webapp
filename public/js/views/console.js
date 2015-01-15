@@ -238,12 +238,12 @@ App.Views.Console = Backbone.View.extend({
         case 'scan':
         case 'version':
         case 'ver':
-          self.getCommand((cmd + '%20' + args.join('%20')), self.cmdLine.scrollIntoView);
+          self.getCommand({cmd: cmd, args: {args: args.join(' ')}}, self.cmdLine.scrollIntoView);
           break;
 
         default:
           if (cmd) {
-            self.postCommand(cmd + ' ' + args.join(' '), self.cmdLine.scrollIntoView);
+            self.postCommand({cmd: cmd, args: {args: args.join(' ')}}, self.cmdLine.scrollIntoView);
           }
 
       }
@@ -278,13 +278,7 @@ App.Views.Console = Backbone.View.extend({
       });
     };
 
-    var command = {
-      cmd: cmd,
-      fail: fail,
-      done: done
-    };
-
-    self.device.getCommand(command);
+    self.device.issueCommand({cmd: cmd.cmd, args: cmd.args, done: done, fail: fail });
 
   },
 
@@ -313,13 +307,7 @@ App.Views.Console = Backbone.View.extend({
       });
     };
 
-    var command = {
-      cmd: {flags:0, command: cmd},
-      done: done,
-      fail: fail
-    };
-
-    self.device.postCommand(command);
+    self.device.issueCommand({cmd: cmd.cmd, args: cmd.args, done: done, fail: fail });
 
   },
 

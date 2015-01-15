@@ -1,4 +1,4 @@
-/*global $:true, Backbone:true, _:true, async:true, App:true */
+/*global $:true, Backbone:true, _:true, async:true, App:true, WiConnectDevice:true */
 /*jshint browser:true */
 /*jshint strict:false */
 
@@ -19,6 +19,8 @@ App.Models.Device = Backbone.Model.extend({
     mac: '',
     module: '',
     netmask: '',
+    ota_host: '',
+    ota_port: '',
     rssi: '',
     ssid: '',
     uuid: '',
@@ -26,13 +28,14 @@ App.Models.Device = Backbone.Model.extend({
     web_setup: ''
   },
   checkInInterval: 45,
+  wiconnect: null,
 
   initialize: function(opts) {
     var self = this;
 
     _.bindAll(this,
       'init', 'checkIn',
-      'getCommand', 'postCommand',
+      'issueCommand', 'postCommand',
       'basicInfo');
 
     this.controller = opts.controller;
@@ -42,6 +45,12 @@ App.Models.Device = Backbone.Model.extend({
     var self = this;
 
     self.controller.loading(true);
+
+    self.wiconnect = new WiConnectDevice({
+      host: self.get('host'),
+      timeout: 5000,
+      retries: 3
+    });
 
     async.series([
         this.basicInfo
@@ -62,31 +71,27 @@ App.Models.Device = Backbone.Model.extend({
   checkIn: function() {
     var self = this;
 
-    var done = function(resp, next) {
+    self.wiconnect.ver(function(err, res) {
       setTimeout(self.checkIn, self.checkInInterval * 1000);
-    };
-
-    var cmd = {
-      cmd: 'ver',
-      done: done
-    };
-
-    self.getCommand(cmd);
+    });
   },
 
   //cmd: {
-  //      cmd: 'version',
+  //      cmd: 'nup',
+  //      [args]: { //optional - command arguments
+  //                args: '-s',
+  //                flags: 0,
+  //                retries: 1,
+  //                timeout: 120000
+  //              },
   //      [property]: 'version', //optional - backbone property name to store returned value
   //      [ret]: true, //optional - return immidiate if property already contains value, prevents excessive requests
   //      [fail]: function(resp, next), //optional - function to execute on ajax failure, will be passed ajax RESPonse and callback reference
-  //      [done]: function(resp, next), //optional - function to execute on ajax completion, will be passed ajax RESPonse and callback reference
+  //      [done]: function(resp, next), //optional - function to execute on successful ajax completion, will be passed ajax RESPonse and callback reference
+  //      [always]: function(resp, next), //optional - function to execute on ajax completion
   //    }
-  getCommand: function(cmd, next, attempt) {
+  issueCommand: function(cmd, next) {
     var self = this;
-
-    if(typeof attempt === 'undefined') {
-      attempt = 1;
-    }
 
     cmd.ret = (cmd.ret === true); //ret - return if exists
 
@@ -94,35 +99,33 @@ App.Models.Device = Backbone.Model.extend({
       return next();
     }
 
-    $.ajax({
-        type: 'GET',
-        contentType: 'application/json',
-        url: self.get('host') + '/command/' + cmd.cmd
-      })
-      .fail(function(resp) {
-        if(attempt >= App.controller.get('retries')){
-          var fail = (typeof cmd.fail === 'function') ? cmd.fail(resp, next) : next(new Error());
+    if(!self.wiconnect.hasOwnProperty(cmd.cmd)) {
+      //not supported by WiConnectJS
+      console.log('posting', cmd.cmd);
+      return self.postCommand({command: cmd.cmd, flags: cmd.args.flags || 0}, next);
+    }
 
-          if(typeof fail === 'function') {
-            return fail();
-          }
+    cmd.args = cmd.args || {};
 
-          return;
-        }
-        self.getCommand(cmd, next, (attempt+1));
-      })
-      .done(function(resp) {
-        if(cmd.property && resp.response){
-          self.set(cmd.property, resp.response);
-        }
+    var xhr = self.wiconnect[cmd.cmd](cmd.args, function(err, res) {
+      if(cmd.property && res.response){
+          self.set(cmd.property, res.response);
+      }
+      next();
+    });
 
-        var done = (typeof cmd.done === 'function') ? cmd.done(resp, next): next();
+    if(typeof cmd.done === 'function'){
+      xhr.done(function(res){cmd.done(res, next);});
+    }
 
-        if(typeof done === 'function') {
-          done();
-        }
+    if(typeof cmd.fail === 'function'){
+      xhr.fail(function(res){cmd.fail(res, next);});
+    }
 
-      });
+    if(typeof cmd.always === 'function'){
+      xhr.always(function(res){cmd.always(res, next);});
+    }
+
   },
 
   //cmd: {
@@ -149,7 +152,7 @@ App.Models.Device = Backbone.Model.extend({
           var fail = (typeof cmd.fail === 'function') ? cmd.fail(resp, next) : next(new Error());
 
           if(typeof fail === 'function') {
-            return fail();
+            return fail(resp);
           }
 
           return;
@@ -161,7 +164,7 @@ App.Models.Device = Backbone.Model.extend({
         var done = (typeof cmd.done === 'function') ? cmd.done(resp, next): next();
 
         if(typeof done === 'function') {
-          done();
+          done(resp);
         }
       });
   },
@@ -215,15 +218,15 @@ App.Models.Device = Backbone.Model.extend({
     };
 
     var cmds = [
-      {property: 'ip', cmd: 'get ne i', ret: false },
-      {property: 'web_setup', cmd: 'setup status', ret: false},
-      {cmd: 'help commands', done: parseCommands},
-      {cmd: 'help variables', done: parseVariables}
+      {property: 'ip', cmd: 'get', args:{args: 'ne i', ret: false}},
+      {property: 'web_setup', cmd: 'setup', args: {args: 'status', ret: false}},
+      {cmd: 'help', args: {args: 'commands'}, done: parseCommands},
+      {cmd: 'help', args: {args: 'variables'}, done: parseVariables}
     ];
 
     async.eachSeries(
       cmds,
-      self.getCommand,
+      self.issueCommand,
       function(err) {
         if(err) {
           //handle err

@@ -101,13 +101,13 @@ App.Views.Firmware = Backbone.View.extend({
     this.$el.html(this.template(this.device.toJSON())).addClass('active');
 
     var cmds = [
-      {property: 'ota_host', cmd: 'get ot h', ret: false},
-      {property: 'ota_port', cmd: 'get ot p', ret: false}
+      {property: 'ota_host', cmd: 'get', args: {args: 'ot h'}, ret: false},
+      {property: 'ota_port', cmd: 'get', args: {args: 'ot p'}, ret: false}
     ];
 
     async.eachSeries(
       cmds,
-      self.device.getCommand,
+      self.device.issueCommand,
       function(err) {
 
         self.$el.html(self.template(self.device.toJSON())).addClass('active');
@@ -134,16 +134,15 @@ App.Views.Firmware = Backbone.View.extend({
     var ota_port = $(this.el).find('input[name="ota_port"]').val();
 
     if(ota_host !== self.device.get('ota_host').replace('\r\n', '')) { //ota host changed
-      console.log(self.device.get('ota_host').length, ota_host.length);
-      cmds.push({cmd: {flags: 0, command:'set ot h ' + ota_host}});
+      cmds.push({cmd: 'set', args: {flags: 0, args:'ot h ' + ota_host}});
     }
 
     if(ota_port !== self.device.get('ota_port').replace('\r\n', '')) { //ota port changed
-      cmds.push({cmd: {flags: 0, command:'set ot p ' + ota_port}});
+      cmds.push({cmd: 'set', args: {flags: 0, args:'ot p ' + ota_port}});
     }
 
     if(cmds.length > 0) { //something to save
-      cmds.push({cmd: {flags: 0, command:'save'}});
+      cmds.push({cmd: 'save'});
     }
 
     var force = $(this.el).find('input[name="force"]').is(':checked') ? ' -f' : '';
@@ -151,13 +150,13 @@ App.Views.Firmware = Backbone.View.extend({
 
     bundle = (bundle.length > 0) ? ' -b ' + bundle : '';
 
-    cmds.push({cmd: {flags: 0, command: 'ota' + force + bundle}});
+    cmds.push({cmd: 'ota', args: {flags: 0, args: + force + bundle}});
 
     self.controller.loading(true);
 
     async.eachSeries(
       cmds,
-      self.device.postCommand,
+      self.device.issueCommand,
       function(err) {
 
         self.controller.loading(false);
@@ -212,16 +211,13 @@ App.Views.Firmware = Backbone.View.extend({
 
     self.controller.loading(true);
 
-    self.device.postCommand({
-      cmd: {
-        flags: 0,
-        command: 'ota -a ' + activation_id + ' ' + activation_password
-      },
-      done: function(resp) {
+    self.device.wiconnect.ota(
+      {args: '-a ' + activation_id + ' ' + activation_password },
+      function(err, res) {
 
         self.controller.loading(false);
 
-        if(resp.response === 'Command failed\r\n') {
+        if(res.response === 'Command failed\r\n') {
           return self.controller.modal({content: '<h2>Custom Firmware Activation error.</h2><h2>Please check Activation ID and Password and try again.</h2>'});
         }
 
@@ -229,7 +225,6 @@ App.Views.Firmware = Backbone.View.extend({
         $('#activation_password').val('');
 
         self.controller.modal({content:'<h2>Custom Firmware Activation complete.</h2>'});
-      }
-    });
+      });
   }
 });

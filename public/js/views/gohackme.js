@@ -55,12 +55,12 @@ to monitor and control your device from the cloud.</h4>\
     self.controller.loading(true);
 
     var cmds = [
-      {property: 'ghm_activated', cmd: 'get gh t', ret: false },
+      {property: 'ghm_activated', cmd: 'get', args: {args: 'gh t'}, ret: false },
     ];
 
     async.eachSeries(
       cmds,
-      self.device.getCommand,
+      self.device.issueCommand,
       function(err) {
         if(err) {
           //handle err
@@ -101,13 +101,13 @@ to monitor and control your device from the cloud.</h4>\
     var password =  $(this.el).find('input[name="password"]').val();
 
     var cmds = [
-      {cmd:{flags:0, command:'gca download -s'}},
-      {cmd:{flags:0, command:'gac \"' + email + '\" \"' + password + '\"'}}
+      {cmd: 'gca', args: {args: 'download -s'}},
+      {cmd: 'gac', args: {args:'\"' + email + '\" \"' + password + '\"'}}
     ];
 
     async.eachSeries(
       cmds,
-      self.device.postCommand,
+      self.device.issueCommand,
       function(err) {
         if(err) {
           //handle err

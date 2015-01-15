@@ -64,15 +64,15 @@ App.Views.NetworkSettings = Backbone.View.extend({
     this.$el.html(this.template(this.device.toJSON())).addClass('active');
 
     var cmds = [
-      {property: 'ssid', cmd: 'get wl s', ret: false },
+      {property: 'ssid', cmd: 'get', args: {args: 'wl s'}, ret: false },
       {property: 'rssi', cmd: 'rssi', ret: false },
-      {property: 'dhcp', cmd: 'get ne d e', ret: false },
-      {property: 'auto_join', cmd: 'get wl o e', ret: false }
+      {property: 'dhcp', cmd: 'get', args: {args: 'ne d e'}, ret: false },
+      {property: 'auto_join', cmd: 'get', args: {args: 'wl o e'}, ret: false }
     ];
 
     async.eachSeries(
       cmds,
-      self.device.getCommand,
+      self.device.issueCommand,
       function(err) {
         if(err){
           //handle err
@@ -237,23 +237,23 @@ App.Views.NetworkSettingsView = Backbone.View.extend({
 
     if(this.device.get('dhcp')){
       cmds = [
-        {property: 'netmask', cmd: 'get ne n', ret: false },
-        {property: 'ip', cmd: 'get ne i', ret: false },
-        {property: 'gateway', cmd: 'get ne g', ret: false }
+        {property: 'netmask', cmd: 'get', args: {args: 'ne n'}, ret: false },
+        {property: 'ip', cmd: 'get', args: {args: 'ne i'}, ret: false },
+        {property: 'gateway', cmd: 'get', args: {args: 'ne g'}, ret: false }
       ];
     } else {
       cmds = [
-        {property: 'netmask', cmd: 'get st n', ret: false },
-        {property: 'ip', cmd: 'get st i', ret: false },
-        {property: 'gateway', cmd: 'get st g', ret: false },
-        {property: 'dns', cmd: 'get st d', ret: false }
+        {property: 'netmask', cmd: 'get', args: {args: 'st n'}, ret: false },
+        {property: 'ip', cmd: 'get', args: {args: 'st i'}, ret: false },
+        {property: 'gateway', cmd: 'get', args: {args: 'st g'}, ret: false },
+        {property: 'dns', cmd: 'get', args: {args: 'st d'}, ret: false }
       ];
     }
 
 
     async.eachSeries(
       cmds,
-      self.device.getCommand,
+      self.device.issueCommand,
       function() {
         self.controller.loading(false);
 

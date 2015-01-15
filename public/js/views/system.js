@@ -70,10 +70,10 @@ App.Views.System = Backbone.View.extend({
     }));
 
 
-    var parseVersion = function(resp, next) {
-      var version = resp.response.split(',')[0],
-          dateModule = resp.response.split(',')[1].trim().replace('Built:','').split(' for '),
-          board = resp.response.split(',')[2];
+    var parseVersion = function(err, res) {
+      var version = res.response.split(',')[0],
+          dateModule = res.response.split(',')[1].trim().replace('Built:','').split(' for '),
+          board = res.response.split(',')[2];
 
       self.device.set({
         version: version,
@@ -83,13 +83,13 @@ App.Views.System = Backbone.View.extend({
       });
 
       var cmds = [
-          {property: 'mac', cmd: 'get wl m', ret: true},
-          {property: 'uuid', cmd: 'get sy u', ret: true}
+          {property: 'mac', cmd: 'get', args: {args: 'wl m'}, ret: true},
+          {property: 'uuid', cmd: 'get', args: {args: 'sy u'}, ret: true}
         ];
 
         async.eachSeries(
           cmds,
-          self.device.getCommand,
+          self.device.issueCommand,
           function() {
             self.controller.loading(false);
 
@@ -97,11 +97,6 @@ App.Views.System = Backbone.View.extend({
           });
     };
 
-    var cmd = {
-      cmd: 'ver',
-      done: parseVersion
-    };
-
-    self.device.getCommand(cmd);
+    self.device.wiconnect.ver(parseVersion);
   }
 });
