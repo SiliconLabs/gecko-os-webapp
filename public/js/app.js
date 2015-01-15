@@ -63,11 +63,23 @@ var App = {
       device: App.device
     });
 
-    self.views.gohackme = new App.Views.GoHACKme({
-      el: $('.gohackme'),
+    self.views.firmware = new App.Views.Firmware({
+      el: $('.firmware'),
       controller: App.controller,
       device: App.device
     });
+
+    self.views.cloud = new App.Views.Cloud({
+      el: $('.cloud'),
+      controller: App.controller,
+      device: App.device
+    });
+
+    // self.views.gohackme = new App.Views.GoHACKme({
+    //   el: $('.gohackme'),
+    //   controller: App.controller,
+    //   device: App.device
+    // });
 
     self.views.loader = new App.Views.Loader({
       el: $('.loading'),

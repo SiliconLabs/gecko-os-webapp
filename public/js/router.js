@@ -42,9 +42,15 @@ App.Router = Backbone.Router.extend ({
     });
   },
 
-  gohackme: function() {
+  firmware: function() {
     App.controller.set({
-      view: 'gohackme'
+      view: 'firmware'
+    });
+  },
+
+  cloud: function() {
+    App.controller.set({
+      view: 'cloud'
     });
   }
 

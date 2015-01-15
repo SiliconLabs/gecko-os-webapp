@@ -9,13 +9,14 @@ App.Views.GoHACKme = Backbone.View.extend({
   activatedTemplate: _.template('\
 <div class="content">\
 <a class="ghm ghm-logo" href="https://gohack.me"></a>\
-<h4>Your device is activated.</h4>\
+<h4>Your device is already activated.</h4>\
 <h4>Go to <a href="https://gohack.me/login" target="_blank">goHACK.me</a>&nbsp;\
 to monitor and control your device from the cloud.</h4>\
 </div>'),
 
   template: _.template('\
 <div class="content">\
+<h1>Free Services</h1>\
 <a class="ghm ghm-logo" href="https://gohack.me"></a>\
 <h4>Create an account with <a href="http://gohack.me/signup" target="_blank">goHACK.me</a></h4>\
 <h4>Activate your device with goHACK.me to start to monitor and control it from the cloud.</h4>\
@@ -46,10 +47,12 @@ to monitor and control your device from the cloud.</h4>\
   render: function() {
     var self = this;
 
-    if(this.controller.get('view') !== 'gohackme'){
+    if(this.controller.get('view') !== 'cloud'){
       $(this.el).removeClass('active');
       return;
     }
+
+    self.controller.loading(true);
 
     var cmds = [
       {property: 'ghm_activated', cmd: 'get gh t', ret: false },
