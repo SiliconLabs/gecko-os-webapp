@@ -29,7 +29,7 @@ var App = {
 
     //useful for local development with remote device
     //set host for local development (and alert to prevent sneaky office code downloads)
-    // self.device.set({host:'http://10.5.6.116'}); self.controller.modal({content:'<h3>Development Mode: <button onclick="App.device.set({host:\'\'});App.device.init();App.controller.closeModal();">Use localhost</button></h3> Remote Device: ' + self.device.get('host') + '<br><br>[Esc to close]'});
+    // self.device.set({host:'http://10.5.6.110'}); if(location.hostname !== 'localhost'){self.controller.modal({content:'<h3>Development Mode: <button onclick="App.device.set({host:\'\'});App.device.init();App.controller.closeModal();">Use localhost</button></h3> Remote Device: ' + self.device.get('host') + '<br><br>[Esc to close]'});}
 
     self.device.init();
 
@@ -74,12 +74,6 @@ var App = {
       controller: App.controller,
       device: App.device
     });
-
-    // self.views.gohackme = new App.Views.GoHACKme({
-    //   el: $('.gohackme'),
-    //   controller: App.controller,
-    //   device: App.device
-    // });
 
     self.views.loader = new App.Views.Loader({
       el: $('.loading'),
