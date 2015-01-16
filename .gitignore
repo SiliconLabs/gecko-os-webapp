@@ -1,8 +1,8 @@
 /public/vendor/
 /node_modules/
 /out/index.html
-/out/wiconnect_webgui.js
-/out/wiconnect_webgui.js.gz
-/out/wiconnect_webgui.css
-/out/wiconnect_webgui.css.gz
-/out/*.map
+/out/webapp/wiconnect.js
+/out/webapp/wiconnect.js.gz
+/out/webapp/wiconnect.css
+/out/webapp/wiconnect.css.gz
+/out/webapp/*.map

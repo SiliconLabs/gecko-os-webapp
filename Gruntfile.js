@@ -29,7 +29,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/wiconnect_webgui.css': 'public/less/*.less'
+          'out/webapp/wiconnect.css': 'public/less/*.less'
         }
       }
     },
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
           sourceMap: true,
         },
         files: {
-          'out/wiconnect_webgui.js':
+          'out/webapp/wiconnect.js':
             [
               'public/vendor/jquery/dist/jquery.min.js',
               'public/vendor/underscore/underscore-min.js',
@@ -71,8 +71,8 @@ module.exports = function(grunt) {
         },
         expand: true,
         files: {
-          'out/wiconnect_webgui.js.gz': 'out/wiconnect_webgui.js',
-          'out/wiconnect_webgui.css.gz': 'out/wiconnect_webgui.css'
+          'out/webapp/wiconnect.js.gz': 'out/webapp/wiconnect.js',
+          'out/webapp/wiconnect.css.gz': 'out/webapp/wiconnect.css'
         }
       },
       release: {
@@ -87,8 +87,8 @@ module.exports = function(grunt) {
             expand: true,
             src: [
               'out/index.html',
-              'out/wiconnect_webgui.js.gz',
-              'out/wiconnect_webgui.css.gz'
+              'out/webapp/wiconnect_webgui.js.gz',
+              'out/webapp/wiconnect_webgui.css.gz'
             ]
           }
         ]
@@ -179,6 +179,11 @@ module.exports = function(grunt) {
     if(!grunt.file.isDir('out/')) {
       grunt.log.writeln('Created output directory.');
       grunt.file.mkdir('out/')
+    }
+
+    if(!grunt.file.isDir('out/webapp/')) {
+      grunt.log.writeln('Created output directory.');
+      grunt.file.mkdir('out/webapp/')
     }
 
     grunt.task.run([
