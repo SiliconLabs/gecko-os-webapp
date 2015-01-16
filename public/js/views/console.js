@@ -17,7 +17,14 @@ App.Views.Console = Backbone.View.extend({
 </div>'),
   history: [],
   initialize: function(opts) {
-    _.bindAll(this, 'render', 'onClose', 'onClick', 'historyHandler', 'onCommand', 'clear', 'printOutput', 'tabComplete');
+
+    _.bindAll(this, 'render',
+              'onClose', 'onClick',
+              'onCommand', 'issueCommand',
+              'historyHandler', 'tabComplete',
+              'printOutput',
+              'clear');
+
     this.delegateEvents();
 
     this.controller = opts.controller;
@@ -227,23 +234,15 @@ App.Views.Console = Backbone.View.extend({
           break;
 
         // case 'reboot':
+        // case 'ota':
+        // case 'ghm_activate':
         //   //display loader
-        //   //accept failure as device restarts
-        //   //then sensibly try last know IP after timeout
+        //   //ping-reconnect sequence
         //   break;
-
-        case 'get':
-        case 'help':
-        case 'ls':
-        case 'scan':
-        case 'version':
-        case 'ver':
-          self.getCommand({cmd: cmd, args: {args: args.join(' ')}}, self.cmdLine.scrollIntoView);
-          break;
 
         default:
           if (cmd) {
-            self.postCommand({cmd: cmd, args: {args: args.join(' ')}}, self.cmdLine.scrollIntoView);
+            self.issueCommand({cmd: cmd, args: {args: args.join(' '), timeout: 60000}}, self.cmdLine.scrollIntoView);
           }
 
       }
@@ -253,48 +252,18 @@ App.Views.Console = Backbone.View.extend({
     this.tabInput = null;
   },
 
-  getCommand: function(cmd, attempt) {
+  issueCommand: function(cmd, attempt) {
     if(typeof attempt === 'undefined') {
       attempt = 1;
     }
 
     var self = this;
 
-    var fail = function(resp, next) {
-      self.output.appendChild(self.newPrompt);
-      self.cmdLine.value = ''; // Clear/setup line for next input.
-      self.cmdLine.focus();
-
-      self.printOutput('Error: GET command/' + cmd + ' ' + resp.status + ': ' + resp.statusText + '');
-    };
-
-    var done = function(resp, next) {
-      self.output.appendChild(self.newPrompt);
-      self.cmdLine.value = ''; // Clear/setup line for next input.
-      self.cmdLine.focus();
-
-      _.each(resp.response.split('\r\n'), function(line){
-        self.printOutput(line);
-      });
-    };
-
-    self.device.issueCommand({cmd: cmd.cmd, args: cmd.args, done: done, fail: fail });
-
-  },
-
-  postCommand: function(cmd, attempt) {
-    if(typeof attempt === 'undefined') {
-      attempt = 1;
-    }
-
-    var self = this;
-
-    var fail = function(resp, next) {
+    var fail = function(err, res) {
       self.output.appendChild(self.newPrompt);
       self.cmdLine.value = '';
       self.cmdLine.focus();
-
-      self.printOutput('Error: POST command/' + cmd + ' ' + resp.status + ': ' + resp.statusText + '');
+      self.printOutput('Error: ' + cmd.cmd + (cmd.args.args ? ' ' + cmd.args.args : '') + ' : ' + err.message + '');
     };
 
     var done = function(resp, next) {
