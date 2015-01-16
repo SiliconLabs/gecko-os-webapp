@@ -1,1 +1,1 @@
-var _webgui = {date:"2015-01-16T07:11:06.544Z", hash:"996279d", version: "1.0.0"};
+var _webgui = {date:"2015-01-16T07:17:23.194Z", hash:"61bcd23", version: "2.0.0"};
