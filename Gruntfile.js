@@ -36,7 +36,8 @@ module.exports = function(grunt) {
     jade: {
       build: {
         files: {
-          'out/index.html': 'public/views/*.jade'
+          'out/index.html': 'public/views/*.jade',
+          'out/webapp/index.html': 'public/views/*.jade'
         }
       }
     },
@@ -86,7 +87,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             src: [
-              'out/index.html',
+              'out/webapp/index.html',
               'out/webapp/wiconnect_webgui.js.gz',
               'out/webapp/wiconnect_webgui.css.gz'
             ]
