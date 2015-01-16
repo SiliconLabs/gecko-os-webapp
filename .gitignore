@@ -1,4 +1,4 @@
-/public/vendor/
+/public/vendor/*/
 /node_modules/
 /out/index.html
 /out/webapp/wiconnect.js
