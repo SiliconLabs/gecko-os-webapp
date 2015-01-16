@@ -74,6 +74,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
     this.device.files = [];
 
+    //draw blank
     this.$el.html(this.template()).addClass('active');
     self.controller.loading(true);
 

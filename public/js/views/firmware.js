@@ -110,6 +110,11 @@ App.Views.Firmware = Backbone.View.extend({
       self.device.issueCommand,
       function(err) {
 
+        //check still active view
+        if(this.controller.get('view') !== 'firmware'){
+          $(this.el).removeClass('active');
+          return;
+        }
         self.$el.html(self.template(self.device.toJSON())).addClass('active');
 
         self.controller.loading(false);

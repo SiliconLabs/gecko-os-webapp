@@ -109,6 +109,11 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
         self.device.set({auto_join: auto_join, dhcp: dhcp});
 
+        //check still active view
+        if(this.controller.get('view') !== 'network'){
+          $(this.el).removeClass('active');
+          return;
+        }
         self.$el.html(self.template(self.device.toJSON())).addClass('active');
 
         self.views.push(new App.Views.Signal({
