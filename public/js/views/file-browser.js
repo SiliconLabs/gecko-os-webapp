@@ -223,13 +223,14 @@ App.Views.FileBrowser = Backbone.View.extend({
             return done();
           }
 
-          commands.push({cmd: 'fde', args: {args: thisFile.name}});
+          commands.push({cmd: 'fde', args: {args: "\"" + thisFile.name + "\""}});
         }
 
         commands.push({cmd: 'fcr', args: {
           flags: 4,
-          filename: thisFile.name,
-          data: e.target.result
+          filename: "\"" + thisFile.name + "\"",
+          data: e.target.result,
+          timeout: 30000
         }});
 
         return done();
