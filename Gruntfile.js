@@ -88,8 +88,8 @@ module.exports = function(grunt) {
             expand: true,
             src: [
               'out/webapp/index.html',
-              'out/webapp/wiconnect_webgui.js.gz',
-              'out/webapp/wiconnect_webgui.css.gz'
+              'out/webapp/wiconnect.js.gz',
+              'out/webapp/wiconnect.css.gz'
             ]
           }
         ]
