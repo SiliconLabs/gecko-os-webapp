@@ -48,7 +48,7 @@ App.Models.Device = Backbone.Model.extend({
 
     self.wiconnect = new WiConnectDevice({
       host: self.get('host'),
-      timeout: 5000,
+      timeout: 20000,
       retries: 3
     });
 
@@ -101,15 +101,18 @@ App.Models.Device = Backbone.Model.extend({
 
     if(!self.wiconnect.hasOwnProperty(cmd.cmd)) {
       //not supported by WiConnectJS
-      console.log('posting', cmd.cmd);
       return self.postCommand({command: cmd.cmd, flags: cmd.args.flags || 0}, next);
     }
 
     cmd.args = cmd.args || {};
 
     var xhr = self.wiconnect[cmd.cmd](cmd.args, function(err, res) {
+      if(err) {
+        return next(err, res);
+      }
+
       if(cmd.property && res.response){
-          self.set(cmd.property, res.response);
+          self.set(cmd.property, res.response.replace('\r\n',''));
       }
       next();
     });
