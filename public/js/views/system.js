@@ -94,8 +94,8 @@ App.Views.System = Backbone.View.extend({
             self.controller.loading(false);
 
             //check still active view
-            if(this.controller.get('view') !== 'system'){
-              $(this.el).removeClass('active');
+            if(self.controller.get('view') !== 'system'){
+              $(self.el).removeClass('active');
               return;
             }
             self.$el.html(self.template(self.device.toJSON()));

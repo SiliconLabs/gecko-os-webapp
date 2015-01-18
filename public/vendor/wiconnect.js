@@ -27,7 +27,8 @@
                         {ls               : 'ls'},
                         {stream_list      : 'list'},
                         {version          : 'ver'},
-                        {wlan_scan        : 'scan'}
+                        {wlan_scan        : 'scan'},
+                        {wlan_get_rssi    : 'rssi'}
                       ];
 
     var postCommands = [{dac_set_level    : 'dac'},
@@ -74,7 +75,6 @@
                         {tls_server       : 'tlss'},
                         {udp_client       : 'udpc'},
                         {udp_server       : 'udps'},
-                        {wlan_get_rssi    : 'rssi'},
                         {wps              : 'wps'}
                       ];
 

@@ -90,8 +90,8 @@ to monitor and control your device from the cloud.</h4>\
         }
 
         //check view still active
-        if(this.controller.get('view') !== 'cloud'){
-          $(this.el).removeClass('active');
+        if(self.controller.get('view') !== 'cloud'){
+          $(self.el).removeClass('active');
           return;
         }
         self.$el.html(self.template()).addClass('active');

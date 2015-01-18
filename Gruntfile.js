@@ -45,9 +45,9 @@ module.exports = function(grunt) {
       build: {
         mangle: false,
         compress: true,
-        options: {
-          sourceMap: true,
-        },
+        // options: {
+        //   sourceMap: true,
+        // },
         files: {
           'out/webapp/wiconnect.js':
             [
