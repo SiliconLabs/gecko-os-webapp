@@ -90,6 +90,7 @@
         args = args || {};
 
         if(typeof callback !== 'function') {
+          attempt = Number(callback);
           callback = null;
         }
 
@@ -191,6 +192,7 @@
         args = args || {};
 
         if(typeof callback !== 'function') {
+          attempt = Number(callback);
           callback = null;
         }
 
@@ -598,7 +600,7 @@
         var byteFrom = (i-1) * chunkSize;
         var byteTo = i * chunkSize;
 
-        if(i === chunks){
+        if(i === chunks && finalChunkSize > 0){
           byteTo = byteFrom + finalChunkSize;
         }
 
@@ -609,7 +611,7 @@
                         .set('Accept', 'application/json')
                         .timeout((args.timeout ? Number(args.timeout) : device.timeout))
                         .send(JSON.stringify({
-                          command: 'write ' + args.args + ' ' + ((i < chunks) ? chunkSize : finalChunkSize),
+                          command: 'write ' + args.args + ' ' + ((i === chunks && finalChunkSize > 0) ? finalChunkSize : chunkSize),
                           flags: args.flags,
                           data: data
                         }))
@@ -676,7 +678,15 @@
 
       xhrObj.abort = function() {
         writer.xhr.abort();
-      }
+      };
+
+      xhrObj.progress = function() {
+        return Number(writer.chunksComplete);
+      };
+
+      xhrObj.total = function() {
+        return Number(writer.totalChunks);
+      };
 
       writeChunk();
 
