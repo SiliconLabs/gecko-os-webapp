@@ -140,9 +140,7 @@ App.Views.Connect = Backbone.View.extend({
 
     this.$el.html(this.template()).addClass('active');
 
-    if(self.device.get('web_setup')) {
-      self.onScan();
-    }
+    self.onScan();
   }
 });
 
@@ -175,6 +173,12 @@ App.Views.QuickConnect = Backbone.View.extend({
 <label for="reconnect"></label>\
 </div>\
 <h4>Reconnect to device</h4>\
+</div>\
+<div class="mdns">\
+<div>\
+<h4>Device Name</h4>\
+<input name="mdns" value="" placeholder="ackme-<%= mac %>"></input>\
+</div>\
 </div>\
 <div>\
 <div class="wiconnect-cbx">\
@@ -214,7 +218,12 @@ App.Views.QuickConnect = Backbone.View.extend({
 <div class="clear"></div>\
 </div>'),
   initialize: function(opts){
-    _.bindAll(this, 'render', 'onClose', 'onCancel', 'onIPv4', 'onAdvanced', 'onAddressing', 'onSave', 'onSetupExit');
+    _.bindAll(this, 'render', 'onClose',
+              'onReconnect', 'onAdvanced', 'onAddressing',
+              'onIPv4',
+              'onCancel', 'onSave', 'onSetupExit'
+              );
+
     this.delegateEvents();
 
     this.network = opts.network;
@@ -227,6 +236,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     this.stopListening();
   },
   events: {
+    'change #reconnect': 'onReconnect',
     'change #show-advanced': 'onAdvanced',
     'change #show-passkey': 'onPasskey',
     'click .btn-ip': 'onAddressing',
@@ -258,6 +268,10 @@ App.Views.QuickConnect = Backbone.View.extend({
       return;
     }
     $(this.el).find('input[name="passkey"]').attr('type', 'password');
+  },
+
+  onReconnect: function(e) {
+    $(this.el).find('.mdns').toggle();
   },
 
   onAdvanced: function(e) {
@@ -313,9 +327,15 @@ App.Views.QuickConnect = Backbone.View.extend({
       cmds.push({cmd: 'set', args: {args:'wl o e 1'}});
 
       if(self.reconnect){
+        var mdns = $(this.el).find('input[name="mdns"]').val();
+        var mac = self.device.get('mac');
+        mac = mac.substring(mac.length - 4).replace(':','');
+
+        mdns = mdns.length > 0 ? mdns : 'ackme-' + mac;
+
         cmds.push({cmd: 'set', args: {args:'ht s e 1'}});
         cmds.push({cmd: 'set', args: {args:'md e 1'}});
-        cmds.push({cmd: 'set', args: {args:'md n wiconnect'}});
+        cmds.push({cmd: 'set', args: {args:'md n ' + mdns}});
         cmds.push({cmd: 'set', args: {args:'md s http'}});
         cmds.push({cmd: 'set', args: {args:'ht s c *'}});
       }
@@ -355,6 +375,10 @@ App.Views.QuickConnect = Backbone.View.extend({
 
   render: function() {
     var self = this;
+
+    var data = this.network;
+    var mac = self.device.get('mac');
+    data.mac = mac.substring(mac.length - 4).replace(':','');
 
     this.$el.html(this.template(this.network));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
