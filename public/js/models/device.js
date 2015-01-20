@@ -222,6 +222,7 @@ App.Models.Device = Backbone.Model.extend({
 
     var cmds = [
       {property: 'ip', cmd: 'get', args:{args: 'ne i', ret: false}},
+      {property: 'mac', cmd: 'get', args:{args: 'wl m', ret: false}},
       {property: 'web_setup', cmd: 'setup', args: {args: 'status', ret: false}},
       {cmd: 'help', args: {args: 'commands'}, done: parseCommands},
       {cmd: 'help', args: {args: 'variables'}, done: parseVariables}
