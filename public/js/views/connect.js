@@ -327,7 +327,7 @@ App.Views.QuickConnect = Backbone.View.extend({
       cmds.push({cmd: 'set', args: {args:'wl o e 1'}});
 
       if(self.reconnect){
-        var mdns = $(this.el).find('input[name="mdns"]').val();
+        var mdns = $(this.el).find('input[name="mdns"]').val().trim();
         var mac = self.device.get('mac');
         mac = mac.substring(mac.length - 4).replace(':','');
 
@@ -397,7 +397,7 @@ App.Views.QuickConnect = Backbone.View.extend({
       return self.controller.modal({content:'<h2>Device is now connecting to ' + this.network.ssid + '.</h2><h2>Setup is now complete.</h2>'});
     }
 
-    if(navigator.platform.indexOf('Android') >= 0) {
+    if(navigator.userAgent.indexOf('Android') >= 0) {
       return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android, an Android app will be available soon. In the meantime, enter the IP address of your device into a browser.</h2>'});
     }
 
