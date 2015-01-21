@@ -238,46 +238,62 @@ App.Views.FileBrowser = Backbone.View.extend({
       };
     };
 
-    $(self.el).find('.file-queue').show('fast');
 
-    async.eachSeries(
-      files,
-      function(file, next) {
+    var processFiles = function() {
+      async.eachSeries(
+        files,
+        function(file, next) {
 
-        var thisFile = {
-          id: 0,
-          state: 'uploading',
-          filename: file.name,
-          size: file.size
-        };
+          var thisFile = {
+            id: 0,
+            state: 'uploading',
+            filename: file.name,
+            size: file.size
+          };
 
-        $(self.el).find('.file-queue').append(self.fileTemplate(thisFile));
+          //if stream for this file already exists close it
+          var openStream = _.filter(self.device.streams, function(stream) {return stream.info.indexOf(thisFile.filename + '-1.0.0.0') >= 0;})[0];
+          if(openStream) {
+            cmds.push({cmd: 'close', args: {args: openStream.id, flags: 0}});
+          }
 
-        var thisReader = new FileReader();
+          $(self.el).find('.file-queue').append(self.fileTemplate(thisFile));
 
-        thisReader.onload = handleFile(cmds, file, next);
+          var thisReader = new FileReader();
 
-        // thisReader.readAsBinaryString(file);
-        thisReader.readAsArrayBuffer(file);
-      },
-      function(err) {
-        if(err) {
-          //handle err
-        }
+          thisReader.onload = handleFile(cmds, file, next);
 
-        async.eachSeries(
-          cmds,
-          self.device.issueCommand,
-          function(err) {
-            self.controller.loading(false);
+          thisReader.readAsArrayBuffer(file);
+        },
+        function(err) {
+          if(err) {
+            //handle err
+          }
+          $(self.el).find('.file-queue').slideDown('fast');
 
-            if(err) {
-              //handle err
-            }
-            self.render();
-          });
+          async.eachSeries(
+            cmds,
+            self.device.issueCommand,
+            function(err, res) {
+              self.controller.loading(false);
 
-      });
+              if(err) {
+                //handle err
+              }
+              self.render();
+            });
+
+        });
+    };
+
+    self.device.wiconnect.list(function(err, res){
+      if(err){
+        //handle err
+      }
+
+      self.device.parseStreams(res, processFiles);
+    });
+
   }
 });
 

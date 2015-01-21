@@ -5,6 +5,7 @@
 App.Models.Device = Backbone.Model.extend({
   commands: [],
   variables: {},
+  streams: [],
   files: [],
   defaults: {
     auto_join: '',
@@ -36,6 +37,7 @@ App.Models.Device = Backbone.Model.extend({
     _.bindAll(this,
       'init', 'checkIn',
       'issueCommand', 'postCommand',
+      'parseCommands', 'parseVariables', 'parseStreams',
       'basicInfo',
       'hashCredentials'
       );
@@ -88,9 +90,9 @@ App.Models.Device = Backbone.Model.extend({
   //              },
   //      [property]: 'version', //optional - backbone property name to store returned value
   //      [ret]: true, //optional - return immidiate if property already contains value, prevents excessive requests
-  //      [fail]: function(resp, next), //optional - function to execute on ajax failure, will be passed ajax RESPonse and callback reference
-  //      [done]: function(resp, next), //optional - function to execute on successful ajax completion, will be passed ajax RESPonse and callback reference
-  //      [always]: function(resp, next), //optional - function to execute on ajax completion
+  //      [fail]: function(res, next), //optional - function to execute on ajax failure, will be passed ajax RESponse and callback reference
+  //      [done]: function(res, next), //optional - function to execute on successful ajax completion, will be passed ajax RESponse and callback reference
+  //      [always]: function(res, next), //optional - function to execute on ajax completion
   //    }
   issueCommand: function(cmd, next) {
     var self = this;
@@ -121,7 +123,7 @@ App.Models.Device = Backbone.Model.extend({
       if(cmd.property && res.response){
           self.set(cmd.property, res.response.replace('\r\n',''));
       }
-      next();
+      next(null, res);
     });
 
     if(typeof cmd.done === 'function'){
@@ -140,9 +142,9 @@ App.Models.Device = Backbone.Model.extend({
 
   //cmd: {
   //      cmd: {flags: 0, command: 'nup'},
-  //      [fail]: function(resp, next), //optional - function to execute on ajax failure, will be passed ajax RESPonse and callback reference
-  //      [done]: function(resp, next), //optional - function to execute on ajax completion, will be passed ajax RESPonse and callback reference
-  //      [always]: function(resp, next), //optional - function to execute on ajax completion
+  //      [fail]: function(res, next), //optional - function to execute on ajax failure, will be passed ajax RESponse and callback reference
+  //      [done]: function(res, next), //optional - function to execute on ajax completion, will be passed ajax RESponse and callback reference
+  //      [always]: function(res, next), //optional - function to execute on ajax completion
   //    }
   postCommand: function(cmd, next, attempt) {
     var self = this;
@@ -163,7 +165,7 @@ App.Models.Device = Backbone.Model.extend({
           var fail = (typeof cmd.fail === 'function') ? cmd.fail(res, next) : next(new Error());
 
           if(typeof fail === 'function') {
-            return fail(res);
+            return fail(new Error(), res);
           }
 
           return;
@@ -175,7 +177,7 @@ App.Models.Device = Backbone.Model.extend({
         var done = (typeof cmd.done === 'function') ? cmd.done(res, next): next;
 
         if(typeof done === 'function') {
-          done(res);
+          done(null, res);
         }
       })
       .always(function(res) {
@@ -188,57 +190,12 @@ App.Models.Device = Backbone.Model.extend({
   basicInfo: function(next) {
     var self = this;
 
-    var parseCommands = function(resp, done) {
-      if(resp.response){
-        _.each(resp.response.split('\r\n'), function(line){
-          if(line.length === 0) {
-            return;
-          }
-          self.commands.push(line.split(':')[0].trim());
-        });
-      }
-
-      done();
-    };
-
-    var parseVariables = function(resp, done) {
-      if(resp.response){
-        _.each(resp.response.split('\r\n'), function(line){
-          if(line.length === 0) {
-            return;
-          }
-
-          //replace multiple whitespace chars with single space before splitting
-          var thisVar = line.replace(/\s{2,}/g, ' ').split(' ')[1].trim();
-
-          if(thisVar.length === 0) {
-            return;
-          }
-
-          if(thisVar.indexOf('.') < 0) {
-            self.variables[line.split(' ')[1].trim()] = {};
-            return;
-          }
-
-          var obj = self.variables;
-          _.each(thisVar.split('.'), function(part){
-            if(!obj[part]){
-              obj[part] = {};
-            }
-            obj = obj[part];
-          });
-        });
-      }
-
-      done();
-    };
-
     var cmds = [
       {property: 'ip', cmd: 'get', args:{args: 'ne i', ret: false}},
       {property: 'mac', cmd: 'get', args:{args: 'wl m', ret: false}},
       {property: 'web_setup', cmd: 'setup', args: {args: 'status', ret: false}},
-      {cmd: 'help', args: {args: 'commands'}, done: parseCommands},
-      {cmd: 'help', args: {args: 'variables'}, done: parseVariables}
+      {cmd: 'help', args: {args: 'commands'}, done: self.parseCommands},
+      {cmd: 'help', args: {args: 'variables'}, done: self.parseVariables}
     ];
 
     async.eachSeries(
@@ -277,6 +234,82 @@ App.Models.Device = Backbone.Model.extend({
         next();
       }
     );
+  },
+
+  parseCommands: function(res, next) {
+    var self = this;
+
+    if(res.response){
+      _.each(res.response.split('\r\n'), function(line){
+        if(line.length === 0) {
+          return;
+        }
+        self.commands.push(line.split(':')[0].trim());
+      });
+    }
+
+    next();
+  },
+
+  parseVariables: function(res, next) {
+    var self = this;
+
+    if(res.response){
+      _.each(res.response.split('\r\n'), function(line){
+        if(line.length === 0) {
+          return;
+        }
+
+        //replace multiple whitespace chars with single space before splitting
+        var thisVar = line.replace(/\s{2,}/g, ' ').split(' ')[1].trim();
+
+        if(thisVar.length === 0) {
+          return;
+        }
+
+        if(thisVar.indexOf('.') < 0) {
+          self.variables[line.split(' ')[1].trim()] = {};
+          return;
+        }
+
+        var obj = self.variables;
+        _.each(thisVar.split('.'), function(part){
+          if(!obj[part]){
+            obj[part] = {};
+          }
+          obj = obj[part];
+        });
+      });
+    }
+
+    next();
+  },
+
+  parseStreams: function(res, next) {
+    var self = this;
+
+    if(res.response) {
+      self.streams.length = 0;
+
+      _.each(
+        res.response.split('\r\n'),
+        function(line) {
+          if(line[0] !== '#'){
+            return;
+          }
+
+          //replace multiple whitespace chars
+          var stream = line.replace(/\s{2,}/g, ' ').split(' ');
+
+          self.streams.push({
+            id: Number(stream[1]),
+            type: stream[2],
+            info: stream.slice(3, stream.length)
+          });
+        });
+    }
+
+    next();
   },
 
   hashCredentials: function(pass, salt) {
