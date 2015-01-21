@@ -33,8 +33,11 @@
 
     var postCommands = [{dac_set_level    : 'dac'},
                         {factory_reset    : 'fac'},
+                        {faults_print     : 'faup'},
+                        {faults_reset     : 'faur'},
                         {file_delete      : 'fde'},
                         {file_open        : 'fop'},
+                        {format_flash     : 'format'},
                         {ghm_activate     : 'gac'},
                         {ghm_capabilities : 'gca'},
                         {ghm_deactivate   : 'gde'},
@@ -57,11 +60,11 @@
                         {network_down     : 'ndo'},
                         {network_lookup   : 'nlo'},
                         {network_up       : 'nup'},
+                        {network_verify   : 'nve'},
                         {ota              : 'ota'},
                         {ping             : 'ping'},
                         {pwm_update       : 'pwm'},
                         {reboot           : 'reboot'},
-                        {reformat_sflash  : 'reformat'},
                         {save             : 'save'},
                         {set              : 'set'},
                         {setup            : 'setup'},
@@ -79,7 +82,8 @@
                       ];
 
     var uniqueCommands = [{file_create  : 'fcr'},
-                          {stream_write : 'write'}
+                          {stream_write : 'write'},
+                          {smtp_send    : 'smtp'}
                          ];
 
 
