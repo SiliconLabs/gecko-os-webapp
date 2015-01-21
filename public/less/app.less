@@ -411,9 +411,8 @@ a, button {
     .network {
       position: relative;
       height: 48px;
-      border: 1px solid #ccc;
+      border: 1px solid #eee;
       border-bottom-style: none;
-      border-radius: 2px;
       cursor: pointer;
 
       div {
@@ -455,6 +454,13 @@ a, button {
         width: 32px;
       }
     }
+  }
+
+  .no-results {
+    display: none;
+    padding: 80px 0 128px 0;
+    text-align: center;
+    color: #999;
   }
 
   .connect-modal {
@@ -621,6 +627,7 @@ a, button {
       }
 
       .modal {
+        position: absolute;
 
         h2 {
           margin-top: 12px;
@@ -659,7 +666,9 @@ a, button {
     }
 
     .networks {
-      margin-top: 48px;
+      position: relative;
+      top: 48px;
+      margin-top: 0;
 
       .network {
 
