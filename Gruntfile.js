@@ -43,7 +43,7 @@ module.exports = function(grunt) {
     },
     uglify: {
       build: {
-        mangle: false,
+        mangle: true,
         compress: true,
         // options: {
         //   sourceMap: true,
