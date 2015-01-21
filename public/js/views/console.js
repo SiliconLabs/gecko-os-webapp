@@ -243,7 +243,11 @@ App.Views.Console = Backbone.View.extend({
 
         default:
           if (cmd) {
-            self.issueCommand({cmd: cmd, args: {args: args.join(' '), timeout: 60000}}, self.cmdLine.scrollIntoView);
+            self.issueCommand({
+              cmd: cmd, args: {args: args.join(' '), timeout: 60000},
+              done: function(res){self.cmdLine.scrollIntoView();},
+              fail: function(res){self.cmdLine.scrollIntoView();}
+            });
           }
 
       }

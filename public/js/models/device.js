@@ -103,7 +103,12 @@ App.Models.Device = Backbone.Model.extend({
 
     if(!self.wiconnect.hasOwnProperty(cmd.cmd)) {
       //not supported by WiConnectJS
-      return self.postCommand({command: cmd.cmd, flags: cmd.args.flags || 0}, next);
+      var command = cmd.cmd;
+      if(cmd.args) {
+        command += (cmd.args.args) ? ' ' + cmd.args.args : '';
+      }
+      self.postCommand({command: command, flags: cmd.args.flags || 0, done: cmd.done, fail: cmd.fail, always: cmd.always}, next);
+      return;
     }
 
     cmd.args = cmd.args || {};
@@ -137,6 +142,7 @@ App.Models.Device = Backbone.Model.extend({
   //      cmd: {flags: 0, command: 'nup'},
   //      [fail]: function(resp, next), //optional - function to execute on ajax failure, will be passed ajax RESPonse and callback reference
   //      [done]: function(resp, next), //optional - function to execute on ajax completion, will be passed ajax RESPonse and callback reference
+  //      [always]: function(resp, next), //optional - function to execute on ajax completion
   //    }
   postCommand: function(cmd, next, attempt) {
     var self = this;
@@ -150,14 +156,14 @@ App.Models.Device = Backbone.Model.extend({
         contentType: 'application/json',
         dataType: 'json',
         url: self.get('host') + '/command',
-        data: JSON.stringify(cmd.cmd)
+        data: JSON.stringify(cmd)
       })
-      .fail(function(resp){
+      .fail(function(res){
         if(attempt >= App.controller.get('retries')){
-          var fail = (typeof cmd.fail === 'function') ? cmd.fail(resp, next) : next(new Error());
+          var fail = (typeof cmd.fail === 'function') ? cmd.fail(res, next) : next(new Error());
 
           if(typeof fail === 'function') {
-            return fail(resp);
+            return fail(res);
           }
 
           return;
@@ -165,11 +171,16 @@ App.Models.Device = Backbone.Model.extend({
 
         self.postCommand(cmd, next, (attempt+1));
       })
-      .done(function(resp){
-        var done = (typeof cmd.done === 'function') ? cmd.done(resp, next): next();
+      .done(function(res){
+        var done = (typeof cmd.done === 'function') ? cmd.done(res, next): next;
 
         if(typeof done === 'function') {
-          done(resp);
+          done(res);
+        }
+      })
+      .always(function(res) {
+        if(typeof cmd.always === 'function') {
+          cmd.always(res);
         }
       });
   },
