@@ -18,6 +18,7 @@ App.Views.Connect = Backbone.View.extend({
 </div>\
 <div class="wifi-scan status">Scanning</div>\
 <div class="networks"></div>\
+<div class="no-results">No networks found.<br>Click Rescan to try again.</div>\
 <div class="clear"></div>\
 </div>'),
   initialize: function(opts){
@@ -99,9 +100,14 @@ App.Views.Connect = Backbone.View.extend({
 
     $(this.el).find('.wifi-scan').removeClass('scanning');
 
+    if(this.networks.length === 0) {
+      $('.no-results').show();
+      return;
+    }
+    $('.no-results').hide();
+
     var nwks = $(self.el).find('.networks');
 
-    nwks.show();
 
     _.each(_.sortBy(this.networks, function(n) {return -n.rssi;}), function(network) {
       self.views.push(new App.Views.Network({
@@ -112,6 +118,8 @@ App.Views.Connect = Backbone.View.extend({
           .appendTo(nwks)
       }));
     });
+
+    nwks.slideDown(125);
   },
   onNetwork: function(e) {
     var self = this;
@@ -332,6 +340,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         mac = mac.substring(mac.length - 4).replace(':','');
 
         mdns = mdns.length > 0 ? mdns : 'ackme-' + mac;
+        mdns = mdns.toLowerCase();
 
         cmds.push({cmd: 'set', args: {args:'ht s e 1'}});
         cmds.push({cmd: 'set', args: {args:'md e 1'}});
@@ -350,6 +359,24 @@ App.Views.QuickConnect = Backbone.View.extend({
     } else {
       self.controller.loading(true);
     }
+
+
+    // var secType = {
+    //         'open':0,
+    //         'wep':1,
+    //         'wpa-aes':2,
+    //         'wpa-tkip':3,
+    //         'wpa2-aes':4,
+    //         'wpa2-mixed':5,
+    //         'wpa2-tkip':6
+    //       };
+
+    // self.device.wiconnect.nve(
+    //   {args: 'wifi ' + self.network.ssid + ' ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((secType[self.network.security.toLowerCase()] > 0) ? ' ' + secType[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(passkey, self.network.ssid) : '')},
+    //   function(err, res){
+    //     console.log('>>>', err, res);
+    //   });
+
 
 
     async.eachSeries(
@@ -378,7 +405,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var data = this.network;
     var mac = self.device.get('mac');
-    data.mac = mac.substring(mac.length - 4).replace(':','');
+    data.mac = mac.substring(mac.length - 4).replace(':','').toLowerCase();
 
     this.$el.html(this.template(this.network));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
