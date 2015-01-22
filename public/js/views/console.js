@@ -207,8 +207,10 @@ App.Views.Console = Backbone.View.extend({
       }
     } else if (e.keyCode === 13) { // enter
       // Save shell history.
-      if (this.cmdLine.value) {
-        this.history[this.history.length] = this.cmdLine.value;
+      if(this.cmdLine.value) {
+        if(this.history[this.history.length - 1] !== this.cmdLine.value) {
+          this.history[this.history.length] = this.cmdLine.value;
+        }
         this.historyPosition = this.history.length;
       }
 
