@@ -23,6 +23,7 @@
     var getCommands = [ {adc_take_sample  : 'adc'},
                         {get              : 'get'},
                         {gpio_get         : 'gge'},
+                        {gpios_get        : 'gges'},
                         {help             : 'help'},
                         {ls               : 'ls'},
                         {stream_list      : 'list'},
@@ -48,6 +49,8 @@
                         {ghm_write        : 'gwr'},
                         {gpio_dir         : 'gdi'},
                         {gpio_set         : 'gse'},
+                        {gpios_dir        : 'gdis'},
+                        {gpios_set        : 'gses'},
                         {http_add_header  : 'had'},
                         {http_download    : 'hdo'},
                         {http_get         : 'hge'},
@@ -80,6 +83,7 @@
                         {udp_server       : 'udps'},
                         {wps              : 'wps'}
                       ];
+
 
     var uniqueCommands = [{file_create  : 'fcr'},
                           {stream_write : 'write'},
