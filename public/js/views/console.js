@@ -4,6 +4,8 @@
 /*jshint strict:false */
 
 App.Views.Console = Backbone.View.extend({
+  buffer: '',
+
   template: _.template('\
 <h1>Console</h1>\
 <div class="terminal">\
@@ -280,6 +282,8 @@ App.Views.Console = Backbone.View.extend({
 
     var self = this;
 
+    self.buffer = '';
+
     var fail = function(err, res) {
       self.output.appendChild(self.newPrompt);
       self.cmdLine.value = '';
@@ -289,7 +293,7 @@ App.Views.Console = Backbone.View.extend({
 
     var done = function(resp, next) {
       self.output.appendChild(self.newPrompt);
-      self.cmdLine.value = ''; // Clear/setup line for next input.
+      self.cmdLine.value = self.buffer; // Clear/setup line for next input.
       self.cmdLine.focus();
 
       _.each(resp.response.split('\r\n'), function(line){
@@ -304,6 +308,7 @@ App.Views.Console = Backbone.View.extend({
   onNext: function(e) {
     e.stopPropagation();
     e.preventDefault();
+    this.buffer += String.fromCharCode(e.which).toLowerCase();
   },
 
   clear: function() {
