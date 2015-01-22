@@ -196,7 +196,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
     this.overwrite = $($('#overwrite')[0]).is(':checked');
 
-    $(e.target).addClass('dropped').removeClass('over').text('files added successfully');
+    $(e.target).addClass('dropped').removeClass('over').text('uploading files');
 
     this.processUploads(e.dataTransfer.files);
   },

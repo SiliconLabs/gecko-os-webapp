@@ -7,6 +7,7 @@ App.Models.Device = Backbone.Model.extend({
   variables: {},
   streams: [],
   files: [],
+  gpio: [],
   defaults: {
     auto_join: '',
     board: '',
@@ -30,6 +31,15 @@ App.Models.Device = Backbone.Model.extend({
   },
   checkInInterval: 45,
   wiconnect: null,
+  securityTypes: {
+    'open':0,
+    'wep':1,
+    'wpa-aes':2,
+    'wpa-tkip':3,
+    'wpa2-aes':4,
+    'wpa2-mixed':5,
+    'wpa2-tkip':6
+  },
 
   initialize: function(opts) {
     var self = this;
@@ -37,7 +47,7 @@ App.Models.Device = Backbone.Model.extend({
     _.bindAll(this,
       'init', 'checkIn',
       'issueCommand', 'postCommand',
-      'parseCommands', 'parseVariables', 'parseStreams',
+      'parseCommands', 'parseVariables', 'parseStreams', 'parseGPIO',
       'basicInfo',
       'hashCredentials'
       );
@@ -291,8 +301,7 @@ App.Models.Device = Backbone.Model.extend({
     if(res.response) {
       self.streams.length = 0;
 
-      _.each(
-        res.response.split('\r\n'),
+      _.each(res.response.split('\r\n'),
         function(line) {
           if(line[0] !== '#'){
             return;
@@ -304,7 +313,42 @@ App.Models.Device = Backbone.Model.extend({
           self.streams.push({
             id: Number(stream[1]),
             type: stream[2],
-            info: stream.slice(3, stream.length)
+            info: stream.slice(3, stream.length).join(' ')
+          });
+        });
+    }
+
+    next();
+  },
+
+  parseGPIO: function(res, next) {
+    var self = this;
+
+    if(res.response) {
+      self.gpio.length = 0;
+
+      _.each(res.response.split('\r\n'),
+        function(line) {
+          if(line[0] !== '#'){
+            return;
+          }
+
+          var thisGPIO = line.replace(/\s{2,}/g, ' ').split(' ');
+
+          var description = thisGPIO.slice(2, thisGPIO.length).join(' ');
+
+          var re = /\((.*?)\)/;
+          var alias = re.exec(description);
+          if(alias) {
+            description = description.replace(alias[0],'');
+            alias = alias[1];
+          }
+
+          self.gpio.push({
+            id: Number(thisGPIO[1]),
+            description: description,
+            alias: alias,
+            state: null
           });
         });
     }
