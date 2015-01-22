@@ -63,6 +63,12 @@ var App = {
       device: App.device
     });
 
+    self.views.gpio = new App.Views.GPIO({
+      el: $('.gpio-usage'),
+      controller: App.controller,
+      device: App.device
+    });
+
     self.views.firmware = new App.Views.Firmware({
       el: $('.firmware'),
       controller: App.controller,
