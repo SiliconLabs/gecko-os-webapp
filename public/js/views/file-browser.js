@@ -13,7 +13,7 @@ App.Views.FileBrowser = Backbone.View.extend({
   fileTemplate: _.template('\
 <div class="file <%= state %>" data-queue="<%= id %>">\
 <div class="name">\
-<%= (state === "fs-file") ? "<a href=\'" + filename.split(" ").join("%20") + "\' data-bypass>" + filename + "</a>" : filename %>\
+<%= (state === "fs-file") ? "<a href=\'" + filename.split(" ").join("%20") + "\' data-bypass target="_blank">" + filename + "</a>" : filename %>\
 </div>\
 <div class="size"><%= size %> bytes</div>\
 <div class="status" data-id="<%= id %>"></div>\
