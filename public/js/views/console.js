@@ -172,7 +172,7 @@ App.Views.Console = Backbone.View.extend({
       return command.match(regex);
     });
 
-    if(match){
+    if(match.length > 0){
       this.cmdLine.value = match[this.tabIndex % match.length];
       this.tabIndex++;
       return;
