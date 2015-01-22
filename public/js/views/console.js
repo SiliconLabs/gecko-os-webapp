@@ -37,16 +37,19 @@ App.Views.Console = Backbone.View.extend({
     this.listenTo(this.controller, 'change:view', this.render);
     this.render();
   },
+
   onClose: function() {
     this.stopListening();
   },
+
   events: {
     'click #input-line>.cmdline': 'onClick',
-    'click .terminal': 'onClick',
+    'mouseup .terminal': 'onClick',
     'keyup #input-line .cmdline': 'historyHandler',
     'keydown #input-line .cmdline': 'onCommand',
     'keydown #next-line .nextline': 'onNext'
   },
+
   render: function() {
     if(this.controller.get('view') !== 'console'){
       $(this.el).removeClass('active');
@@ -61,10 +64,21 @@ App.Views.Console = Backbone.View.extend({
     this.cmdLine.focus();
 
   },
+
   onClick: function(e) {
+    var textSel = "";
+    if (typeof window.getSelection !== "undefined") {
+        textSel = window.getSelection().toString();
+    } else if (typeof document.selection !== "undefined" && document.selection.type === "Text") {
+        textSel = document.selection.createRange().text;
+    }
+    if(textSel.length > 0) {
+      return;
+    }
     this.cmdLine.value = this.cmdLine.value;
     this.cmdLine.focus();
   },
+
   historyHandler: function(e) {
     if (e.keyCode !== 38 && e.keyCode !== 40) {
       return;
@@ -96,6 +110,7 @@ App.Views.Console = Backbone.View.extend({
       this.cmdLinevalue = this.cmdLine.value; // Sets cursor to end of input.
     }
   },
+
   tabComplete: function() {
     var cmd, varb, args, match, regex;
 
@@ -180,6 +195,7 @@ App.Views.Console = Backbone.View.extend({
 
     return;
   },
+
   onCommand: function(e) {
     var self = this;
     if (e.keyCode === 9) { // Tab
