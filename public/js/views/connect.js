@@ -361,43 +361,62 @@ App.Views.QuickConnect = Backbone.View.extend({
     }
 
 
-    // var secType = {
-    //         'open':0,
-    //         'wep':1,
-    //         'wpa-aes':2,
-    //         'wpa-tkip':3,
-    //         'wpa2-aes':4,
-    //         'wpa2-mixed':5,
-    //         'wpa2-tkip':6
-    //       };
+    var credentialFail = function(err, res) {
+      //verification failed modal
+    };
 
-    // self.device.wiconnect.nve(
-    //   {args: 'wifi ' + self.network.ssid + ' ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((secType[self.network.security.toLowerCase()] > 0) ? ' ' + secType[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(passkey, self.network.ssid) : '')},
-    //   function(err, res){
-    //     console.log('>>>', err, res);
-    //   });
+    var saveSettings = function() {
+      async.eachSeries(
+        cmds,
+        self.device.issueCommand,
+        function(err) {
+          if(self.device.get('web_setup')){
+            self.remove();
+            self.onSetupExit();
+            return;
+          }
 
+          if(err){
+            //handle err
+          }
 
+          self.controller.loading(false);
 
-    async.eachSeries(
-      cmds,
-      self.device.issueCommand,
-      function(err) {
-        if(self.device.get('web_setup')){
+          $('.connect>.content').show();
           self.remove();
-          self.onSetupExit();
-          return;
-        }
+        });
+    };
 
-        if(err){
-          //handle err
-        }
+    var attempt = 1;
 
-        self.controller.loading(false);
+    var verifyCredentials = function() {
+      self.device.wiconnect.nve(
+        {args: 'wifi \"' + self.network.ssid + '\" ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((self.device.securityTypes[self.network.security.toLowerCase()] > 0) ? ' ' + self.device.securityTypes[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(passkey, self.network.ssid) : '')},
+        function(err, res){
+          if(res.response.replace('\r\n','') !== 'Success') {
+            //timeout or Command Failed
+            //
+            if(attempt >= 3){
+              return credentialFail();
+            }
 
-        $('.connect>.content').show();
-        self.remove();
-      });
+            attempt += 1;
+
+            //need to wait a few seconds to prevent eating all the beacons
+            return setTimeout(verifyCredentials, 3000);
+          }
+
+          //close verify modal - show loader
+          saveSettings();
+        });
+    };
+
+    if(!self.device.get('web_setup')) {
+      //verify modal here
+      return verifyCredentials();
+    }
+
+    saveSettings();
   },
 
   render: function() {
