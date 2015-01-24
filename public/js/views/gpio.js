@@ -6,6 +6,8 @@
 App.Views.GPIO = Backbone.View.extend({
   els: [],
   views: [],
+  gpios: '',
+  poll: null,
   filter: true,
 
   template: _.template('<div class="content">\
@@ -45,7 +47,7 @@ App.Views.GPIO = Backbone.View.extend({
   },
 
   initialize: function(opts){
-    _.bindAll(this, 'render', 'onClose', 'onGPIO', 'onFilter', 'onBtn');
+    _.bindAll(this, 'render', 'onClose', 'getGPIO', 'onGPIO', 'onFilter', 'onBtn');
     this.delegateEvents();
 
     this.controller = opts.controller;
@@ -88,39 +90,55 @@ App.Views.GPIO = Backbone.View.extend({
 
   onGPIO: function() {
     var self = this;
-    var cmds = [];
+
+
+    var gpiosEl = self.$el.find('.gpios');
+
+    gpiosEl.empty();
+
+    for(var i = 0; i < self.gpios.length; i+=1) {
+      var tmpl = '';
+      var gpio = _.findWhere(self.device.gpio, {id: i});
+
+      if(!gpio && !self.filter) {
+        tmpl = self.templates.default({id: i});
+      }
+
+      //initialiazed gpio
+      if(gpio) {
+        //set current state
+        gpio.state = Number(self.gpios[i]);
+
+        tmpl = self.templates.basic(gpio);
+
+        if(gpio.description.indexOf('GPIO') >= 0) {
+          tmpl = (gpio.description.indexOf('input') >= 0) ? self.templates.gpio_input(gpio) : self.templates.gpio_output(gpio);
+        }
+      }
+
+      if(tmpl.length > 0){
+        $('<div />').addClass('gpio').html(tmpl).appendTo(gpiosEl);
+      }
+    }
+
+    self.controller.loading(false);
+
+  },
+
+  getGPIO: function() {
+    var self = this;
 
     self.device.issueCommand({cmd: 'gpios_get', args: {}}, function(err, res) {
       var gpios = res.response.replace('\r\n','');
 
-      for(var i = 0; i < gpios.length; i+=1) {
-        var tmpl = '';
-        var gpio = _.findWhere(self.device.gpio, {id: i});
+      if(self.state !== gpios){
+        self.gpios = gpios;
 
-        if(!gpio && !self.filter) {
-          tmpl = self.templates.default({id: i});
-        }
-
-        //initialiazed gpio
-        if(gpio) {
-          //set current state
-          gpio.state = Number(gpios[i]);
-
-          tmpl = self.templates.basic(gpio);
-
-          if(gpio.description.indexOf('GPIO') >= 0) {
-            tmpl = (gpio.description.indexOf('input') >= 0) ? self.templates.gpio_input(gpio) : self.templates.gpio_output(gpio);
-          }
-        }
-
-        if(tmpl.length > 0){
-          $('<div />').addClass('gpio').html(tmpl).appendTo(self.$el.find('.gpios'));
-        }
+        self.onGPIO();
       }
 
-      self.controller.loading(false);
+      self.poll = setTimeout(self.getGPIO, 1000);
     });
-
   },
 
   render: function(){
@@ -128,6 +146,8 @@ App.Views.GPIO = Backbone.View.extend({
 
     if(this.controller.get('view') !== 'gpio'){
       $(this.el).removeClass('active');
+
+      clearTimeout(self.poll);
       return;
     }
 
@@ -137,7 +157,7 @@ App.Views.GPIO = Backbone.View.extend({
 
     self.device.wiconnect.get({args: 'gpio.usage'}, function(err, res) {
 
-      self.device.parseGPIO(res, self.onGPIO);
+      self.device.parseGPIO(res, self.getGPIO);
     });
   }
 });
