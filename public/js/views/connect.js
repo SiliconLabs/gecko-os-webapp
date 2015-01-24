@@ -411,7 +411,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         });
     };
 
-    if(!self.device.get('web_setup')) {
+    if(self.device.get('web_setup')) {
       //verify modal here
       return verifyCredentials();
     }
