@@ -355,25 +355,25 @@ App.Views.QuickConnect = Backbone.View.extend({
     if(self.device.get('web_setup')) {
       $('.networks').empty(); //clear network list
       cmds.push({cmd:'reboot'});
-      self.controller.modal({systemModal: true, content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
     } else {
       self.controller.loading(true);
     }
 
 
     var credentialFail = function(err, res) {
-      //verification failed modal
+      return self.controller.modal({content:'<h2>Network credentials could not be verified. Please check Passkey and try again.</h2>'});
     };
 
     var saveSettings = function() {
+      self.controller.modal({systemModal: true, content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
+
       async.eachSeries(
         cmds,
         self.device.issueCommand,
         function(err) {
           if(self.device.get('web_setup')){
             self.remove();
-            self.onSetupExit();
-            return;
+            return self.onSetupExit();
           }
 
           if(err){
@@ -395,7 +395,6 @@ App.Views.QuickConnect = Backbone.View.extend({
         function(err, res){
           if(res.response.replace('\r\n','') !== 'Success') {
             //timeout or Command Failed
-            //
             if(attempt >= 3){
               return credentialFail();
             }
@@ -406,13 +405,12 @@ App.Views.QuickConnect = Backbone.View.extend({
             return setTimeout(verifyCredentials, 3000);
           }
 
-          //close verify modal - show loader
-          saveSettings();
+          return saveSettings();
         });
     };
 
     if(self.device.get('web_setup')) {
-      //verify modal here
+      self.controller.modal({content:'<h2>Verifying network credentials.</h2>'});
       return verifyCredentials();
     }
 
