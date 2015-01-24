@@ -410,7 +410,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     };
 
     if(self.device.get('web_setup')) {
-      self.controller.modal({content:'<h2>Verifying network credentials.</h2>'});
+      self.controller.modal({systemModal: true, content:'<h2>Verifying network credentials.</h2>'});
       return verifyCredentials();
     }
 
@@ -442,7 +442,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     }
 
     if(navigator.userAgent.indexOf('Android') >= 0) {
-      return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android, an Android app will be available soon. In the meantime, enter the IP address of your device into a browser.</h2>'});
+      return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android.</h2><h2>Download the <a href="https://play.google.com/store/apps/details?id=discovery.ack.me.ackme_discovery" target="_blank">ACKme Discovery</a> App from the Play store to find your device.</h2>'});
     }
 
     if(typeof self.setup === 'undefined') {
