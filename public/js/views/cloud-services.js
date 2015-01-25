@@ -16,7 +16,7 @@ App.Views.Cloud = Backbone.View.extend({
 </div>\
 <div class="content">\
 <h1>Commercial Services</h1>\
-<div class="sdc-logo" style="height:80px;"></div>\
+<div class="sdc-logo"></div>\
 <p>The Complete Silicon-to-Cloud&trade; IoT Framework Solution</p>\
 <div class="clear"></div>\
 </div>'),

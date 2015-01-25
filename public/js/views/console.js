@@ -248,7 +248,7 @@ App.Views.Console = Backbone.View.extend({
       // Parse out command, args, and trim off whitespace.
       if (this.cmdLine.value && this.cmdLine.value.trim()) {
 
-        cmdPipe = this.cmdLine.value.split('|');
+        cmdPipe = _.filter(this.cmdLine.value.split('|'), function(cmd){return cmd.trim().length > 0;});
 
         self.doCommand(cmdPipe[0], _.rest(cmdPipe));
       }
@@ -299,7 +299,6 @@ App.Views.Console = Backbone.View.extend({
             re = new RegExp(re);
             return d.match(re);
           }, (args[0] === '-v'));
-        console.log(grepd);
 
         if(pipe.length > 0) {
           return self.doCommand(pipe[0], _.rest(pipe), grepd);
@@ -309,6 +308,15 @@ App.Views.Console = Backbone.View.extend({
         break;
 
       case 'history':
+        if(args && (args[0] === 'clear')) {
+          self.history = [];
+          self.historyPosition = 0;
+          if(self.controller.ls && self.controller.ls.console) {
+            self.controller.ls.console = JSON.stringify({history: []});
+          }
+          self.printOutput([]);
+          break;
+        }
         var padLength = String(self.history.length).length + 1;
         var history = [];
         _.each(_.last(self.history, ((Number(args[0]) > 0)) ? Number(args[0]) : self.history.length), function(hist, h) {
