@@ -13,7 +13,7 @@ App.Views.FileBrowser = Backbone.View.extend({
   fileTemplate: _.template('\
 <div class="file <%= state %>" data-queue="<%= id %>">\
 <div class="name">\
-<%= (state === "fs-file") ? "<a href=\'" + filename.split(" ").join("%20") + "\' data-bypass target=\'_blank\'>" + filename + "</a>" : filename %>\
+<%= (link === "fs-link") ? "<a href=\'" + filename.split(" ").join("%20") + "\' data-bypass target=\'_blank\'>" + filename + "</a>" : filename %>\
 </div>\
 <div class="size"><%= size %> bytes</div>\
 <div class="status" data-id="<%= id %>"></div>\
@@ -137,9 +137,14 @@ App.Views.FileBrowser = Backbone.View.extend({
       _.filter(self.device.files, function(file) { return file.type[0] !== 'i';}), //not internal flash
       function(file) {
         file.state = '';
+        file.link = '';
 
-        if((file.type.substring(2,4) === 'FE') || (file.type.substring(2,4) === '03')) { //only user files and tls certs can be deleted
+        if(!_.contains(['00','01','81'], file.type.substring(2,4))){ //FW-791
           file.state = 'fs-file';
+        }
+
+        if((file.flags & 0x12) === 0) { //FW-791
+          file.link = 'fs-link';
         }
 
         $(self.el).find('#file-system').append(self.fileTemplate(file));

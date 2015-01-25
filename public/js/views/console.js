@@ -242,7 +242,7 @@ App.Views.Console = Backbone.View.extend({
       this.tabIndex = 0;
       this.tabInput = null;
 
-      var cmd, args, cmdPipe;
+      var cmdPipe;
 
       // Parse out command, args, and trim off whitespace.
       if (this.cmdLine.value && this.cmdLine.value.trim()) {
