@@ -22,6 +22,7 @@ App.Views.Console = Backbone.View.extend({
 <div><input class="nextline" spellcheck="false" autocapitalize="off" /></div>\
 </div>\
 </div>'),
+
   initialize: function(opts) {
 
     _.bindAll(this, 'render',

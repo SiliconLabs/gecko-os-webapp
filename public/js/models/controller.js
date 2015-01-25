@@ -41,9 +41,11 @@ App.Models.Controller = Backbone.Model.extend({
 
     this.resize();
   },
+
   onClose: function(){
     $(window).off('keyup', this.onKey);
   },
+
   onKey: function(e) {
     if (e.keyCode === 27) {
       if(this.views.modal && !this.views.modal.isSystemModal()) {
@@ -51,6 +53,7 @@ App.Models.Controller = Backbone.Model.extend({
       }
     }
   },
+
   resize: function(e){
 
     //ignore mobile keyboards triggering resize
@@ -104,6 +107,7 @@ App.Models.Controller = Backbone.Model.extend({
     });
 
   },
+
   loading: function(loading) {
     this.set({loading: loading});
 
@@ -113,6 +117,7 @@ App.Models.Controller = Backbone.Model.extend({
       $('.loader').hide();
     }
   },
+
   modal: function(args) {
     var self = this;
 
@@ -134,6 +139,7 @@ App.Models.Controller = Backbone.Model.extend({
     async.series([self.closeModal, addModal], function(err){});
 
   },
+
   closeModal: function(next) {
     var self = this;
 

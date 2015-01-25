@@ -342,6 +342,8 @@ App.Views.QuickConnect = Backbone.View.extend({
         mdns = mdns.length > 0 ? mdns : 'ackme-' + mac;
         mdns = mdns.toLowerCase();
 
+        self.mdns = mdns;
+
         cmds.push({cmd: 'set', args: {args:'ht s e 1'}});
         cmds.push({cmd: 'set', args: {args:'md e 1'}});
         cmds.push({cmd: 'set', args: {args:'md n ' + mdns}});
@@ -452,8 +454,7 @@ App.Views.QuickConnect = Backbone.View.extend({
       };
     }
 
-    // var host = (navigator.platform === 'Win32') ? 'wiconnect' : 'wiconnect.local';
-    var host = 'wiconnect.local';
+    var host = (navigator.platform === 'Win32') ? self.mdns : self.mdns + '.local';
 
     $.ajax({
         url: 'http://' + host + '/command/ver',
