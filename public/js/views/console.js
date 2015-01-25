@@ -6,6 +6,11 @@
 App.Views.Console = Backbone.View.extend({
   buffer: '',
 
+  history: [],
+  cmdMask: {
+    rm: 'fde'
+  },
+
   template: _.template('\
 <h1>Console</h1>\
 <div class="terminal">\
@@ -17,14 +22,13 @@ App.Views.Console = Backbone.View.extend({
 <div><input class="nextline" spellcheck="false" autocapitalize="off" /></div>\
 </div>\
 </div>'),
-  history: [],
   initialize: function(opts) {
 
     _.bindAll(this, 'render',
               'onClose', 'onClick',
-              'onCommand', 'issueCommand',
+              'onCommand', 'issueCommand', 'doCommand',
               'historyHandler', 'tabComplete',
-              'printOutput',
+              'printOutput', 'printLine',
               'clear');
 
     this.delegateEvents();
@@ -35,6 +39,11 @@ App.Views.Console = Backbone.View.extend({
     this.historyPosition = 0;
     this.historyTemp = 0;
     this.tabIndex = 0;
+
+    if(this.controller.ls && this.controller.ls.console){
+      this.history = JSON.parse(this.controller.ls.console).history;
+      this.historyPosition = this.history.length;
+    }
 
     this.listenTo(this.controller, 'change:view', this.render);
     this.render();
@@ -208,9 +217,16 @@ App.Views.Console = Backbone.View.extend({
     } else if (e.keyCode === 13) { // enter
       // Save shell history.
       if(this.cmdLine.value) {
+
         if(this.history[this.history.length - 1] !== this.cmdLine.value) {
+
           this.history[this.history.length] = this.cmdLine.value;
+
+          if(this.controller.ls){
+            this.controller.ls.console = JSON.stringify({history: _.last(this.history, 1024)});
+          }
         }
+
         this.historyPosition = this.history.length;
       }
 
@@ -223,58 +239,120 @@ App.Views.Console = Backbone.View.extend({
       self.newPrompt.spellcheck = false;
       self.newPrompt.autocapitalize = "off";
 
-      var cmd, args;
+      this.tabIndex = 0;
+      this.tabInput = null;
+
+      var cmd, args, cmdPipe;
 
       // Parse out command, args, and trim off whitespace.
       if (this.cmdLine.value && this.cmdLine.value.trim()) {
-        args = this.cmdLine.value.split(' ').filter(function(val, i) {
-          return val;
-        });
-        cmd = args[0].toLowerCase();
-        args = args.splice(1); // Remove cmd from arg list.
 
-        //focus on next line to show command being processed
-        $(this.el).find('.nextline').focus();
-      }
+        cmdPipe = this.cmdLine.value.split('|');
 
-      switch (cmd) {
-        case 'clear':
-          this.clear(this);
-          return;
-
-        case 'file_create':
-        case 'fcr':
-        case 'stream_write':
-        case 'write':
-        case 'smtp_send':
-        case 'smtp':
-          self.output.appendChild(self.newPrompt);
-          self.cmdLine.value = ''; // Clear/setup line for next input.
-          self.printOutput('[not supported in web console]');
-          self.cmdLine.focus();
-          break;
-
-        // case 'reboot':
-        // case 'ota':
-        // case 'ghm_activate':
-        //   //display loader
-        //   //ping-reconnect sequence
-        //   break;
-
-        default:
-          if (cmd) {
-            self.issueCommand({
-              cmd: cmd, args: {args: args.join(' '), timeout: 60000},
-              done: function(res){self.cmdLine.scrollIntoView();},
-              fail: function(res){self.cmdLine.scrollIntoView();}
-            });
-          }
-
+        self.doCommand(cmdPipe[0], _.rest(cmdPipe));
       }
     }
+  },
 
-    this.tabIndex = 0;
-    this.tabInput = null;
+  doCommand: function(cmd, pipe, data) {
+    var self = this;
+    var args;
+
+    // ![historyPosition] - reference cmd in history
+    if(cmd[0] === '!' && (Number(cmd.substring(1, cmd.length)) - 1) < this.history.length){
+      cmd = this.history[Number(cmd.substring(1, cmd.length)) - 1];
+    }
+
+    args = cmd.split(' ').filter(function(val, i) {
+      return val;
+    });
+    cmd = args[0].toLowerCase();
+    args = args.splice(1); // Remove cmd from arg list.
+
+    //focus on next line to show command being processed
+    $(this.el).find('.nextline').focus();
+
+    var pad = function(str, len, padChar) {
+      return (len <=str.length) ? str : pad(padChar + str, len, padChar);
+    };
+
+    var nextPipe = function(res){
+      self.doCommand(pipe[0], _.rest(pipe), res.response.split('\r\n'));
+    };
+
+    switch (cmd) {
+      case 'clear':
+        this.clear(this);
+        return;
+
+      case 'grep':
+        if(!_.isArray(data)){
+          return;
+        }
+
+        var grepd = $.grep(data, function(d) {
+            var re = args.join(' ');
+            if(args[0] === '-v'){ //ignore invert flag
+              re = _.rest(args).join(' ');
+            }
+            re = new RegExp(re);
+            return d.match(re);
+          }, (args[0] === '-v'));
+        console.log(grepd);
+
+        if(pipe.length > 0) {
+          return self.doCommand(pipe[0], _.rest(pipe), grepd);
+        }
+
+        self.printOutput(grepd);
+        break;
+
+      case 'history':
+        var padLength = String(self.history.length).length + 1;
+        var history = [];
+        _.each(_.last(self.history, ((Number(args[0]) > 0)) ? Number(args[0]) : self.history.length), function(hist, h) {
+          history.push(pad((Number(args[0] > 0 ? self.history.length - Number(args[0]) + h: h)) + 1, padLength, ' ') + ' ' + hist);
+        });
+
+        if(pipe.length > 0) {
+          return self.doCommand(pipe[0], _.rest(pipe), history);
+        }
+
+        self.printOutput(history);
+        break;
+
+      case 'file_create':
+      case 'fcr':
+      case 'stream_write':
+      case 'write':
+      case 'smtp_send':
+      case 'smtp':
+        self.output.appendChild(self.newPrompt);
+        self.cmdLine.value = ''; // Clear/setup line for next input.
+        self.printOutput('[not supported in web console]');
+        self.cmdLine.focus();
+        break;
+
+      // case 'reboot':
+      // case 'ota':
+      // case 'ghm_activate':
+      //   //display loader
+      //   //ping-reconnect sequence
+      //   break;
+
+      default:
+        if (cmd) {
+          if(self.cmdMask.hasOwnProperty(cmd)){
+            cmd = self.cmdMask[cmd];
+          }
+          self.issueCommand({
+            cmd: cmd, args: {args: args.join(' '), timeout: 60000},
+            done: (pipe.length > 0 ? nextPipe : null)
+          });
+        }
+
+    }
+
   },
 
   issueCommand: function(cmd, attempt) {
@@ -287,24 +365,14 @@ App.Views.Console = Backbone.View.extend({
     self.buffer = '';
 
     var fail = function(err, res) {
-      self.output.appendChild(self.newPrompt);
-      self.cmdLine.value = '';
-      self.cmdLine.focus();
-      self.printOutput('Error: ' + cmd.cmd + (cmd.args.args ? ' ' + cmd.args.args : '') + ' : ' + err.message + '');
+      self.printOutput(['Error: ' + cmd.cmd + (cmd.args.args ? ' ' + cmd.args.args : '') + ' : ' + err.message]);
     };
 
-    var done = function(resp, next) {
-      self.output.appendChild(self.newPrompt);
-      self.cmdLine.value = self.buffer; // Clear/setup line for next input.
-      self.cmdLine.focus();
-
-      _.each(resp.response.split('\r\n'), function(line){
-        self.printOutput(line);
-      });
+    var done = function(res, next) {
+      self.printOutput(res.response.split('\r\n'));
     };
 
-    self.device.issueCommand({cmd: cmd.cmd, args: cmd.args, done: done, fail: fail });
-
+    self.device.issueCommand({cmd: cmd.cmd, args: cmd.args, done: (cmd.done ? cmd.done : done), fail: (cmd.fail ? cmd.fail : fail) });
   },
 
   onNext: function(e) {
@@ -316,9 +384,10 @@ App.Views.Console = Backbone.View.extend({
   clear: function() {
     this.output.innerHTML = '';
     this.cmdLine.value = '';
+    this.cmdLine.focus();
   },
 
-  printOutput: function(line) {
+  printLine: function(line) {
     line = line
             .replace(/&/g, '&amp;')
             .replace(/\ /g, "&nbsp;")
@@ -331,6 +400,13 @@ App.Views.Console = Backbone.View.extend({
     var html = '<div class="ls-files">' + line + '</div>';
 
     this.output.insertAdjacentHTML('beforeEnd', html);
+  },
+
+  printOutput: function(lines) {
+    this.output.appendChild(this.newPrompt);
+    this.cmdLine.value = this.buffer; // Clear/setup line for next input.
+    this.cmdLine.focus();
+    _.each(lines, this.printLine);
     this.output.scrollIntoView();
     this.cmdLine.scrollIntoView();
   }

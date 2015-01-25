@@ -15,6 +15,7 @@ App.Models.Controller = Backbone.Model.extend({
     queue: 0,
     retries: 3
   },
+  ls: null,
   initialize: function(opts) {
     var self = this;
 
@@ -24,6 +25,10 @@ App.Models.Controller = Backbone.Model.extend({
     $(window).on('resize', resizer);
     $(window).on('orientationchange', this.resize);
     $(window).on('keyup', this.onKey);
+
+    if (typeof (Storage)!=="undefined"){
+      this.ls=localStorage;
+    }
 
     $(document).ajaxError(function(event, jqxhr, settings, exception ) {
       if ( jqxhr.status === 401 ) {
