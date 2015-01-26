@@ -252,6 +252,7 @@ App.Views.FileBrowser = Backbone.View.extend({
           var thisFile = {
             id: 0,
             state: 'uploading',
+            link: '',
             filename: file.name,
             size: file.size
           };
