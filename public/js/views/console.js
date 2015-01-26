@@ -1,4 +1,4 @@
-/*global Backbone:true, $:true, _:true, App:true, Terminal:true */
+/*global Backbone:true, $:true, _:true, App:true, Terminal:true, _webapp:true */
 /*jshint multistr:true */
 /*jshint browser:true */
 /*jshint strict:false */
@@ -79,9 +79,9 @@ App.Views.Console = Backbone.View.extend({
 
   onClick: function(e) {
     var textSel = "";
-    if (typeof window.getSelection !== "undefined") {
+    if (window.getSelection && typeof window.getSelection === 'function') {
         textSel = window.getSelection().toString();
-    } else if (typeof document.selection !== "undefined" && document.selection.type === "Text") {
+    } else if (document.selection && typeof document.selection.createRange === 'function' && document.selection.type === "Text") {
         textSel = document.selection.createRange().text;
     }
     if(textSel.length > 0) {
@@ -328,6 +328,10 @@ App.Views.Console = Backbone.View.extend({
         }
 
         self.printOutput(history);
+        break;
+
+      case '_webapp':
+        self.printOutput([JSON.stringify(_webapp)]);
         break;
 
       case 'file_create':

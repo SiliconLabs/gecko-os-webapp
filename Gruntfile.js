@@ -159,7 +159,7 @@ module.exports = function(grunt) {
     var pkg = grunt.file.readJSON('package.json');
     grunt.file.write(
       'public/js/version.js',
-      'var _webgui = '
+      'var _webapp = '
         + '{'
           + 'date:"' + new Date().toISOString() + '", '
           + 'hash:"' + rev.object + '", '
