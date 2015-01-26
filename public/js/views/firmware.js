@@ -155,7 +155,7 @@ App.Views.Firmware = Backbone.View.extend({
 
     bundle = (bundle.length > 0) ? ' -b ' + bundle : '';
 
-    cmds.push({cmd: 'ota', args: {flags: 0, args: + force + bundle}});
+    cmds.push({cmd: 'ota', args: {flags: 0, args: force + bundle}});
 
     self.controller.loading(true);
 
