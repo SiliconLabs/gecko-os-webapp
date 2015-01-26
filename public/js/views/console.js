@@ -340,10 +340,7 @@ App.Views.Console = Backbone.View.extend({
       case 'write':
       case 'smtp_send':
       case 'smtp':
-        self.output.appendChild(self.newPrompt);
-        self.cmdLine.value = ''; // Clear/setup line for next input.
-        self.printOutput('[not supported in web console]');
-        self.cmdLine.focus();
+        self.printOutput(['[not supported in web console]']);
         break;
 
       // case 'reboot':
