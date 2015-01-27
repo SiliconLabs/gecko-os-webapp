@@ -310,6 +310,7 @@ App.Views.Console = Backbone.View.extend({
 
       case 'grep':
         if(!_.isArray(data)){
+          self.printOutput();
           return;
         }
 
