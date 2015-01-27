@@ -175,7 +175,7 @@
             return xhr.onSuccess(JSON.parse(res.text));
           }
 
-          if(attempt >= device.retries) {
+          if(attempt >= (args.retries ? args.retries : device.retries)) {
             return xhr.onFail(err, res);
           }
 
@@ -280,7 +280,7 @@
             return xhr.onSuccess(JSON.parse(res.text));
           }
 
-          if(attempt >= device.retries){
+          if(attempt >= (args.retries ? args.retries : device.retries)){
             return xhr.onFail(err, res);
           }
 
