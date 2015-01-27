@@ -129,8 +129,7 @@ App.Models.Controller = Backbone.Model.extend({
       self.views.modal = new App.Views.Modal({
         el: $('<div id="system-modal" />')
               .appendTo($('.main')),
-        content: args.content,
-        systemModal: args.systemModal,
+        args: args,
         controller: self
       });
       next();

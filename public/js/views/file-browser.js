@@ -154,27 +154,37 @@ App.Views.FileBrowser = Backbone.View.extend({
   },
 
   onDelete: function(e) {
-    // this.deleteFile($(e.currentTarget).data('id'));
-    //
-    this.deleteModal = new App.Views.DeleteModal({
-      fileID: $(e.currentTarget).data('id'),
-      device: this.device,
-      controller: this.controller,
-      el: $('<div />')
-        .addClass('confirm-delete modal')
-        .appendTo(this.$el)
+    var self = this;
+
+    var filename = _.findWhere(self.device.files, {id: $(e.currentTarget).data('id')}).filename;
+
+    self.controller.modal({
+      content: '<h2>Are you sure you want to delete "' + filename + '"?</h2>',
+      systemModal: true,
+      showClose: false,
+      primaryBtn: {
+        content: 'Delete',
+        class: 'delete',
+        clickFn: function(modal) {
+          self.controller.loading(true);
+
+          self.device.wiconnect.fde(
+            {args: filename, flags: 0},
+            function(err) {
+              if(err){
+                // handle err
+              }
+              modal.onClose();
+              self.controller.loading(false);
+              self.render();
+            });
+        }
+      },
+      secondaryBtn: {
+        content: 'Cancel',
+        class: 'cancel'
+      }
     });
-    this.deleteModal.on('modalDelete', this.modalDelete, this);
-    this.deleteModal.on('modalCancel', this.modalCancel, this);
-  },
-
-  modalDelete: function() {
-    this.modalCancel();
-    this.render();
-  },
-
-  modalCancel: function() {
-    this.deleteModal.stopListening();
   },
 
   onDragenter: function(e) {
@@ -302,80 +312,3 @@ App.Views.FileBrowser = Backbone.View.extend({
 
   }
 });
-
-
-
-App.Views.DeleteModal = Backbone.View.extend({
-  template: _.template('\
-<div class="content">\
-<h2>Are you sure you want to delete "<%= filename%>"?</h2>\
-<div>\
-<button class="btn btn-lg cancel">Cancel</button>\
-<button class="btn btn-lg delete">Delete</button>\
-</div>\
-<div class="clear"></div>\
-</div>'),
-  initialize: function(opts) {
-    _.bindAll(this,
-              'render', 'onClose',
-              'onCancel', 'onDelete');
-
-    var self = this;
-
-    this.fileID = opts.fileID;
-    this.device = opts.device;
-    this.controller = opts.controller;
-
-    this.file = _.findWhere(self.device.files, {id: self.fileID});
-
-    this.render();
-  },
-
-  onClose: function() {
-    this.stopListening();
-  },
-
-  events: {
-    'click .cancel': 'onCancel',
-    'click .delete': 'onDelete'
-  },
-
-  onCancel: function() {
-    this.trigger('modalCancel');
-    this.remove();
-  },
-
-  onDelete: function() {
-    this.deleteFile();
-  },
-
-  deleteFile: function() {
-    var self = this;
-
-    if(typeof self.file === 'undefined'){
-      self.onCancel();
-    }
-
-    self.controller.loading(true);
-    self.remove();
-
-    self.device.wiconnect.fde(
-      {args: self.file.filename, flags: 0},
-      function(err) {
-        if(err){
-          // handle err
-        }
-        self.controller.loading(false);
-        self.trigger('modalDelete');
-      });
-
-  },
-
-  render: function() {
-    var self = this;
-
-    this.$el.html(this.template({filename: self.file.filename}));
-  }
-});
-
-

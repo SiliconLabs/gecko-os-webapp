@@ -363,11 +363,28 @@ App.Views.QuickConnect = Backbone.View.extend({
 
 
     var credentialFail = function(err, res) {
-      return self.controller.modal({content:'<h2>Network credentials could not be verified. Please check Passkey and try again.</h2>'});
+      return self.controller.modal({
+        systemModal: true,
+        content:'<h2>Network credentials could not be verified. Would you like to continue to save anyway?</h2>',
+        primaryBtn: {
+          content: 'Save Settings',
+          class: 'save',
+          clickFn: function(modal) {
+            saveSettings();
+          }
+        },
+        secondaryBtn: {
+          content: 'Check Credentials',
+          class: 'cancel'
+        }
+      });
     };
 
     var saveSettings = function() {
-      self.controller.modal({systemModal: true, content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'});
+      self.controller.modal({
+        systemModal: true,
+        content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'
+      });
 
       async.eachSeries(
         cmds,

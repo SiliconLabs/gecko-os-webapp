@@ -1,4 +1,5 @@
 @import "mixins.less";
+@import "variables.less";
 
 @font-face {
     font-family: 'open-sans';
@@ -251,11 +252,11 @@ body{
           margin-bottom: 32px;
         }
 
-        &.save, &.delete, &.cancel {
+        &.modal-primary, &.modal-secondary, &.save, &.delete, &.cancel {
           width: 120px;
         }
 
-        &.save, &.delete {
+        &.modal-primary, &.save, &.delete {
           position: absolute;
           right: 32px;
         }
@@ -279,19 +280,23 @@ a, button {
     .box-shadow(1px 2px 1px rgba(0,0,0,0.125));
     .transition(box-shadow 0.3s);
 
-    &:first-child {
-      border-top-left-radius: 2px;
-      border-top-right-radius: 0px;
-      border-bottom-right-radius: 0px;
-      border-bottom-left-radius: 2px;
+    .btn-bar & {
+
+      &:first-child {
+        border-top-left-radius: 2px;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+        border-bottom-left-radius: 2px;
+      }
+
+      &:last-child {
+        border-top-left-radius: 0px;
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
+        border-bottom-left-radius: 0px;
+      }
     }
 
-    &:last-child {
-      border-top-left-radius: 0px;
-      border-top-right-radius: 2px;
-      border-bottom-right-radius: 2px;
-      border-bottom-left-radius: 0px;
-    }
 
     &:active{
       border: inherit;
