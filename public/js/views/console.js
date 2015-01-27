@@ -8,8 +8,8 @@ App.Views.Console = Backbone.View.extend({
 
   reconnect: {
     attempt: 0,
-    retries: 30,
-    timeout: 2000,
+    retries: 60,
+    timeout: 1000,
     delay: 1000
   },
 
@@ -294,6 +294,10 @@ App.Views.Console = Backbone.View.extend({
           args = args.join(' ');
           re = /(\'(.+)\')|(\"(.+)\")/;
           var alias = args.substring(0, args.indexOf('='));
+          if(self.device.wiconnect.hasOwnProperty(alias) || self.cmdMask.hasOwnProperty(alias)) {
+            self.printOutput(['Invalid alias name']);
+            break;
+          }
           var aliasCmd = re.exec(args.substring(args.indexOf('=')));
           self.alias[alias] = (aliasCmd[2] ? aliasCmd[2] : aliasCmd[4]);
         }
@@ -350,6 +354,15 @@ App.Views.Console = Backbone.View.extend({
 
       case '_webapp':
         self.printOutput([JSON.stringify(_webapp)]);
+        break;
+
+      case 'unalias':
+        if(args[0]) {
+          if(self.alias.hasOwnProperty(args[0])) {
+            delete self.alias[args[0]];
+          }
+        }
+        self.printOutput();
         break;
 
       case 'file_create':
@@ -468,8 +481,8 @@ App.Views.Console = Backbone.View.extend({
         {retries: 1, timeout: self.reconnect.timeout},
         function(err, res) {
           if(err){
-            if(self.reconnect.attempt > self.reconnect.retries){
-              return self.controller.modal({content:'<h2>Unable to reconnect to device.<br><br> Please check you are connected to<br>\'' + self.network.ssid + '\'</h2>'});
+            if(self.reconnect.attempt >= self.reconnect.retries){
+              return self.controller.modal({content:'<h2>Unable to reconnect to device.</h2>'});
             }
 
             self.reconnect.attempt += 1;
