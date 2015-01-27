@@ -473,7 +473,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         setTimeout(self.onSetupExit, 1000);
       })
       .done(function() {
-        top.location = 'http://' + host;
+        top.location = 'http://' + host + '/';
       });
   }
 });
