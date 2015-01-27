@@ -6,7 +6,15 @@
 App.Views.Console = Backbone.View.extend({
   buffer: '',
 
+  reconnect: {
+    attempt: 0,
+    retries: 30,
+    timeout: 2000,
+    delay: 1000
+  },
+
   history: [],
+  alias:{},
   cmdMask: {
     rm: 'fde'
   },
@@ -30,6 +38,7 @@ App.Views.Console = Backbone.View.extend({
               'onCommand', 'issueCommand', 'doCommand',
               'historyHandler', 'tabComplete',
               'printOutput', 'printLine',
+              'tryReconnect',
               'clear');
 
     this.delegateEvents();
@@ -42,7 +51,9 @@ App.Views.Console = Backbone.View.extend({
     this.tabIndex = 0;
 
     if(this.controller.ls && this.controller.ls.console){
-      this.history = JSON.parse(this.controller.ls.console).history;
+      var console   = JSON.parse(this.controller.ls.console);
+      this.alias    = console.alias   || {};
+      this.history  = console.history || [];
       this.historyPosition = this.history.length;
     }
 
@@ -220,12 +231,7 @@ App.Views.Console = Backbone.View.extend({
       if(this.cmdLine.value) {
 
         if(this.history[this.history.length - 1] !== this.cmdLine.value) {
-
           this.history[this.history.length] = this.cmdLine.value;
-
-          if(this.controller.ls){
-            this.controller.ls.console = JSON.stringify({history: _.last(this.history, 1024)});
-          }
         }
 
         this.historyPosition = this.history.length;
@@ -240,9 +246,6 @@ App.Views.Console = Backbone.View.extend({
       self.newPrompt.spellcheck = false;
       self.newPrompt.autocapitalize = "off";
 
-      this.tabIndex = 0;
-      this.tabInput = null;
-
       var cmdPipe;
 
       // Parse out command, args, and trim off whitespace.
@@ -253,11 +256,15 @@ App.Views.Console = Backbone.View.extend({
         self.doCommand(cmdPipe[0], _.rest(cmdPipe));
       }
     }
+    this.tabIndex = 0;
+    this.tabInput = null;
   },
 
   doCommand: function(cmd, pipe, data) {
     var self = this;
-    var args;
+    var args, re;
+
+    cmd = cmd.trim();
 
     // ![historyPosition] - reference cmd in history
     if(cmd[0] === '!' && (Number(cmd.substring(1, cmd.length)) - 1) < this.history.length){
@@ -282,9 +289,20 @@ App.Views.Console = Backbone.View.extend({
     };
 
     switch (cmd) {
+      case 'alias':
+        if(args[0]){
+          args = args.join(' ');
+          re = /(\'(.+)\')|(\"(.+)\")/;
+          var alias = args.substring(0, args.indexOf('='));
+          var aliasCmd = re.exec(args.substring(args.indexOf('=')));
+          self.alias[alias] = (aliasCmd[2] ? aliasCmd[2] : aliasCmd[4]);
+        }
+        self.printOutput();
+        break;
+
       case 'clear':
         this.clear(this);
-        return;
+        break;
 
       case 'grep':
         if(!_.isArray(data)){
@@ -292,7 +310,7 @@ App.Views.Console = Backbone.View.extend({
         }
 
         var grepd = $.grep(data, function(d) {
-            var re = args.join(' ');
+            re = args.join(' ');
             if(args[0] === '-v'){ //ignore invert flag
               re = _.rest(args).join(' ');
             }
@@ -343,17 +361,32 @@ App.Views.Console = Backbone.View.extend({
         self.printOutput(['[not supported in web console]']);
         break;
 
-      // case 'reboot':
-      // case 'ota':
-      // case 'ghm_activate':
-      //   //display loader
-      //   //ping-reconnect sequence
-      //   break;
+      case 'reboot':
+      case 'ota':
+      case 'ghm_activate':
+      case 'gac':
+        //no piping
+        // self.controller.loading(true);
+        self.controller.modal({systemModal: true, content:'<h2>Device rebooting...</h2><div class="progress-bar"><div class="progress"></div></div>'});
+        self.reconnect.attempt = 0;
+        self.issueCommand({
+          cmd: cmd, args: {args: args.join(' '), timeout: 60000},
+          done: self.tryReconnect
+        });
+        break;
 
       default:
         if (cmd) {
-          if(self.cmdMask.hasOwnProperty(cmd)){
+          if(self.cmdMask.hasOwnProperty(cmd)) {
             cmd = self.cmdMask[cmd];
+          }
+          if(self.alias.hasOwnProperty(cmd)) {
+            cmd = self.alias[cmd];
+          }
+          if(cmd.indexOf('|') > 0) {
+            var cmdPipe = _.filter(this.cmdLine.value.split('|'), function(c){return c.trim().length > 0;});
+            cmd = cmdPipe[0];
+            pipe = _.rest(cmdPipe);
           }
           self.issueCommand({
             cmd: cmd, args: {args: args.join(' '), timeout: 60000},
@@ -363,6 +396,12 @@ App.Views.Console = Backbone.View.extend({
 
     }
 
+    if(this.controller.ls){
+      this.controller.ls.console = JSON.stringify({
+        history: _.last(this.history, 1024),
+        alias: this.alias
+      });
+    }
   },
 
   issueCommand: function(cmd, attempt) {
@@ -419,5 +458,29 @@ App.Views.Console = Backbone.View.extend({
     _.each(lines, this.printLine);
     this.output.scrollIntoView();
     this.cmdLine.scrollIntoView();
+  },
+
+  tryReconnect: function() {
+    var self = this;
+
+    setTimeout(function(){
+      self.device.wiconnect.ver(
+        {retries: 1, timeout: self.reconnect.timeout},
+        function(err, res) {
+          if(err){
+            if(self.reconnect.attempt > self.reconnect.retries){
+              return self.controller.modal({content:'<h2>Unable to reconnect to device.<br><br> Please check you are connected to<br>\'' + self.network.ssid + '\'</h2>'});
+            }
+
+            self.reconnect.attempt += 1;
+            $('.progress').css({width: String((self.reconnect.attempt / self.reconnect.retries)*100) + '%'});
+
+            return self.tryReconnect();
+          }
+          self.printOutput(['Success']);
+          self.controller.closeModal();
+        });
+    }, self.reconnect.delay);
+
   }
 });
