@@ -78,34 +78,8 @@ App.Views.NetworkSettings = Backbone.View.extend({
           //handle err
         }
 
-        var auto_join = self.device.get('auto_join').replace('\r\n','');
-        var dhcp = self.device.get('dhcp').replace('\r\n','');
-
-        switch(auto_join){
-          case '0':
-          case 'off':
-          case 'false':
-            auto_join = false;
-            break;
-          case '1':
-          case 'on':
-          case 'true':
-            auto_join = true;
-            break;
-        }
-
-        switch(dhcp){
-          case '0':
-          case 'off':
-          case 'false':
-            dhcp = false;
-            break;
-          case '1':
-          case 'on':
-          case 'true':
-            dhcp = true;
-            break;
-        }
+        var auto_join = Boolean(Number(self.device.get('auto_join')));
+        var dhcp = Boolean(Number(self.device.get('dhcp')));
 
         self.device.set({auto_join: auto_join, dhcp: dhcp});
 

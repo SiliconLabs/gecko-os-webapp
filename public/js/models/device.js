@@ -9,14 +9,17 @@ App.Models.Device = Backbone.Model.extend({
   files: [],
   gpio: [],
   defaults: {
+    all: '',
     auto_join: '',
     board: '',
     date: '',
+    default_interface: '',
     dhcp: '',
     dns: '',
     gateway: '',
     ghm_activated: '',
     host: '',
+    http_interface: '',
     ip: '',
     mac: '',
     module: '',
@@ -24,11 +27,13 @@ App.Models.Device = Backbone.Model.extend({
     ota_host: '',
     ota_port: '',
     rssi: '',
+    softap: '',
     ssid: '',
     time: 0,
     uuid: '',
     version: '',
-    web_setup: ''
+    web_setup: '',
+    wlan: ''
   },
   checkInInterval: 45,
   wiconnect: null,
@@ -132,7 +137,7 @@ App.Models.Device = Backbone.Model.extend({
       }
 
       if(cmd.property && res.response){
-          self.set(cmd.property, res.response.replace('\r\n',''));
+        self.set(cmd.property, res.response);
       }
       next(null, res);
     });
@@ -202,8 +207,7 @@ App.Models.Device = Backbone.Model.extend({
     var self = this;
 
     var cmds = [
-      {property: 'ip', cmd: 'get', args:{args: 'ne i', ret: false}},
-      {property: 'mac', cmd: 'get', args:{args: 'wl m', ret: false}},
+      {property: 'all', cmd: 'get', args: {args: 'all', ret: false}},
       {property: 'web_setup', cmd: 'setup', args: {args: 'status', ret: false}},
       {cmd: 'help', args: {args: 'commands'}, done: self.parseCommands},
       {cmd: 'help', args: {args: 'variables'}, done: self.parseVariables}
@@ -217,30 +221,37 @@ App.Models.Device = Backbone.Model.extend({
           //handle err
         }
 
-        var web_setup = self.get('web_setup').replace('\r\n','');
+        var extractVar = function(prop, filter) {
+          return _.filter(self.get(prop).split('\r\n'), function(line){return (line.indexOf(filter) >= 0);})[0].replace(filter + ' ','');
+        };
 
-        switch(web_setup){
-          case '0':
-          case 'off':
-          case 'false':
-            web_setup = false;
-            break;
-          case '1':
-          case 'on':
-          case 'true':
-            web_setup = true;
-            break;
-        }
+        var web_setup = Boolean(Number(self.get('web_setup')));
 
-        self.set({web_setup: web_setup});
+        self.set({
+          ip: extractVar('all', 'network.ip:'),
+          mac: extractVar('all', 'wlan.mac:'),
+          http_interface: extractVar('all', 'http.server.interface:'),
+          default_interface: extractVar('all', 'network.default_interface:'),
+          web_setup: web_setup
+        });
+
+        var iface;
 
         if(web_setup){
-          $('.nav ul li.setup').show('fast');
+          iface = 'setup';
           self.controller.set('view','connect');
         } else {
-          $('.nav ul li').show('fast');
+          iface = self.get('http_interface');
+          if(iface === 'default') {
+            iface = self.get('default_interface');
+          }
           self.controller.set('view','network');
         }
+
+        $('.nav ul').addClass(iface);
+        $('.nav ul li:not(.' + iface + ') a').each(function(){$(this).attr('disabled', 'disabled');});
+
+        $('.nav ul li').show('fast');
 
         next();
       }

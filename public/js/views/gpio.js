@@ -11,7 +11,7 @@ App.Views.GPIO = Backbone.View.extend({
   filter: true,
 
   template: _.template('<div class="content">\
-<h1>GPIO Configuration</h1>\
+<h1>GPIOs</h1>\
 <div class="btn-bar filter">\
 <button class="btn  btn-filter col-50 <%= filter ? "active pressed" : "" %>" data-filter="inuse">IN USE</button>\
 <button class="btn  btn-filter col-50 <%= !filter ? "active pressed" : "" %>" data-filter="all">ALL</button>\
