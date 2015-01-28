@@ -25,6 +25,7 @@ App.Models.Device = Backbone.Model.extend({
     ota_port: '',
     rssi: '',
     ssid: '',
+    time: 0,
     uuid: '',
     version: '',
     web_setup: ''

@@ -6,6 +6,8 @@
 App.Views.System = Backbone.View.extend({
   els: [],
   views: [],
+  poll: null,
+
   template: _.template('\
 <div class="content">\
 <h1>System</h1>\
@@ -33,11 +35,15 @@ App.Views.System = Backbone.View.extend({
 <h4>Hardware ID</h4>\
 <input name="uuid" value="<%- uuid %>" disabled></input>\
 </div>\
+<div>\
+<h4>System Time</h4>\
+<input name="time" value="<%- new Date(Number(time)*1000) %>" disabled></input>\
+</div>\
 <div class="clear"></div>\
 </div>'),
 
   initialize: function(opts){
-    _.bindAll(this, 'render', 'onClose');
+    _.bindAll(this, 'render', 'onClose', 'getTime');
     this.delegateEvents();
 
     this.controller = opts.controller;
@@ -53,11 +59,26 @@ App.Views.System = Backbone.View.extend({
 
   events: {},
 
+  getTime: function() {
+    var self = this;
+
+    self.device.issueCommand({cmd: 'get', args: {args: 'time.rtc'}}, function(err, res) {
+      var time = res.response.replace('\r\n','');
+
+      self.device.time = time;
+
+      $(self.el).find('input[name="time"]').val(new Date(Number(time)*1000));
+
+      self.poll = setTimeout(self.getTime, 1000);
+    });
+  },
+
   render: function(){
     var self = this;
 
     if(this.controller.get('view') !== 'system'){
       $(this.el).removeClass('active');
+      clearTimeout(self.poll);
       return;
     }
 
@@ -84,7 +105,8 @@ App.Views.System = Backbone.View.extend({
 
       var cmds = [
           {property: 'mac', cmd: 'get', args: {args: 'wl m'}, ret: true},
-          {property: 'uuid', cmd: 'get', args: {args: 'sy u'}, ret: true}
+          {property: 'uuid', cmd: 'get', args: {args: 'sy u'}, ret: true},
+          {property: 'time', cmd: 'get', args: {args: 'time.rtc'}, ret: false}
         ];
 
         async.eachSeries(
@@ -99,6 +121,7 @@ App.Views.System = Backbone.View.extend({
               return;
             }
             self.$el.html(self.template(self.device.toJSON()));
+            self.getTime();
           });
     };
 
