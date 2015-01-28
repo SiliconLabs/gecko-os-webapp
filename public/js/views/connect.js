@@ -165,14 +165,14 @@ App.Views.QuickConnect = Backbone.View.extend({
 <input name="bssid" value="<%- bssid %>" disabled></input>\
 </div>\
 <div>\
-<h4>Passkey</h4>\
-<input name="passkey" type="password" value=""></input>\
+<h4>Password</h4>\
+<input name="password" type="password" value=""></input>\
 </div>\
 <div class="right">\
-<h5>show passkey</h5>\
+<h5>show password</h5>\
 <div class="wiconnect-cbx secondary small">\
-<input type="checkbox" value="show-passkey" id="show-passkey" name="show-passkey" />\
-<label for="show-passkey"></label>\
+<input type="checkbox" value="show-password" id="show-password" name="show-password" />\
+<label for="show-password"></label>\
 </div>\
 </div>\
 <div class="reconnect">\
@@ -227,7 +227,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>'),
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose',
-              'onReconnect', 'onAdvanced', 'onAddressing',
+              'onReconnect', 'onAdvanced', 'onAddressing', 'onPassword',
               'onIPv4',
               'onCancel', 'onSave', 'onSetupExit'
               );
@@ -246,7 +246,7 @@ App.Views.QuickConnect = Backbone.View.extend({
   events: {
     'change #reconnect': 'onReconnect',
     'change #show-advanced': 'onAdvanced',
-    'change #show-passkey': 'onPasskey',
+    'change #show-password': 'onPassword',
     'click .btn-ip': 'onAddressing',
     'blur .ipv4': 'onIPv4',
     'keyup .ipv4.invalid': 'onIPv4',
@@ -270,12 +270,12 @@ App.Views.QuickConnect = Backbone.View.extend({
     thisAdd.removeClass('invalid');
   },
 
-  onPasskey: function(e) {
-    if($(this.el).find('#show-passkey').is(':checked')) {
-      $(this.el).find('input[name="passkey"]').attr('type', 'text');
+  onPassword: function(e) {
+    if($(this.el).find('#show-password').is(':checked')) {
+      $(this.el).find('input[name="password"]').attr('type', 'text');
       return;
     }
-    $(this.el).find('input[name="passkey"]').attr('type', 'password');
+    $(this.el).find('input[name="password"]').attr('type', 'password');
   },
 
   onReconnect: function(e) {
@@ -307,10 +307,10 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var advanced = $($(this.el).find('input[name="show-advanced"]')[0]).is(':checked');
 
-    var passkey = $(this.el).find('input[name="passkey"]').val();
+    var password = $(this.el).find('input[name="password"]').val();
     cmds = [
       {cmd: 'set', args: {args:'wl s \"' + self.network.ssid + '\"'}},
-      {cmd: 'set', args: {args:'wl p \"' + passkey + '\"'}}
+      {cmd: 'set', args: {args:'wl p \"' + password + '\"'}}
     ];
 
     if(advanced){
@@ -365,16 +365,16 @@ App.Views.QuickConnect = Backbone.View.extend({
     var credentialFail = function(err, res) {
       return self.controller.modal({
         systemModal: true,
-        content:'<h2>Network credentials could not be verified. Would you like to continue to save anyway?</h2>',
+        content:'<h2>Failed to verify network password.</h2>',
         primaryBtn: {
-          content: 'Save Settings',
+          content: 'Save &amp; Continue',
           class: 'save',
           clickFn: function(modal) {
             saveSettings();
           }
         },
         secondaryBtn: {
-          content: 'Check Credentials',
+          content: 'Check Password',
           class: 'cancel'
         }
       });
@@ -410,7 +410,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var verifyCredentials = function() {
       self.device.wiconnect.nve(
-        {args: 'wifi \"' + self.network.ssid + '\" ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((self.device.securityTypes[self.network.security.toLowerCase()] > 0) ? ' ' + self.device.securityTypes[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(passkey, self.network.ssid) : '')},
+        {args: 'wifi \"' + self.network.ssid + '\" ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((self.device.securityTypes[self.network.security.toLowerCase()] > 0) ? ' ' + self.device.securityTypes[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(password, self.network.ssid) : '')},
         function(err, res){
           if(res.response.replace('\r\n','') !== 'Success') {
             //timeout or Command Failed
@@ -424,7 +424,12 @@ App.Views.QuickConnect = Backbone.View.extend({
             return setTimeout(verifyCredentials, 3000);
           }
 
-          return saveSettings();
+          self.controller.modal({
+            systemModal: true,
+            content: '<h2>Success!<br>Your network password is correct.</h2>'
+          });
+
+          setTimeout(saveSettings, 2000);
         });
     };
 
@@ -461,7 +466,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     }
 
     if(navigator.userAgent.indexOf('Android') >= 0) {
-      return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android.</h2><h2>Download the <a href="https://play.google.com/store/apps/details?id=discovery.ack.me.ackme_discovery" target="_blank">ACKme Discovery</a> App from the Play store to find your device.</h2>'});
+      return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android.</h2><h2>Download the <a href="intent://#Intent;scheme=ackme_discovery;action=android.intent.action.VIEW;package=discovery.ack.me.ackme_discovery;end">ACKme Discovery</a> App from the Play store to find your device.</h2>'});
     }
 
     if(typeof self.setup === 'undefined') {
