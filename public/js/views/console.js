@@ -159,10 +159,6 @@ App.Views.Console = Backbone.View.extend({
       if(varb.lastIndexOf('.') > 0) { //tab complete subvariables
         var varParts = varb.split('.');
 
-        if(varParts[varParts.length - 1].length === 0) {
-          return; //nothing after last .
-        }
-
         if(!this.tabInput){
           this.tabInput = varParts[varParts.length - 1];
         }
@@ -183,14 +179,29 @@ App.Views.Console = Backbone.View.extend({
         this.tabInput = varb;
       }
 
-      regex = new RegExp('^(' + this.tabInput + ')');
+      match = keys;
 
-      match = _.filter(keys, function(variable){
-        return variable.match(regex);
-      });
+      if(this.tabInput[this.tabInput.length-1] !== '.') { //sub variable
+        regex = new RegExp('^(' + this.tabInput + ')');
+
+        match = _.filter(keys, function(variable){
+          return variable.match(regex);
+        });
+      }
 
       if(match.length > 0){
-        this.cmdLine.value = newLine + match[this.tabIndex % match.length];
+        newLine = newLine + match[this.tabIndex % match.length];
+
+        if(match.length === 1 && Object.keys(thisObject[match[0]]).length > 0) {
+          // only subvar and has children
+          newLine += '.';
+          this.tabInput = newLine;
+        } else if(match.length === 1) {
+          // only matching subvar with no further subvars
+          newLine += ' ';
+        }
+
+        this.cmdLine.value = newLine;
         this.tabIndex++;
         return;
       }
