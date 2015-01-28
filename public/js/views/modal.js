@@ -10,10 +10,12 @@ App.Views.Modal = Backbone.View.extend({
 <div class="content">\
 <% if(showClose) { %><div class="modal-close"></div><% } %>\
 <%= content %>\
+<% if(primaryBtn || secondaryBtn) { %>\
 <div>\
 <% if(secondaryBtn) { %><button class="btn btn-lg modal-secondary <%= secondaryBtn.class %>"><%= secondaryBtn.content || "Back" %></button><% } %>\
 <% if(primaryBtn) { %><button class="btn btn-lg modal-primary <%= primaryBtn.class %>"><%= primaryBtn.content || "Next" %></button><% } %>\
 </div>\
+<% } %>\
 </div>\
 </div>'),
 
