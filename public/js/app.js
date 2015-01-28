@@ -29,7 +29,7 @@ var App = {
 
     //useful for local development with remote device - set ht s c *
     //set host for local development (and alert to prevent sneaky office code downloads)
-    // self.device.set({host:'http://12.34.56,78'}); if(location.hostname !== 'localhost'){self.controller.modal({content:'<h3>Development Mode: <button onclick="App.device.set({host:\'\'});App.device.init();App.controller.closeModal();">Use localhost</button></h3> Remote Device: ' + self.device.get('host') + '<br><br>[Esc to close]'});}
+    // self.device.set({host:'http://10.5.6.110'}); if(location.hostname !== 'localhost'){self.controller.modal({content:'<h3>Development Mode: <button onclick="App.device.set({host:\'\'});App.device.init();App.controller.closeModal();">Use localhost</button></h3> Remote Device: ' + self.device.get('host') + '<br><br>[Esc to close]'});}
 
     self.device.init();
 
