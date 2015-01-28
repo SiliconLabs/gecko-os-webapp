@@ -143,7 +143,7 @@ App.Views.FileBrowser = Backbone.View.extend({
           file.state = 'fs-file';
         }
 
-        if(!(file.flags & 0x12)) { //FW-791
+        if(!(file.flags & 0x1A)) { //FW-791
           file.link = 'fs-link';
         }
 
