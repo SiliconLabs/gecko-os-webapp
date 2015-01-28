@@ -253,7 +253,8 @@ body{
         }
 
         &.modal-primary, &.modal-secondary, &.save, &.delete, &.cancel {
-          width: 120px;
+          min-width: 120px;
+          padding: 0 16px
         }
 
         &.modal-primary, &.save, &.delete {
@@ -324,14 +325,12 @@ a, button {
 
     &.save {
       border: none;
-      border-radius: 2px;
       background: #5d9d09;
       color: #fff;
     }
 
     &.delete {
       border: none;
-      border-radius: 2px;
       background: #ad2327;
       color: #fff;
     }
