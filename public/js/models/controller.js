@@ -69,7 +69,6 @@ App.Models.Controller = Backbone.Model.extend({
       Math.max(d.body.offsetHeight, d.documentElement.offsetHeight),
       Math.max(d.body.clientHeight, d.documentElement.clientHeight)
     );
-    var tray = this.get('tray');
 
     var size;
 
@@ -89,7 +88,7 @@ App.Models.Controller = Backbone.Model.extend({
     } else {
       $('.main')
         .removeAttr('style')
-        .find('>div:not(.loader)')
+        .find('>div:not(.loader, .system-modal)')
           .removeAttr('style');
       if(!App.menu) {
         $('.nav').hide();
@@ -127,7 +126,7 @@ App.Models.Controller = Backbone.Model.extend({
       }
 
       self.views.modal = new App.Views.Modal({
-        el: $('<div id="system-modal" />')
+        el: $('<div id="system-modal" class="system-modal" />')
               .appendTo($('.main')),
         args: args,
         controller: self
