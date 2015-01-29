@@ -16,6 +16,7 @@ App.Views.Firmware = Backbone.View.extend({
 <p>If you require access to custom firmware services which may include access to custom firmware images, files or firmware bundles, please contact ACKme to setup an account and obtain custom firmware credentials. After receiving registration credentials, register this module in the registration area below.</p>\
 <div class="clear"></div>\
 </div>\
+<hr>\
 </div>\
 <div class="content"><h1>Firmware Update</h1>\
 <div>\
@@ -41,6 +42,7 @@ App.Views.Firmware = Backbone.View.extend({
 <button class="btn btn-lg active right upgrade">Upgrade</button><div class="clear">\
 </div>\
 </div>\
+<hr>\
 </div>\
 <div class="content">\
 <h1>Custom Firmware Activation</h1>\

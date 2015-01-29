@@ -13,12 +13,14 @@ App.Views.Cloud = Backbone.View.extend({
 <h1>Cloud Services</h1>\
 <p>ACKme modules interoperate with cloud vendors offering services for device monitoring, control and messaging. Cloud services pre-installed on this module need to be enabled by a secure activation process prior to use.</p>\
 <div class="clear"></div>\
+<hr>\
 </div>\
 <div class="content">\
 <h1>Commercial Services</h1>\
-<div class="sdc-logo"></div>\
+<a class="sdc-logo" href="https://sensors.com" target="_blank"></a>\
 <p>The Complete Silicon-to-Cloud&trade; IoT Framework Solution</p>\
 <div class="clear"></div>\
+<hr>\
 </div>'),
 
   initialize: function(opts){

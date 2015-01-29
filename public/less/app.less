@@ -23,6 +23,10 @@ input[type="file"]::-webkit-file-upload-button {
   text-shadow: none !important;
 }
 
+hr {
+  display: none;
+}
+
 body{
   margin:0;
   overflow-x: hidden;
@@ -246,21 +250,6 @@ body{
 
       .content {
         .box-shadow(0px 1px 16px rgba(0,0,0,.25));
-
-        .progress-bar {
-          width: 50%;
-          margin: 32px auto 8px auto;
-          height: 4px;
-          background: #f2f2f2;
-
-          .progress {
-            width: 0;
-            background: #428bca;
-            height: 4px;
-            border-radius: 1px;
-            .transition(width 1.5s);
-          }
-        }
       }
 
       .advanced, .mdns {
@@ -513,6 +502,7 @@ a, button {
 
     .right {
       float: right;
+      height: 0;
     }
 
     .secondary {
@@ -601,6 +591,15 @@ a, button {
 }
 
 @media(max-width: 768px){
+  hr{
+    display: block;
+    width: 100%;
+    height: 1px;
+    margin-top: 48px;
+    border: 0;
+    border-bottom: 2px dashed #e2e2e2;
+  }
+
   body {
     overflow-x: hidden;
 
@@ -682,16 +681,13 @@ a, button {
             position: relative;
             right: auto;
             bottom: auto;
+            margin: 16px 0 0 0;
           }
 
           &.modal-primary, &,.modal-secondary {
             position: relative;
             display: block;
             width: 100%;
-          }
-
-          &.modal-primary{
-            margin: 16px 0 0 0;
           }
         }
       }
@@ -704,8 +700,9 @@ a, button {
 
       &.scan {
         position: relative;
-        top: 32px;
+        top: 0;
         right: auto;
+        margin-top: 32px;
         width: 100%;
       }
     }
@@ -721,8 +718,7 @@ a, button {
 
     .networks {
       position: relative;
-      top: 48px;
-      margin-top: 0;
+      margin-top: 18px;
 
       .network {
 
@@ -768,6 +764,20 @@ a, button {
 
       .menu {
         left: 8px;
+      }
+
+      &>div {
+
+        &.system {
+
+          .content {
+
+            input:disabled {
+
+              font-size: 10pt;
+            }
+          }
+        }
       }
     }
   }

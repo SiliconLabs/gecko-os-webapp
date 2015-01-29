@@ -17,7 +17,7 @@ to monitor and control your device from the cloud.</h4>\
   template: _.template('\
 <div class="content">\
 <h1>Free Services</h1>\
-<a class="ghm ghm-logo" href="https://gohack.me"></a>\
+<a class="ghm ghm-logo" href="https://gohack.me" target="_blank"></a>\
 <h4>Create an account with <a href="http://gohack.me/signup" target="_blank">goHACK.me</a></h4>\
 <h4>Activate your device with goHACK.me to start to monitor and control it from the cloud.</h4>\
 <input type="text" name="email" id="ghm-email" placeholder="email@address.com">\

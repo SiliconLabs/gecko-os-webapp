@@ -34,6 +34,21 @@
       >div {
         height: 48px;
         margin-top: 48px;
+
+        &.progress-bar {
+          width: 50%;
+          margin: 32px auto 8px auto;
+          height: 4px;
+          background: #f2f2f2;
+
+          .progress {
+            width: 0;
+            background: #428bca;
+            height: 4px;
+            border-radius: 1px;
+            .transition(width 1.5s);
+          }
+        }
       }
 
       h2 {
