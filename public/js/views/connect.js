@@ -368,7 +368,6 @@ App.Views.QuickConnect = Backbone.View.extend({
         content:'<h2>Failed to verify network password.</h2>',
         primaryBtn: {
           content: 'Save &amp; Continue',
-          class: 'save',
           clickFn: function(modal) {
             saveSettings();
           }

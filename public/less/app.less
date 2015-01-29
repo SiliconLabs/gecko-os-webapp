@@ -280,12 +280,13 @@ body{
 
         &.modal-primary, &.modal-secondary, &.save, &.delete, &.cancel {
           min-width: 120px;
-          padding: 0 16px
+          padding: 0 16px;
         }
 
         &.modal-primary, &.save, &.delete {
           position: absolute;
           right: 32px;
+          bottom: 32px;
         }
       }
     }
@@ -347,6 +348,11 @@ a, button {
 
     &.pressed {
       .box-shadow(inset 2px 2px 1px rgba(0,0,0,0.125));
+    }
+
+    &.modal-primary {
+      background: #428bca;
+      color: #fff;
     }
 
     &.save {
@@ -672,8 +678,20 @@ a, button {
 
         .btn {
 
-          &.save{
-            right: 16px;
+          &.modal-primary, &.save, &.delete {
+            position: relative;
+            right: auto;
+            bottom: auto;
+          }
+
+          &.modal-primary, &,.modal-secondary {
+            position: relative;
+            display: block;
+            width: 100%;
+          }
+
+          &.modal-primary{
+            margin: 16px 0 0 0;
           }
         }
       }
