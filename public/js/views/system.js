@@ -37,7 +37,7 @@ App.Views.System = Backbone.View.extend({
 </div>\
 <div>\
 <h4>System Time</h4>\
-<input name="time" value="<%- new Date(Number(time)*1000) %>" disabled></input>\
+<input name="time" value="<%- utc %>" disabled></input>\
 </div>\
 <div class="clear"></div>\
 </div>'),
@@ -62,12 +62,12 @@ App.Views.System = Backbone.View.extend({
   getTime: function() {
     var self = this;
 
-    self.device.issueCommand({cmd: 'get', args: {args: 'time.rtc'}}, function(err, res) {
+    self.device.issueCommand({cmd: 'get', args: {args: 'time.rtc utc'}}, function(err, res) {
       var time = res.response.replace('\r\n','');
 
-      self.device.time = time;
+      self.device.set({utc: time});
 
-      $(self.el).find('input[name="time"]').val(new Date(Number(time)*1000));
+      $(self.el).find('input[name="time"]').val(time);
 
       self.poll = setTimeout(self.getTime, 1000);
     });
@@ -106,7 +106,7 @@ App.Views.System = Backbone.View.extend({
       var cmds = [
           {property: 'mac', cmd: 'get', args: {args: 'wl m'}, ret: true},
           {property: 'uuid', cmd: 'get', args: {args: 'sy u'}, ret: true},
-          {property: 'time', cmd: 'get', args: {args: 'time.rtc'}, ret: false}
+          {property: 'utc', cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
         ];
 
         async.eachSeries(
