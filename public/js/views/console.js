@@ -7,6 +7,7 @@ App.Views.Console = Backbone.View.extend({
   buffer: '',
 
   reconnect: {
+    content: 'Device rebooting...',
     attempt: 0,
     retries: 60,
     timeout: 1000,
@@ -386,16 +387,20 @@ App.Views.Console = Backbone.View.extend({
         self.printOutput(['[not supported in web console]']);
         break;
 
-      case 'reboot':
       case 'ota':
+        self.reconnect.content = 'Device Upgrading...';
+        self.reconnect.retries = 100;
+        self.reconnect.timeout = 4000;
+        self.reconnect.delay   = 1000;
+      /* falls through */
+      case 'reboot':
       case 'ghm_activate':
       case 'gac':
         //no piping
-        // self.controller.loading(true);
-        self.controller.modal({systemModal: true, content:'<h2>Device rebooting...</h2><div class="progress-bar"><div class="progress"></div></div>'});
         self.reconnect.attempt = 0;
+        self.controller.modal({systemModal: true, content:'<h2>' + self.reconnect.content +'</h2><div class="progress-bar"><div class="progress"></div></div>'});
         self.issueCommand({
-          cmd: cmd, args: {args: args.join(' '), timeout: 60000},
+          cmd: cmd, args: {args: args.join(' '), timeout: self.reconnect.timeout, retries: self.reconnect.retries},
           done: self.tryReconnect
         });
         break;
@@ -502,6 +507,16 @@ App.Views.Console = Backbone.View.extend({
 
             return self.tryReconnect();
           }
+
+          //reset defaults
+          self.reconnect = {
+            content: 'Device rebooting...',
+            attempt: 0,
+            retries: 60,
+            timeout: 1000,
+            delay: 1000
+          };
+
           self.printOutput(['Success']);
           self.controller.closeModal();
         });
