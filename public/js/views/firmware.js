@@ -39,7 +39,7 @@ App.Views.Firmware = Backbone.View.extend({
 <label for="force"></label>\
 </div>\
 </div>\
-<button class="btn btn-lg active right upgrade">Upgrade</button><div class="clear">\
+<button class="btn btn-lg active right upgrade">Update</button><div class="clear">\
 </div>\
 </div>\
 <hr>\

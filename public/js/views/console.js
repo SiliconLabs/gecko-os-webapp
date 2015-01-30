@@ -388,7 +388,7 @@ App.Views.Console = Backbone.View.extend({
         break;
 
       case 'ota':
-        self.reconnect.content = 'Device Upgrading...';
+        self.reconnect.content = 'Device Updating...';
         self.reconnect.retries = 100;
         self.reconnect.timeout = 4000;
         self.reconnect.delay   = 1000;
