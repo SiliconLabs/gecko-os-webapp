@@ -1,4 +1,4 @@
-/*global Backbone:true, $:true, _:true, async:true, App:true */
+/*global Backbone:true, $:true, _:true, async:true, App:true, _webapp:true */
 /*jshint multistr:true */
 /*jshint browser:true */
 /*jshint strict:false */
@@ -40,10 +40,19 @@ App.Views.System = Backbone.View.extend({
 <input name="time" value="<%- utc %>" disabled></input>\
 </div>\
 <div class="clear"></div>\
+<hr>\
+</div>\
+<div class="content">\
+<h1>Webapp</h1>\
+<h4>Version</h4>\
+<input name="version" value="<%- webapp.version %>-<%- webapp.hash %>" disabled></input>\
+<h4>Build Date</h4>\
+<input name="version" value="<%= webapp.date %>" disabled></input>\
+<button class="btn btn-lg active upgrade">Update</button>\
 </div>'),
 
   initialize: function(opts){
-    _.bindAll(this, 'render', 'onClose', 'getTime');
+    _.bindAll(this, 'render', 'onClose', 'getTime', 'onUpgrade');
     this.delegateEvents();
 
     this.controller = opts.controller;
@@ -57,7 +66,9 @@ App.Views.System = Backbone.View.extend({
     this.stopListening();
   },
 
-  events: {},
+  events: {
+    'click .upgrade': 'onUpgrade'
+  },
 
   getTime: function() {
     var self = this;
@@ -73,6 +84,39 @@ App.Views.System = Backbone.View.extend({
     });
   },
 
+  onUpgrade: function() {
+    var self = this;
+
+    self.controller.modal({
+      systemModal: true,
+      content: '<h2>Updating Webapp...</h2><div class="progress-bar"><div class="progress"></div></div>'
+    });
+
+    var files = [
+      'index.html',
+      'wiconnect.js.gz',
+      'wiconnect.css.gz',
+      'unauthorized.html'
+    ];
+
+    var filesComplete = 0;
+
+    async.eachSeries(
+      files,
+      function(file, next) {
+        self.device.wiconnect.http_download(
+          {args: 'http://resources.ack.me/webapp/2.1/latest/' + file + ' webapp/' + file},
+          function(err, res) {
+            filesComplete += 1;
+            $('.progress').css({width: String((filesComplete / files.length)*100) + '%'});
+            next();
+          });
+      },
+      function(err, res) {
+        setTimeout(function(){top.location = top.location;}, 3000);
+      });
+  },
+
   render: function(){
     var self = this;
 
@@ -84,8 +128,11 @@ App.Views.System = Backbone.View.extend({
 
     self.controller.loading(true);
 
+    var data = self.device.toJSON();
+    data.webapp = _webapp;
+
     //draw empty
-    self.$el.html(self.template(self.device.toJSON())).addClass('active');
+    self.$el.html(self.template(data)).addClass('active');
     self.views.push(new App.Views.Loader({
       el: $(self.el).find('.loading')
     }));
@@ -120,8 +167,13 @@ App.Views.System = Backbone.View.extend({
               $(self.el).removeClass('active');
               return;
             }
-            self.$el.html(self.template(self.device.toJSON()));
-            self.getTime();
+
+            data = self.device.toJSON();
+            data.webapp = _webapp;
+            data.webapp.date = new Date(data.webapp.date);
+
+            self.$el.html(self.template(data));
+            // self.getTime();
           });
     };
 
