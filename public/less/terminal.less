@@ -45,15 +45,10 @@
   .prompt {
     white-space: nowrap;
     color: #ffcc00;
-    margin-right: 7px;
-    display: -webkit-box;
-    -webkit-box-pack: center;
-    -webkit-box-orient: vertical;
-    display: box;
-    box-pack: center;
-    box-orient: vertical;
-    -webkit-user-select: none;
-    user-select: none;
+
+    &::selection {
+      color: #fff;
+    }
   }
 
   .cmdline, .nextline {
@@ -64,6 +59,7 @@
     font: inherit;
     border: none;
     color: inherit;
+    padding: 0;
   }
 
   .ls-files {
@@ -71,7 +67,7 @@
       color: #ffcc00;
     }
 
-    & span {
+    & span:not(.prompt, .cmd) {
       cursor: pointer;
 
       &:hover {

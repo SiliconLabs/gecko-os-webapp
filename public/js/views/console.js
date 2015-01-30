@@ -25,7 +25,7 @@ App.Views.Console = Backbone.View.extend({
 <div class="terminal">\
 <output></output>\
 <div id="input-line" class="input-line">\
-<div class="prompt">&gt;</div><div><input class="cmdline" autofocus spellcheck="false" autocapitalize="off" /></div>\
+<div class="prompt">&gt;</div>&nbsp;<div><input class="cmdline" autofocus spellcheck="false" autocapitalize="off" /></div>\
 </div>\
 <div id="next-line" class="input-line">\
 <div><input class="nextline" spellcheck="false" autocapitalize="off" /></div>\
@@ -250,13 +250,11 @@ App.Views.Console = Backbone.View.extend({
       }
 
       // Duplicate current input and append to output section.
-      self.newPrompt = this.cmdLine.parentNode.parentNode.cloneNode(true);
+      self.newPrompt = this.cmdLine.parentNode.parentNode.cloneNode(false);
       self.newPrompt.removeAttribute('id');
-      self.newPrompt.classList.add('line');
-      self.newPrompt.autofocus = false;
-      self.newPrompt.readOnly = true;
-      self.newPrompt.spellcheck = false;
-      self.newPrompt.autocapitalize = "off";
+      self.newPrompt.classList.remove('input-line');
+      self.newPrompt.classList.add('ls-files');
+      self.newPrompt.innerHTML = '<span class="prompt">&gt;</span>&nbsp;<span class="cmd">' + this.cmdLine.value + '</span>';
 
       var cmdPipe;
 
