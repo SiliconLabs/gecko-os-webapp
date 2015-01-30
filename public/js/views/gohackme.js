@@ -6,6 +6,15 @@
 App.Views.GoHACKme = Backbone.View.extend({
   els: [],
   views: [],
+
+  reconnect: {
+    content: 'Reconnecting to device...',
+    attempt: 0,
+    retries: 60,
+    timeout: 1000,
+    delay: 1000
+  },
+
   activatedTemplate: _.template('\
 <div class="content">\
 <a class="ghm ghm-logo" href="https://gohack.me"></a>\
@@ -26,7 +35,7 @@ to monitor and control your device from the cloud.</h4>\
 </div>'),
 
   initialize: function(opts) {
-    _.bindAll(this, 'render', 'onClose', 'onActivate');
+    _.bindAll(this, 'render', 'onClose', 'onActivate', 'tryReconnect');
     this.delegateEvents();
     this.device = opts.device;
     this.controller = opts.controller;
@@ -68,20 +77,7 @@ to monitor and control your device from the cloud.</h4>\
 
         self.controller.loading(false);
 
-        var ghm_activated = self.device.get('ghm_activated').replace('\r\n','');
-
-        switch(ghm_activated){
-          case '0':
-          case 'off':
-          case 'false':
-            ghm_activated = false;
-            break;
-          case '1':
-          case 'on':
-          case 'true':
-            ghm_activated = true;
-            break;
-        }
+        var ghm_activated = Boolean(Number(self.device.get('ghm_activated').split('\r\n')[1])); //"Device ______\r\n[0|1]\r\n" returned - take second line and convert to bool
 
         self.device.set({ghm_activated: ghm_activated});
 
@@ -110,6 +106,12 @@ to monitor and control your device from the cloud.</h4>\
       {cmd: 'gac', args: {args:'\"' + email + '\" \"' + password + '\"'}}
     ];
 
+    self.controller.modal({
+      systemModal: true,
+      content:'<h2>Activating device with goHACK.me service.</h2><div class="progress-bar"><div class="progress"></div></div>'
+    });
+
+
     async.eachSeries(
       cmds,
       self.device.issueCommand,
@@ -117,7 +119,41 @@ to monitor and control your device from the cloud.</h4>\
         if(err) {
           //handle err
         }
-        self.render();
+        self.tryReconnect();
       });
+  },
+
+  tryReconnect: function() {
+    var self = this;
+
+    setTimeout(function(){
+      self.device.wiconnect.ver(
+        {retries: 1, timeout: self.reconnect.timeout},
+        function(err, res) {
+          if(err){
+            if(self.reconnect.attempt >= self.reconnect.retries){
+              return self.controller.modal({content:'<h2>Unable to reconnect to device.</h2>'});
+            }
+
+            self.reconnect.attempt += 1;
+            $('.progress').css({width: String((self.reconnect.attempt / self.reconnect.retries)*100) + '%'});
+
+            return self.tryReconnect();
+          }
+
+          self.reconnect.attempt = 0;
+
+          self.controller.modal({
+            systemModal: true,
+            content: 'Device now activated with goHACK.me'
+          });
+
+          setTimeout(function() {
+            self.controller.closeModal();
+            self.render();
+          }, 3000);
+        });
+    }, self.reconnect.delay);
+
   }
 });
