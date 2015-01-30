@@ -77,7 +77,7 @@ to monitor and control your device from the cloud.</h4>\
 
         self.controller.loading(false);
 
-        var ghm_activated = Boolean(Number(self.device.get('ghm_activated').split('\r\n')[1])); //"Device ______\r\n[0|1]\r\n" returned - take second line and convert to bool
+        var ghm_activated = Boolean(Number(self.device.get('ghm_activated').replace('\r\n','')));
 
         self.device.set({ghm_activated: ghm_activated});
 
