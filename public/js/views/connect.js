@@ -87,7 +87,11 @@ App.Views.Connect = Backbone.View.extend({
       self.onResults();
     };
 
-    self.device.wiconnect.scan({args: '-v', timeout: 20000}, scanComplete);
+    self.device.issueCommand(
+      {property: 'mdns', cmd: 'get', args: {args: 'md n', ret: false}},
+      function(err, res) {
+        self.device.wiconnect.scan({args: '-v', timeout: 20000}, scanComplete);
+      });
 
   },
   onResults: function() {
@@ -185,7 +189,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 <div class="mdns">\
 <div>\
 <h4>Device Name</h4>\
-<input name="mdns" value="" placeholder="ackme-<%= mac %>"></input>\
+<input name="mdns" value="" placeholder="ackme-<%= mac %>"><%- mdns %></input>\
 </div>\
 </div>\
 <div>\
@@ -446,6 +450,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     var data = this.network;
     var mac = self.device.get('mac');
     data.mac = mac.substring(mac.length - 4).replace(':','').toLowerCase();
+    this.network.mdns = self.device.get('mdns').replace('\r\n');
 
     this.$el.html(this.template(this.network));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
