@@ -173,7 +173,7 @@ App.Views.System = Backbone.View.extend({
             data.webapp.date = new Date(data.webapp.date);
 
             self.$el.html(self.template(data));
-            // self.getTime();
+            self.getTime();
           });
     };
 
