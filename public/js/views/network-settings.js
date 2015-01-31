@@ -10,7 +10,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
 <div class="content">\
 <h1>Network Settings</h1>\
 <div>\
-<h4>SSID</h4>\
+<h4>Network Name (SSID)</h4>\
 <div class="signal"></div>\
 <input name="ssid" value="<%- ssid %>" disabled></input>\
 </div>\
@@ -176,7 +176,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
 App.Views.NetworkSettingsView = Backbone.View.extend({
   template: _.template('\
 <div>\
-<h4>IP</h4>\
+<h4>IP Address</h4>\
 <input name="ip" value="<%- ip %>" disabled></input>\
 </div>\
 <div>\

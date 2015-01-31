@@ -13,19 +13,16 @@ App.Views.Firmware = Backbone.View.extend({
 <h1>Firmware Management</h1>\
 <div>\
 <p>The firmware and files on this module can be updated and configured using an online Firmware Management Service. ACKme modules are factory configured with access to the standard WiConnect firmware from the ACKme OTA update server.</p>\
-<p>If you require access to custom firmware services which may include access to custom firmware images, files or firmware bundles, please contact ACKme to setup an account and obtain custom firmware credentials. After receiving registration credentials, register this module in the registration area below.</p>\
-<div class="clear"></div>\
-</div>\
-<hr>\
+<p>If you require access to custom firmware services, including access to custom firmware images, files or firmware bundles for this module or a host system, please contact ACKme to setup an account and obtain custom firmware activation credentials. Use the credentials to activate this module in the Custom Firmware Activation panel below.</p>\</div>\<hr>\
 </div>\
 <div class="content"><h1>Firmware Update</h1>\
 <div>\
 <div class="col-60">\
-<h4>Device Management host</h4>\
+<h4>Firmware Management Host</h4>\
 <input name="ota_host" class="ota_host" value="<%- ota_host %>">\
 </div>\
 <div class="col-40">\
-<h4>port</h4>\
+<h4>Port</h4>\
 <input name="ota_port" class="ota_port" value="<%- ota_port %>">\
 </div>\
 <div>\
@@ -49,7 +46,7 @@ App.Views.Firmware = Backbone.View.extend({
 <div>\
 <p>Activate this module for custom firmware and files by entering your Activation ID and Password obtained from ACKme.</p>\
 <div>\
-<h4>Activate ID</h4>\
+<h4>Activation ID</h4>\
 <input type="text" id="activation_id" name="activation_id" class="activation_id" value="">\
 </div>\
 <div>\

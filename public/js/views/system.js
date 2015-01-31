@@ -28,11 +28,11 @@ App.Views.System = Backbone.View.extend({
 <input name="board" value="<%- board %>" disabled></input>\
 </div>\
 <div>\
-<h4>MAC</h4>\
+<h4>MAC Address</h4>\
 <input name="mac" value="<%- mac %>" disabled></input>\
 </div>\
 <div>\
-<h4>Hardware ID</h4>\
+<h4>Hardware UUID</h4>\
 <input name="uuid" value="<%- uuid %>" disabled></input>\
 </div>\
 <div>\
