@@ -32,6 +32,7 @@ App.Models.Device = Backbone.Model.extend({
     softap: '',
     ssid: '',
     utc: '',
+    uptime: '',
     uuid: '',
     version: '',
     web_setup: '',

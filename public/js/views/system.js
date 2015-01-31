@@ -40,6 +40,10 @@ App.Views.System = Backbone.View.extend({
 <input name="memory" value="<%- memory %>%" disabled></input>\
 </div>\
 <div>\
+<h4>Uptime (seconds)</h4>\
+<input name="uptime" value="<%- uptime %>" disabled></input>\
+</div>\
+<div>\
 <h4>System Time</h4>\
 <input name="time" value="<%- utc %>" disabled></input>\
 </div>\
@@ -157,6 +161,7 @@ App.Views.System = Backbone.View.extend({
       var cmds = [
           {property: 'mac', cmd: 'get', args: {args: 'wl m'}, ret: true},
           {property: 'memory', cmd: 'get', args: {args: 'sy o'}, ret: true},
+          {property: 'uptime', cmd: 'get', args: {args: 'ti u'}, ret: true},
           {property: 'uuid', cmd: 'get', args: {args: 'sy u'}, ret: true},
           {property: 'utc', cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
         ];
