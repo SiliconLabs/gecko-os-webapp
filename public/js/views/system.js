@@ -85,7 +85,7 @@ App.Views.System = Backbone.View.extend({
     };
 
     uptime = uptime.replace('\r\n','');
-    uptime = padLeft(parseInt(uptime / 86400), 2) + ':' + padLeft(parseInt((uptime % 86400) / 3600), 2) + ':' + padLeft(parseInt((uptime % 3600)/60), 2) + ':' + padLeft(parseInt(uptime % 60), 2);
+    uptime = parseInt(uptime / 86400) + ' days, ' + padLeft(parseInt((uptime % 86400) / 3600), 2) + ':' + padLeft(parseInt((uptime % 3600)/60), 2) + ':' + padLeft(parseInt(uptime % 60), 2);
     return uptime;
   },
 
