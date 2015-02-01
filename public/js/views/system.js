@@ -40,7 +40,7 @@ App.Views.System = Backbone.View.extend({
 <input name="memory" value="<%- memory %>%" disabled></input>\
 </div>\
 <div>\
-<h4>Uptime (seconds)</h4>\
+<h4>Uptime</h4>\
 <input name="uptime" value="<%- uptime %>" disabled></input>\
 </div>\
 <div>\
@@ -60,7 +60,7 @@ App.Views.System = Backbone.View.extend({
 </div>'),
 
   initialize: function(opts){
-    _.bindAll(this, 'render', 'onClose', 'getTime', 'onUpgrade');
+    _.bindAll(this, 'render', 'onClose', 'formatUptime', 'update', 'onUpgrade');
     this.delegateEvents();
 
     this.controller = opts.controller;
@@ -78,18 +78,37 @@ App.Views.System = Backbone.View.extend({
     'click .upgrade': 'onUpgrade'
   },
 
-  getTime: function() {
+  formatUptime: function(uptime) {
+
+    var padLeft = function(str, n, pad) {
+      return new Array(n - String(str).length + 1).join(pad || '0') + str;
+    };
+
+    uptime = uptime.replace('\r\n','');
+    uptime = padLeft(parseInt(uptime / 86400), 2) + ':' + padLeft(parseInt((uptime % 86400) / 3600), 2) + ':' + padLeft(parseInt((uptime % 3600)/60), 2) + ':' + padLeft(parseInt(uptime % 60), 2);
+    return uptime;
+  },
+
+  update: function() {
     var self = this;
 
-    self.device.issueCommand({cmd: 'get', args: {args: 'time.rtc utc'}}, function(err, res) {
-      var time = res.response.replace('\r\n','');
+    var cmds = [
+        {property: 'memory', cmd: 'get', args: {args: 'sy o'}, ret: false},
+        {property: 'uptime', cmd: 'get', args: {args: 'ti u'}, ret: false},
+        {property: 'utc', cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
+      ];
 
-      self.device.set({utc: time});
+    async.eachSeries(
+      cmds,
+      self.device.issueCommand,
+      function(err, res) {
 
-      $(self.el).find('input[name="time"]').val(time);
+        $(self.el).find('input[name="time"]').val(self.device.get('utc').replace('\r\n',''));
+        $(self.el).find('input[name="memory"]').val(self.device.get('memory') + '%');
+        $(self.el).find('input[name="uptime"]').val(self.formatUptime(self.device.get('uptime')));
 
-      self.poll = setTimeout(self.getTime, 1000);
-    });
+        self.poll = setTimeout(self.update, 1000);
+      });
   },
 
   onUpgrade: function() {
@@ -160,8 +179,8 @@ App.Views.System = Backbone.View.extend({
 
       var cmds = [
           {property: 'mac', cmd: 'get', args: {args: 'wl m'}, ret: true},
-          {property: 'memory', cmd: 'get', args: {args: 'sy o'}, ret: true},
-          {property: 'uptime', cmd: 'get', args: {args: 'ti u'}, ret: true},
+          {property: 'memory', cmd: 'get', args: {args: 'sy o'}, ret: false},
+          {property: 'uptime', cmd: 'get', args: {args: 'ti u'}, ret: false},
           {property: 'uuid', cmd: 'get', args: {args: 'sy u'}, ret: true},
           {property: 'utc', cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
         ];
@@ -179,11 +198,12 @@ App.Views.System = Backbone.View.extend({
             }
 
             data = self.device.toJSON();
+            data.uptime = self.formatUptime(data.uptime);
             data.webapp = _webapp;
             data.webapp.date = new Date(data.webapp.date);
 
             self.$el.html(self.template(data));
-            self.getTime();
+            self.update();
           });
     };
 

@@ -189,7 +189,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 <div class="mdns">\
 <div>\
 <h4>Device Name</h4>\
-<input name="mdns" value="" placeholder="ackme-<%= mac %>"><%- mdns %></input>\
+<input name="mdns" placeholder="ackme-<%= mac %>" value="<%= mdns %>"></input>\
 </div>\
 </div>\
 <div>\
@@ -450,7 +450,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     var data = this.network;
     var mac = self.device.get('mac');
     data.mac = mac.substring(mac.length - 4).replace(':','').toLowerCase();
-    this.network.mdns = self.device.get('mdns').replace('\r\n');
+    this.network.mdns = self.device.get('mdns').replace('\r\n', '');
 
     this.$el.html(this.template(this.network));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
