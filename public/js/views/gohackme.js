@@ -19,7 +19,7 @@ App.Views.GoHACKme = Backbone.View.extend({
 <div class="content">\
 <a class="ghm ghm-logo" href="https://gohack.me"></a>\
 <h4>Your device is already activated.</h4>\
-<h4>Go to <a href="https://gohack.me/login" target="_blank">goHACK.me</a>&nbsp;\
+<h4>Go to <a href="https://gohack.me/login" data-bypass target="_blank">goHACK.me</a>&nbsp;\
 to monitor and control your device from the cloud.</h4>\
 </div>'),
 
@@ -27,7 +27,7 @@ to monitor and control your device from the cloud.</h4>\
 <div class="content">\
 <h1>Free Services</h1>\
 <a class="ghm ghm-logo" href="https://gohack.me" target="_blank"></a>\
-<h4>Create an account with <a href="http://gohack.me/signup" target="_blank">goHACK.me</a></h4>\
+<h4>Create an account with <a href="http://gohack.me/signup" data-bypass target="_blank">goHACK.me</a></h4>\
 <h4>Activate your device with goHACK.me to monitor, control and message it from the cloud.</h4>\
 <input type="text" name="email" id="ghm-email" placeholder="email@address.com">\
 <input type="password" name="password" id="ghm-password" placeholder="******">\
