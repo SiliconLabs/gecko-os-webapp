@@ -68,6 +68,11 @@ body{
     overflow-y: auto;
     .gradient(#3e3c3d, #2d2c2d);
 
+    &>a[disabled]{
+      pointer-events: none !important;
+      cursor: default;
+    }
+
     ul {
       list-style: none;
       margin: 0;

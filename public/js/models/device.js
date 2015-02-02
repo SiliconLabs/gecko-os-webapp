@@ -251,8 +251,10 @@ App.Models.Device = Backbone.Model.extend({
           self.controller.set('view','network');
         }
 
+        $('.nav, .nav ul').addClass(iface);
         $('.nav ul').addClass(iface);
-        $('.nav ul li:not(.' + iface + ') a').each(function(){$(this).attr('disabled', 'disabled');});
+        $('.nav>a:not(.' + iface +')').each(function(){$(this).removeAttr('href');});
+        $('.nav ul li:not(.' + iface + ') a').each(function(){console.log(this);$(this).attr('disabled', 'disabled');});
 
         $('.nav ul li').show('fast');
 
