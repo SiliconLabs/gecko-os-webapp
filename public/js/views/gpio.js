@@ -6,6 +6,7 @@
 App.Views.GPIO = Backbone.View.extend({
   els: [],
   views: [],
+  lastState: null,
   gpios: '',
   poll: null,
   filter: true,
@@ -24,22 +25,24 @@ App.Views.GPIO = Backbone.View.extend({
   templates: {
     gpio_input: _.template('\
 <div class="no"><%= id%> : </div>\
-<div><%= alias ? alias + " - " : "" %><%= description %></div>\
-<div class="state value">\
+<div class="name"><%= alias ? alias + " - " : "" %><%= description %></div>\
+<div class="state value <%= changed ? "changed": "" %>">\
 <%= state ? "High" : "Low" %>\
-</div>'),
+</div>\
+<div class="fade"></div>'),
 
     gpio_output: _.template('\
 <div class="no"><%= id%> : </div>\
-<div><%= alias ? alias + " - " : "" %><%= description %></div>\
+<div class="name"><%= alias ? alias + " - " : "" %><%= description %></div>\
 <div class="btn-bar">\
 <button class="btn btn-sm btn-gpio <%= !state ? "active pressed" : "" %>" data-gpio="<%= id%>" data-value="0">Low</button>\
 <button class="btn btn-sm btn-gpio <%= state ? "active pressed" : "" %>" data-gpio="<%= id%>" data-value="1">High</button>\
-</div>'),
+</div>\
+<div class="fade"></div>'),
 
     basic: _.template('\
 <div class="no"><%= id%> : </div>\
-<div><%= description %></div>'),
+<div class="name"><%= description %></div>'),
 
     default: _.template('\
 <div class="no"><%= id%> : </div>\
@@ -98,6 +101,7 @@ App.Views.GPIO = Backbone.View.extend({
 
     for(var i = 0; i < self.gpios.length; i+=1) {
       var tmpl = '';
+      var gpio_dir = '';
       var gpio = _.findWhere(self.device.gpio, {id: i});
 
       if(!gpio && !self.filter) {
@@ -106,18 +110,29 @@ App.Views.GPIO = Backbone.View.extend({
 
       //initialiazed gpio
       if(gpio) {
+        gpio.changed = false;
+        if(self.lastState){
+          gpio.changed = (Number(self.lastState[i]) !== Number(self.gpios[i]));
+        }
+
         //set current state
         gpio.state = Number(self.gpios[i]);
 
         tmpl = self.templates.basic(gpio);
 
         if(gpio.description.indexOf('GPIO') >= 0) {
-          tmpl = (gpio.description.indexOf('input') >= 0) ? self.templates.gpio_input(gpio) : self.templates.gpio_output(gpio);
+          if(gpio.description.indexOf('input') >= 0) {
+            tmpl = self.templates.gpio_input(gpio);
+            gpio_dir = ' in';
+          } else {
+            tmpl = self.templates.gpio_output(gpio);
+            gpio_dir = ' out';
+          }
         }
       }
 
       if(tmpl.length > 0){
-        $('<div />').addClass('gpio').html(tmpl).appendTo(gpiosEl);
+        $('<div />').addClass('gpio' + gpio_dir).html(tmpl).appendTo(gpiosEl);
       }
     }
 
@@ -132,6 +147,7 @@ App.Views.GPIO = Backbone.View.extend({
       var gpios = res.response.replace('\r\n','');
 
       if(self.state !== gpios){
+        self.lastState = self.gpios;
         self.gpios = gpios;
 
         self.onGPIO();

@@ -110,10 +110,12 @@
 
       .name {
         padding-left: 8px;
+        overflow: hidden;
+        white-space: nowrap;
       }
 
       .size {
-        right: 10%;
+        right: 40px;
         text-align: right;
         font-size: 10pt;
         color: #bbb;
@@ -126,6 +128,10 @@
         height: 24px;
         background-size: contain;
         background-repeat: no-repeat;
+      }
+
+      .fade {
+        display: none;
       }
 
       &.fs-file {
@@ -181,6 +187,43 @@
   }
 }
 
+@media(max-width: 768px){
+  .browser {
+
+    .file-queue, .file-system {
+      margin-top: 32px;
+
+      .file {
+
+        .name {
+          padding: 0;
+          width: ~"calc(100% - 64px)";
+        }
+
+        .size {
+          right: 24px;
+        }
+
+        .status {
+          right: 0px;
+        }
+
+        .fade {
+          .gradient-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
+          position: absolute;
+          top: 0;
+          right: 64px;
+          display: block;
+          width: 32px;
+          height: 30px;
+          z-index: 1;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}
+
 @media(max-width: 480px){
   .browser {
 
@@ -194,10 +237,6 @@
         right: -8px;
         bottom: -35px;
       }
-    }
-
-    .file-queue, .file-system {
-      margin-top: 32px;
     }
   }
 }

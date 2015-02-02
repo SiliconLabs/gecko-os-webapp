@@ -33,6 +33,15 @@
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='@start', endColorstr='@end',GradientType=0 );
 }
 
+.gradient-horizontal(@left, @right) {
+  background: -moz-linear-gradient(left, @left 0%, @right 90%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%,@left), color-stop(90%,@right));
+  background: -webkit-linear-gradient(left, @left 0%, @right 90%);
+  background: -o-linear-gradient(left, @left 0%, @right 90%);
+  background: -ms-linear-gradient(left, @left 0%, @right 90%);
+  background: linear-gradient(to right, @left 0%, @right 90%);
+}
+
 .animation(@animation) {
   -webkit-animation:  @animation;
   -moz-animation:     @animation;

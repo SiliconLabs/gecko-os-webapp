@@ -15,8 +15,9 @@ App.Views.FileBrowser = Backbone.View.extend({
 <div class="name">\
 <%= (link === "fs-link") ? "<a href=\'" + filename.split(" ").join("%20") + "\' data-bypass target=\'_blank\'>" + filename + "</a>" : filename %>\
 </div>\
-<div class="size"><%= size %> bytes</div>\
+<div class="size"><%= size %></div>\
 <div class="status" data-id="<%= id %>"></div>\
+<div class="fade"></div>\
 </div>'),
 
   template: _.template('\
@@ -145,6 +146,12 @@ App.Views.FileBrowser = Backbone.View.extend({
 
         if(!(file.flags & 0x1A)) { //FW-791
           file.link = 'fs-link';
+        }
+
+        if(_.contains(['small', 'medium'], self.controller.get('size'))) {
+          file.size = parseInt(file.size/1024) + 'K';
+        } else {
+          file.size = file.size + ' bytes';
         }
 
         $(self.el).find('#file-system').append(self.fileTemplate(file));

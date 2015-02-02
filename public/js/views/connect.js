@@ -170,7 +170,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 <div>\
 <h4>Password</h4>\
-<input name="password" type="password" value=""></input>\
+<input name="password" type="password" value="" autocapitalize="off"></input>\
 </div>\
 <div class="right">\
 <h5>show password</h5>\
@@ -450,7 +450,10 @@ App.Views.QuickConnect = Backbone.View.extend({
     var data = this.network;
     var mac = self.device.get('mac');
     data.mac = mac.substring(mac.length - 4).replace(':','').toLowerCase();
-    this.network.mdns = self.device.get('mdns').replace('\r\n', '');
+    data.mdns = self.device.get('mdns').replace('\r\n', '');
+    if(data.mdns[data.mdns.length-1] === '#'){
+      data.mdns = data.mdns.substring(0, data.mdns.length-1) + data.mac;
+    }
 
     this.$el.html(this.template(this.network));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
@@ -466,7 +469,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     var self = this;
 
     if(!self.reconnect){
-      return self.controller.modal({content:'<h2>Device is now connecting to ' + this.network.ssid + '.</h2><h2>Setup is now complete.</h2>'});
+      return self.controller.modal({content:'<h2>Device is now connecting to ' + this.network.ssid + '.</h2><h2>Setup is complete.</h2>'});
     }
 
     if(navigator.userAgent.indexOf('Android') >= 0) {

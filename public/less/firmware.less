@@ -6,4 +6,43 @@
     min-width: 220px;
     max-width: 100%;
   }
+
+  .content {
+
+    .col-60, .col-40 {
+
+      h4{
+        margin-top: 0;
+      }
+    }
+
+    .col-40 {
+      padding-left: 4%;
+    }
+  }
+
+  h5 {
+    display: inline-block;
+  }
+
+  .right {
+    float: right;
+  }
+
+  .secondary {
+    margin: 0;
+
+    &.small label {
+      left: 6px;
+    }
+  }
+}
+
+@media(max-width: 768px){
+  .firmware {
+
+    .secondary {
+      top: 2px;
+    }
+  }
 }
