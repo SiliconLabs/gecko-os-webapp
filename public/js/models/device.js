@@ -9,7 +9,6 @@ App.Models.Device = Backbone.Model.extend({
   files: [],
   gpio: [],
   defaults: {
-    all: '',
     auto_join: '',
     board: '',
     date: '',
@@ -210,8 +209,7 @@ App.Models.Device = Backbone.Model.extend({
     var self = this;
 
     var cmds = [
-      {property: 'all', cmd: 'get', args: {args: 'all', ret: false}},
-      {property: 'web_setup', cmd: 'setup', args: {args: 'status', ret: false}},
+      {property: 'web_setup', cmd: 'setup', args: {args: 'status'}, ret: false},
       {cmd: 'help', args: {args: 'commands'}, done: self.parseCommands},
       {cmd: 'help', args: {args: 'variables'}, done: self.parseVariables}
     ];
@@ -224,41 +222,45 @@ App.Models.Device = Backbone.Model.extend({
           //handle err
         }
 
-        var extractVar = function(prop, filter) {
-          return _.filter(self.get(prop).split('\r\n'), function(line){return (line.indexOf(filter) >= 0);})[0].replace(filter + ' ','');
-        };
+        self.wiconnect.get({args: 'all'}, function(err, res) {
 
-        var web_setup = Boolean(Number(self.get('web_setup')));
+          var extractVar = function(str, filter) {
+            return _.filter(str.split('\r\n'), function(line){return (line.indexOf(filter) >= 0);})[0].replace(filter + ' ','');
+          };
 
-        self.set({
-          ip: extractVar('all', 'network.ip:'),
-          mac: extractVar('all', 'wlan.mac:'),
-          http_interface: extractVar('all', 'http.server.interface:'),
-          default_interface: extractVar('all', 'network.default_interface:'),
-          web_setup: web_setup
+          var web_setup = Boolean(Number(self.get('web_setup')));
+
+          self.set({
+            ip: extractVar(res.response, 'network.ip:'),
+            mac: extractVar(res.response, 'wlan.mac:'),
+            http_interface: extractVar(res.response, 'http.server.interface:'),
+            default_interface: extractVar(res.response, 'network.default_interface:'),
+            web_setup: web_setup
+          });
+
+          var iface;
+
+          if(web_setup){
+            iface = 'setup';
+            self.controller.set('view','connect');
+          } else {
+            iface = self.get('http_interface');
+            if(iface === 'default') {
+              iface = self.get('default_interface');
+            }
+            self.controller.set('view','network');
+          }
+
+          $('.nav, .nav ul').addClass(iface);
+          $('.nav ul').addClass(iface);
+          $('.nav>a:not(.' + iface +')').each(function(){$(this).removeAttr('href');});
+          $('.nav ul li:not(.' + iface + ') a').each(function(){console.log(this);$(this).attr('disabled', 'disabled');});
+
+          $('.nav ul li').show('fast');
+
+          next();
         });
 
-        var iface;
-
-        if(web_setup){
-          iface = 'setup';
-          self.controller.set('view','connect');
-        } else {
-          iface = self.get('http_interface');
-          if(iface === 'default') {
-            iface = self.get('default_interface');
-          }
-          self.controller.set('view','network');
-        }
-
-        $('.nav, .nav ul').addClass(iface);
-        $('.nav ul').addClass(iface);
-        $('.nav>a:not(.' + iface +')').each(function(){$(this).removeAttr('href');});
-        $('.nav ul li:not(.' + iface + ') a').each(function(){console.log(this);$(this).attr('disabled', 'disabled');});
-
-        $('.nav ul li').show('fast');
-
-        next();
       }
     );
   },
