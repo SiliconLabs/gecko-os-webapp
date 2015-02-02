@@ -455,7 +455,7 @@ App.Views.QuickConnect = Backbone.View.extend({
       data.mdns = data.mdns.substring(0, data.mdns.length-1) + data.mac;
     }
 
-    this.$el.html(this.template(this.network));
+    this.$el.html(this.template(data));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
       $('.connect>.content').hide();
     }
