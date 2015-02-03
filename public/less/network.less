@@ -1,0 +1,61 @@
+@import "mixins.less";
+@import "variables.less";
+
+
+.network-settings {
+
+  .content {
+
+    &>div {
+      position: relative;
+    }
+
+    .auto-connect {
+
+      h4 {
+        display: inline-block;
+      }
+    }
+
+    .btn-bar {
+      margin-top: 0;
+    }
+  }
+
+  .signal {
+    position: absolute;
+    top: -72px;
+    right: 0;
+  }
+
+  div{
+
+    &.static {
+      display: none;
+    }
+  }
+}
+
+
+
+@media(max-width: 768px){
+  .network-settings {
+
+    .signal {
+      position: absolute;
+      top: 4px;
+      right: 0;
+      height: 0;
+
+      .bar{
+
+        &.empty{
+          background: #bbb;
+        }
+      }
+      .rssi {
+        color: #bbb;
+      }
+    }
+  }
+}

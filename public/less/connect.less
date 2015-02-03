@@ -1,0 +1,190 @@
+@import "mixins.less";
+@import "variables.less";
+
+
+.connect {
+
+  h1{
+    margin-bottom: 0;
+  }
+
+  .btn.scan {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    width: 100px;
+
+    &.scanning {
+      display: none;
+    }
+  }
+
+  .wifi-scan{
+
+    &.status {
+      display: none;
+      width: 100%;
+      left: 0;
+      margin-top: 32px;
+      text-align: center;
+      color: #444;
+
+      &.scanning{
+        display: block;
+      }
+    }
+  }
+
+  .networks {
+    display: none;
+    margin-top: 32px;
+
+    .network {
+      position: relative;
+      height: 48px;
+      border: 1px solid #eee;
+      border-bottom-style: none;
+      cursor: pointer;
+
+      div {
+        display: inline-block;
+        line-height: 48px;
+      }
+
+      &:last-child {
+        border-bottom-style: solid;
+      }
+
+      &:hover {
+        background: #eee;
+      }
+
+      .ssid {
+        width: 66%;
+        padding-left: 16px;
+      }
+
+      .channel {
+        position: absolute;
+        left: 66%;
+        bottom: 4px;
+        line-height: 8pt;
+        color: #ccc;
+        font-size: 8pt;
+      }
+
+      .security {
+        font-size: 10pt;
+      }
+
+      .signal {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        height: 24px;
+        width: 32px;
+      }
+    }
+  }
+
+  .no-results {
+    display: none;
+    padding: 80px 0 128px 0;
+    text-align: center;
+    color: #999;
+  }
+
+  .connect-modal {
+
+    h5 {
+      display: inline-block;
+    }
+
+    .right {
+      float: right;
+      height: 0;
+    }
+
+    .secondary {
+      margin: 0;
+
+      &.small label {
+        left: 6px;
+      }
+    }
+  }
+}
+
+
+
+@media(max-width: 768px){
+  .connect {
+
+    .btn {
+
+      &.scan {
+        position: relative;
+        top: 0;
+        right: auto;
+        margin-top: 32px;
+        width: 100%;
+      }
+    }
+
+    .wifi-scan {
+      top: 50vh;
+
+      &.status {
+        position: absolute;
+        margin-top: 16px;
+      }
+    }
+
+    .networks {
+      position: relative;
+      margin-top: 18px;
+
+      .network {
+
+        .ssid {
+          width: 66%;
+          word-wrap: break-word;
+          line-height: 16px;
+        }
+      }
+    }
+  }
+}
+
+
+
+@media(max-width: 480px){
+  .connect {
+
+    .networks {
+
+      .network {
+
+        .ssid {
+          position: absolute;
+          top: 14px;
+          width: inherit;
+          padding-left: 8px;
+        }
+
+        .channel {
+          left: 8px;
+        }
+
+        .security {
+          position: absolute;
+          bottom: 2px;
+          line-height: normal;
+          right: 56px;
+          font-size: 8pt;
+          color: #ccc;
+        }
+      }
+    }
+  }
+}

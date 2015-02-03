@@ -283,11 +283,11 @@ App.Views.QuickConnect = Backbone.View.extend({
   },
 
   onReconnect: function(e) {
-    $(this.el).find('.mdns').toggle();
+    $(this.el).find('.mdns').slideToggle(125);
   },
 
   onAdvanced: function(e) {
-    $(this.el).find('.advanced').toggle();
+    $(this.el).find('.advanced').slideToggle(125);
   },
 
   onAddressing: function(e) {
@@ -296,10 +296,10 @@ App.Views.QuickConnect = Backbone.View.extend({
     thisBtn.addClass('active pressed');
 
     if(!thisBtn.hasClass('btn-static')){
-      return $(this.el).find('.static').hide();
+      return $(this.el).find('.static').slideUp(125);
     }
 
-    $(this.el).find('.static').show();
+    $(this.el).find('.static').slideDown(125);
   },
 
   onSave: function() {

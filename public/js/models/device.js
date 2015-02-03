@@ -20,6 +20,7 @@ App.Models.Device = Backbone.Model.extend({
     host: '',
     http_interface: '',
     ip: '',
+    network_buffer: '',
     mac: '',
     mdns: '',
     memory: '',
