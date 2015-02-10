@@ -1,12 +1,12 @@
-# ACKme WiConnect Web Setup GUI
+# ACKme WiConnect WebApp
 
 ## Installation
 
-The WiConnect WebGUI uses the following development tools:
+The WiConnect WebApp uses the following development tools:
 
-* NodeJS
-* Grunt
-* Bower
+* [Node.js](http://nodejs.org)
+* [Grunt](http://gruntjs.com)
+* [Bower](http://bower.io)
 
 To develop, build or run the WebGUI on your local machine, these will need to be installed. Instructions for installation of these tools:
 
