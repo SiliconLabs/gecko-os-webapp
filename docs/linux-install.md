@@ -13,3 +13,10 @@ Install Grunt and Bower
 ```
 npm install grunt-cli bower -g
 ```
+
+Install npm & bower packages and dependancies
+---------------------------------------------
+```
+npm install
+bower install
+```
