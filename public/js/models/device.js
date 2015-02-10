@@ -249,7 +249,7 @@ App.Models.Device = Backbone.Model.extend({
             if(iface === 'default') {
               iface = self.get('default_interface');
             }
-            self.controller.set('view','network');
+            self.controller.set('view','network-settings');
           }
 
           $('.nav, .nav ul').addClass(iface);

@@ -53,7 +53,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
     var self = this;
     this.views = [];
 
-    if(this.controller.get('view') !== 'network'){
+    if(this.controller.get('view') !== 'network-settings'){
       $(this.el).removeClass('active');
       return;
     }
@@ -84,7 +84,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
         self.device.set({auto_join: auto_join, dhcp: dhcp});
 
         //check still active view
-        if(self.controller.get('view') !== 'network'){
+        if(self.controller.get('view') !== 'network-settings'){
           $(self.el).removeClass('active');
           return;
         }

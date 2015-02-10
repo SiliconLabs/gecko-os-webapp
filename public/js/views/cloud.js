@@ -21,7 +21,8 @@ App.Views.Cloud = Backbone.View.extend({
 <h4>The Complete Silicon-to-Cloud&trade; IoT Framework Solution</h4>\
 <div class="clear"></div>\
 <hr>\
-</div>'),
+</div>\
+<div class="gohackme"></div>'),
 
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose');

@@ -33,60 +33,47 @@ var App = {
 
     self.device.init();
 
-    self.views.connect = new App.Views.Connect({
-      el: $('.connect'),
-      controller: App.controller,
-      device: App.device
-    });
+    var appViews = [
+      {el: 'connect',           nav: 'Connect',         view: App.Views.Connect,          modes: ['wlan', 'softap', 'setup']},
+      {el: 'network-settings',  nav: 'Network',         view: App.Views.NetworkSettings,  modes: ['wlan', 'softap']},
+      {el: 'gpio-usage',        nav: 'GPIOs',           view: App.Views.GPIO,             modes: ['wlan', 'softap', 'setup']},
+      {el: 'browser',           nav: 'Files',           view: App.Views.FileBrowser,      modes: ['wlan', 'softap', 'setup']},
+      {el: 'console',           nav: 'Console',         view: App.Views.Console,          modes: ['wlan', 'softap', 'setup']},
+      {el: 'system',            nav: 'System',          view: App.Views.System,           modes: ['wlan', 'softap', 'setup']},
+      {el: 'firmware',          nav: 'Firmware',        view: App.Views.Firmware,         modes: ['wlan']},
+      {el: 'cloud',             nav: 'Cloud Services',  view: App.Views.Cloud,            modes: ['wlan']}
+    ];
 
-    self.views.network = new App.Views.NetworkSettings({
-      el: $('.network-settings'),
-      controller: App.controller,
-      device: App.device
-    });
+    //create menu nav items and content holders for each application view
+    _.each(appViews, function(thisView){
+      var li = $('<li />'),
+           a = $('<a />'),
+         div = $('<div />');
 
-    self.views.system = new App.Views.System({
-      el: $('.system'),
-      controller: App.controller,
-      device: App.device
-    });
+      div.addClass(thisView.el);
 
-    self.views.console = new App.Views.Console({
-      el: $('.console'),
-      controller: App.controller,
-      device: App.device
-    });
+      _.each(thisView.modes, function(mode) {
+        li.addClass(mode);
+      });
 
-    self.views.browser = new App.Views.FileBrowser({
-      el: $('.browser'),
-      controller: App.controller,
-      device: App.device
-    });
+      a.attr('href', thisView.el);
+      a.text(thisView.nav);
 
-    self.views.gpio = new App.Views.GPIO({
-      el: $('.gpio-usage'),
-      controller: App.controller,
-      device: App.device
-    });
+      a.appendTo(li);
+      li.appendTo('.nav ul');
+      div.insertBefore('.main .menu');
 
-    self.views.firmware = new App.Views.Firmware({
-      el: $('.firmware'),
-      controller: App.controller,
-      device: App.device
-    });
-
-    self.views.cloud = new App.Views.Cloud({
-      el: $('.cloud'),
-      controller: App.controller,
-      device: App.device
+      self.views[thisView.el] = new thisView.view({
+        el: $('.' + thisView.el),
+        controller: App.controller,
+        device: App.device
+      });
     });
 
     self.views.loader = new App.Views.Loader({
       el: $('.loading'),
       controller: App.controller
     });
-
-    self.router = new App.Router();
 
     Backbone.history.start({pushState: true});
 
