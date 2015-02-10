@@ -57,7 +57,7 @@ module.exports = function(grunt) {
               'public/vendor/backbone/backbone.js',
               'public/vendor/async/lib/async.js',
               'public/vendor/superagent/superagent.js',
-              'public/vendor/wiconnect.js',
+              'public/vendor/wiconnectjs/lib/main.js',
               'public/js/*.js',
               'public/js/*/*.js'
             ]
