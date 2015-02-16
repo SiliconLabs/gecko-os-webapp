@@ -66,7 +66,7 @@ body{
     box-sizing: border-box;
     overflow-x: hidden;
     overflow-y: auto;
-    .gradient(#3e3c3d, #2d2c2d);
+    .gradient(@nav-light, @nav-dark);
 
     &>a[disabled]{
       pointer-events: none !important;
@@ -83,23 +83,23 @@ body{
         display: none;
         font-size: 14pt;
         font-weight: 300;
-        border-bottom: 1px solid #222;
-        border-top: 1px solid #444;
+        border-bottom: 1px solid @nav-shadow;
+        border-top: 1px solid @nav-highlight;
 
         &:hover {
-          background-color: #222;
+          background-color: @nav-shadow;
         }
 
         a {
           display: block;
           text-decoration: none;
           padding: 16px;
-          color: #fff;
+          color: @nav-link;
         }
 
         a[disabled] {
           pointer-events: none;
-          color: #888;
+          color: @nav-link-disabled;
           cursor: not-allowed;
         }
       }
@@ -177,10 +177,6 @@ body{
           }
         }
 
-        // >div {
-        //   margin-bottom: 24px;
-        // }
-
         input {
           width: 100%;
           padding-left: 8px;
@@ -203,7 +199,7 @@ body{
           }
 
           &:disabled{
-            background: #f2f2f2;
+            background: @light;
             border: none;
           }
 
@@ -475,7 +471,7 @@ a, button {
           width: 25px;
           height: 2px;
           margin: 4px 0;
-          background: #444;
+          background: @dark;
         }
       }
 

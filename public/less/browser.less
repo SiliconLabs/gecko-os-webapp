@@ -18,20 +18,20 @@
     height: 120px;
     padding-top: 12px;
     border: 5px dashed #eee;
-    color:#ccc;
+    color: #ccc;
     font-size:24px;
     line-height:24px;
     text-align: center;
     .transition(color 0.3s, border-color 0.3s;);
 
     &.over{
-      border-color: #428bca;
-      color: #428bca;
+      border-color: @blue;
+      color: @blue;
     }
 
     &.dropped {
-      border-color: #0b3;
-      color: #0b3;
+      border-color: @icon-green;
+      color: @icon-green;
       padding-top: 40px;
     }
 
@@ -44,7 +44,7 @@
       position: relative;
       display: block;
       background: #eee;
-      color: #888;
+      color: @medium;
       text-align: center;
       max-width: 160px;
       margin: 0 auto;
@@ -137,7 +137,7 @@
       &.fs-file {
 
         a {
-          color: #428bca;
+          color: @blue;
           text-decoration: none;
 
           &:hover {

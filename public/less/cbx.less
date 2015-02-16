@@ -1,4 +1,5 @@
 @import "mixins.less";
+@import "variables.less";
 
 .wiconnect-cbx {
   position: relative;
@@ -19,7 +20,7 @@
     border-radius: 2px;
     cursor: pointer;
     .box-shadow(inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4););
-    .gradient(#222, #45484d);
+    .gradient(@checkbox-dark, @checkbox-light);
 
     &::after {
       filter: alpha(opacity=0);
@@ -31,7 +32,7 @@
       background: transparent;
       top: 4px;
       left: 4px;
-      border: 3px solid #fcfff4;
+      border: 3px solid @checkbox-stroke;
       border-top: none;
       border-right: none;
       .transform(rotate(-45deg));
@@ -71,7 +72,7 @@
   &.secondary {
 
     label {
-      .gradient(#aaa, #ccc);
+      .gradient(@checkbox2-dark, @checkbox2-light);
     }
   }
 }
