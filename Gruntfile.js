@@ -37,7 +37,6 @@ module.exports = function(grunt) {
       build: {
         files: {
           './out/index.html': './public/views/index.jade',
-          './out/webapp/index.html': './public/views/index.jade',
           './out/webapp/unauthorized.html': './public/views/unauthorized.jade'
         }
       }
@@ -194,6 +193,7 @@ module.exports = function(grunt) {
       'uglify:build', 'less:build', 'jade:build',
       'compress:build'
     ]);
+
   });
 
   grunt.registerTask('release', function(type) {
@@ -204,7 +204,11 @@ module.exports = function(grunt) {
       grunt.file.mkdir('out/release/')
     }
 
+    grunt.file.copy('out/index.html', 'out/webapp/index.html');
+
     grunt.task.run(['bumpup:' + type, 'build', 'compress:release', 'tagrelease', 'shell:pushTags']);
+
+    grunt.file.delete('out/webapp/index.html');
 
     grunt.log.writeln('--------------------------------------');
     grunt.log.writeln('Ignore tagrelease deprecation message.');
