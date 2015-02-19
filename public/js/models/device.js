@@ -62,6 +62,10 @@ App.Models.Device = Backbone.Model.extend({
       );
 
     this.controller = opts.controller;
+
+    this.fs = new App.Models.FileSystem({
+      device: this
+    });
   },
 
   init: function() {

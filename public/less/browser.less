@@ -97,13 +97,18 @@
   .file-queue, .file-system {
     margin-top: 24px;
 
-    .file {
+    .file, .folder {
       position: relative;
       border-bottom: 1px dashed #eee;
       height: 32px;
       line-height: 32px;
+      transition: background 0.175s;
 
-      .name, .size, .status, .remove {
+      &:hover {
+        background: @lighter;
+      }
+
+      .name, .size, .status, .icon, .remove, .path, .new {
         display: inline-block;
         position: absolute;
       }
@@ -112,6 +117,7 @@
         padding-left: 8px;
         overflow: hidden;
         white-space: nowrap;
+        color: @dark;
       }
 
       .size {
@@ -121,9 +127,8 @@
         color: #bbb;
       }
 
-      .status {
+      .status, .icon {
         top: 4px;
-        right: 8px;
         width: 24px;
         height: 24px;
         background-size: contain;
@@ -132,6 +137,75 @@
 
       .fade {
         display: none;
+      }
+    }
+
+    .folder {
+      cursor: pointer;
+
+      &.dir {
+        cursor: default;
+        border: none;
+        color: @medium;
+      }
+
+      .new {
+        right: 8px;
+        padding-right: 32px;
+        cursor: pointer;
+
+        &:hover {
+          color: @dark;
+        }
+
+        .icon {
+          right: 0;
+          left: auto;
+        }
+      }
+
+      .path {
+        padding-left: 6px;
+      }
+
+      .name {
+        padding-left: 36px;
+      }
+
+      .icon {
+        .fldr('428bca');
+        left: 6px;
+        opacity: 0.85;
+        .transition(opacity 0.3s);
+
+        .add {
+          .cross('FFFFFF');
+          width: 11px;
+          height: 11px;
+          background-size: contain;
+          background-repeat: no-repeat;
+          position: absolute;
+          top: 7px;
+          left: 6px;
+        }
+      }
+
+      &:hover {
+        .name {
+          text-decoration: underline;
+        }
+
+        .icon {
+          opacity: 1;
+        }
+
+      }
+    }
+
+    .file {
+
+      .status {
+        right: 8px;
       }
 
       &.fs-file {
@@ -185,6 +259,50 @@
   .file-queue {
     display: none;
   }
+
+  .fileContext {
+    position: fixed;
+    background: #fff;
+    .box-shadow(0 1px 2px rgba(0,0,0,.25));
+    z-index: 10;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        cursor: pointer;
+        padding: 4px 16px;
+        color: @dark;
+        font-size: 10pt;
+        transition: background 0.175s;
+
+        &.hr::after {
+          content: '';
+          position: absolute;
+          display: block;
+          left: 0;
+          width: 100%;
+          margin: 4px 0;
+          border-bottom: 1px dotted #ccc;
+        }
+
+        &:hover {
+          background: #f2f2f2;
+        }
+
+        &.disabled {
+          color: @medium;
+
+          &:hover {
+            background: #fff;
+            cursor: default;
+          }
+        }
+      }
+    }
+  }
 }
 
 @media(max-width: 768px){
@@ -193,10 +311,9 @@
     .file-queue, .file-system {
       margin-top: 32px;
 
-      .file {
+      .file, .folder {
 
         .name {
-          padding: 0;
           width: ~"calc(100% - 64px)";
         }
 
@@ -218,6 +335,24 @@
           height: 30px;
           z-index: 1;
           white-space: nowrap;
+        }
+      }
+
+      .file {
+
+        .name {
+          padding: 0;
+        }
+      }
+
+      .folder {
+
+        .icon {
+          left: 0;
+        }
+
+        .name {
+          padding-left: 28px;
         }
       }
     }

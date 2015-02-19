@@ -1,4 +1,4 @@
-/*global Backbone:true, $:true, _:true, async:true, App:true, WiConnectDevice: true */
+/*global Backbone:true, $:true, jQuery:true, _:true, async:true, App:true, WiConnectDevice: true */
 /*jshint multistr:true */
 /*jshint browser:true */
 /*jshint strict:false */
@@ -10,10 +10,20 @@ App.Views.FileBrowser = Backbone.View.extend({
 
   overwrite: false,
 
-  fileTemplate: _.template('\
-<div class="file <%= state %>" data-queue="<%= id %>">\
+  folderTemplate: _.template('\
+<div class="folder" data-cd="<%= name %>">\
+<div class="icon">\
+</div>\
 <div class="name">\
-<%= (link === "fs-link") ? "<a href=\'" + filename.split(" ").join("%20") + "\' data-bypass target=\'_blank\'>" + filename + "</a>" : filename %>\
+<%= name %>\
+</div>\
+<div class="size"><%= info %></div>\
+</div>'),
+
+  fileTemplate: _.template('\
+<div class="file <%= state %>" data-id="<%= id %>">\
+<div class="name">\
+<%= link ? "<a href=\'" + url.split(" ").join("%20") + "\' data-bypass target=\'_blank\'>" + name + "</a>" : name %>\
 </div>\
 <div class="size"><%= size %></div>\
 <div class="status" data-id="<%= id %>"></div>\
@@ -40,10 +50,9 @@ App.Views.FileBrowser = Backbone.View.extend({
 </div>'),
 
   initialize: function(opts){
-    _.bindAll(this, 'render', 'setupEvents', 'onClose', 'onDelete',
-              'onDragleave', 'onDragenter', 'onDragover', 'onDrop',
-              'readFiles', 'showFiles',
-              'processUploads');
+    _.bindAll(this, 'render', 'setupEvents', 'onClose', 'onDelete', 'deleteFile',
+              'onDragleave', 'onDragenter', 'onDragover', 'onDrop', 'onRightClick',
+              'readFiles', 'showDir', 'onFolder');
 
     this.delegateEvents();
 
@@ -61,7 +70,47 @@ App.Views.FileBrowser = Backbone.View.extend({
   events: {
     //drag and drop events need to be handled outside backbone to access event.dataTransfer
     'click .fs-file .status' : 'onDelete',
-    'change .file-select' : 'onFile'
+    'click .file-system .folder': 'onFolder',
+    'change .file-select' : 'onFileSelect',
+    'contextmenu .file-system .file': 'onRightClick',
+    'contextmenu .file-system .folder': 'onRightClick',
+    'contextmenu .content': 'onRightClick',
+    'click .fs-file': 'onFileClick'
+  },
+
+  onRightClick: function(e) {
+    var self = this;
+    if(self.fileContext){
+      self.fileContext.close();
+    }
+
+    var t = e.clientY,
+        r = 'auto',
+        b = 'auto',
+        l = e.clientX;
+
+    var thisFile = null;
+
+    if(_.contains(e.currentTarget.classList, 'fs-file')){
+      _.each(Object.keys(self.device.fs.cwd().files), function(f){
+        if(self.device.fs.cwd().files[f].id === $(e.currentTarget).data('id')){
+          thisFile = self.device.fs.cwd().files[f];
+        }
+      });
+    }
+
+    self.fileContext = new App.Views.FileContext({
+      el: $('<div />')
+            .addClass('fileContext')
+            .css({top: t, right: r, bottom: b, left: l})
+            .appendTo(self.$el),
+      controller: self.controller,
+      device: self.device,
+      browser: self,
+      file: thisFile
+    });
+
+    return false;
   },
 
   render: function(){
@@ -73,15 +122,13 @@ App.Views.FileBrowser = Backbone.View.extend({
       return;
     }
 
-    this.device.files = [];
-
     //draw blank
     this.$el.html(this.template()).addClass('active');
     self.controller.loading(true);
 
     this.setupEvents();
 
-    this.readFiles(self.showFiles);
+    this.readFiles(self.showDir);
   },
 
   setupEvents: function() {
@@ -103,26 +150,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
     var done = function(err, res) {
       if(res.response){
-        _.each(res.response.split('\r\n'), function(line){
-          if(line.length === 0) {
-            return;
-          }
-
-          line = line.replace(/\s{2,}/g, ' ').split(' '); //replace multiple spaces with a single space
-
-          if(line[0] === '!') {
-            return;
-          }
-
-          self.device.files.push({
-            id: Number(line[1]),
-            type: line[2],
-            flags: parseInt(line[3], 16),
-            size: Number(line[5]),
-            version: line[6],
-            filename: _.rest(line, 7).join(' ')
-          });
-        });
+        self.device.fs.read(res.response.split('\r\n'));
       }
 
       next();
@@ -131,25 +159,59 @@ App.Views.FileBrowser = Backbone.View.extend({
     self.device.wiconnect.ls({args: '-v'}, done);
   },
 
-  showFiles: function() {
+  showDir: function(dir) {
     var self = this;
+    $(self.el).find('#file-system').empty();
+
+    dir = dir || self.device.fs.cwd();
+
+    if(dir && dir.parent){
+      $(self.el).find('#file-system').append(self.folderTemplate({
+        name: '..',
+        info: dir.parent.path
+      }));
+    }
 
     _.each(
-      _.filter(self.device.files, function(file) { return file.type[0] !== 'i';}), //not internal flash
-      function(file) {
+      _.filter(Object.keys(dir.dirs), function(foldername) {
+        return (foldername[0] !== '.');
+      }),
+      function(folder){
+        var fldr = {
+          name: folder,
+          info: Object.keys(dir.dirs[folder].files).length + ' file' + (Object.keys(dir.dirs[folder].files).length !== 1 ? 's' : '')
+        };
+
+        $(self.el).find('#file-system').append(self.folderTemplate(fldr));
+      });
+
+    //JSON.parse(JSON.stringify()) - equiv of copying object
+    var dirfiles = JSON.parse(JSON.stringify(dir.files));
+
+    _.each(
+      _.filter(Object.keys(dirfiles), function(filename) {
+        return (filename[0] !== '.') && (filename[filename.length] !== '/') && (dir.files[filename].type[0] !== 'i');
+      }), //not internal flash, hidden, directory
+      function(filename) {
+        var file = dirfiles[filename];
+        file.name = filename;
         file.state = '';
-        file.link = '';
+        file.link = false;
 
         if(!_.contains(['00','01','81'], file.type.substring(2,4))){ //FW-791
           file.state = 'fs-file';
         }
 
         if(!(file.flags & 0x1A)) { //FW-791
-          file.link = 'fs-link';
+          file.link = true;
+
+          file.url = (self.device.get('host').slice(-1) === '/') ? self.device.get('host').substring(0, (self.device.get('host').length - 2)) : self.device.get('host');
+          file.url += self.device.fs.cwd().path + ((self.device.fs.cwd().path.length > 1) ? '/' : '');
+          file.url += file.name;
         }
 
         if(_.contains(['small', 'medium'], self.controller.get('size'))) {
-          file.size = parseInt(file.size/1024) + 'K';
+          file.size = (file.size/1024).toFixed(1) + 'K';
         } else {
           file.size = file.size + ' bytes';
         }
@@ -160,10 +222,28 @@ App.Views.FileBrowser = Backbone.View.extend({
     self.controller.loading(false);
   },
 
+  onFolder: function(e) {
+    e.preventDefault();
+
+    this.showDir(this.device.fs.cd($(e.currentTarget).data('cd')));
+  },
+
   onDelete: function(e) {
     var self = this;
 
-    var filename = _.findWhere(self.device.files, {id: $(e.currentTarget).data('id')}).filename;
+    var filename;
+
+    _.each(Object.keys(self.device.fs.cwd().files), function(f){
+      if(self.device.fs.cwd().files[f].id === $(e.currentTarget).data('id')){
+        filename = f;
+      }
+    });
+
+    self.deleteFile(filename);
+  },
+
+  deleteFile: function(filename) {
+    var self = this;
 
     self.controller.modal({
       content: '<h2>Are you sure you want to delete "' + filename + '"?</h2>',
@@ -175,8 +255,13 @@ App.Views.FileBrowser = Backbone.View.extend({
         clickFn: function(modal) {
           self.controller.loading(true);
 
-          self.device.wiconnect.fde(
-            {args: filename, flags: 0},
+          if(self.device.fs.cwd().path.length > 1) {
+            //not root dir
+            filename = self.device.fs.cwd().path.substring(1) + '/' + filename;
+          }
+
+          self.device.fs.rm(
+            filename,
             function(err) {
               if(err){
                 // handle err
@@ -185,6 +270,7 @@ App.Views.FileBrowser = Backbone.View.extend({
               self.controller.loading(false);
               self.render();
             });
+
         }
       },
       secondaryBtn: {
@@ -216,106 +302,159 @@ App.Views.FileBrowser = Backbone.View.extend({
     e.stopPropagation();
     e.preventDefault();
 
-    this.overwrite = $($('#overwrite')[0]).is(':checked');
-
     $(e.target).addClass('dropped').removeClass('over').text('uploading files');
 
     this.processUploads(e.dataTransfer.files);
   },
 
-  onFile: function(e) {
+  onFileSelect: function(e) {
     e.stopPropagation();
     e.preventDefault();
-
-    this.overwrite = $($('#overwrite')[0]).is(':checked');
 
     this.processUploads(e.currentTarget.files);
   },
 
   processUploads: function(files) {
     var self = this;
-    var cmds = [];
+    self.overwrite = $($('#overwrite')[0]).is(':checked');
 
     self.controller.loading(true);
 
-    var handleFile = function(commands, thisFile, done) {
-      return function(e) {
+    async.eachSeries(
+      files,
+      function(file, next) {
+        var thisFile = {
+          id: 0,
+          state: 'uploading',
+          link: '',
+          name: file.name,
+          size: file.size
+        };
+        $(self.el).find('.file-queue').append(self.fileTemplate(thisFile));
+        next();
+      },
+      function() {
+        $(self.el).find('.file-queue').slideDown('fast');
 
-        if(typeof _.findWhere(self.device.files, {filename: thisFile.name}) !== 'undefined') {
-          if(!self.overwrite) {
-            return done();
-          }
+        self.device.fs.write(files, function(err){
+          self.controller.loading(false);
 
-          commands.push({cmd: 'fde', args: {args: "\"" + thisFile.name + "\""}});
-        }
-
-        commands.push({cmd: 'fcr', args: {
-          flags: 4,
-          filename: "\"" + thisFile.name + "\"",
-          data: e.target.result,
-          timeout: 30000
-        }});
-
-        return done();
-      };
-    };
-
-
-    var processFiles = function() {
-      async.eachSeries(
-        files,
-        function(file, next) {
-
-          var thisFile = {
-            id: 0,
-            state: 'uploading',
-            link: '',
-            filename: file.name,
-            size: file.size
-          };
-
-          //if stream for this file already exists close it
-          var openStream = _.filter(self.device.streams, function(stream) {return stream.info.indexOf(thisFile.filename + '-1.0.0.0') >= 0;})[0];
-          if(openStream) {
-            cmds.push({cmd: 'close', args: {args: openStream.id, flags: 0}});
-          }
-
-          $(self.el).find('.file-queue').append(self.fileTemplate(thisFile));
-
-          var thisReader = new FileReader();
-
-          thisReader.onload = handleFile(cmds, file, next);
-
-          thisReader.readAsArrayBuffer(file);
-        },
-        function(err) {
           if(err) {
             //handle err
           }
-          $(self.el).find('.file-queue').slideDown('fast');
-
-          async.eachSeries(
-            cmds,
-            self.device.issueCommand,
-            function(err, res) {
-              self.controller.loading(false);
-
-              if(err) {
-                //handle err
-              }
-              self.render();
-            });
-
+          self.render();
         });
-    };
+      });
 
-    self.device.wiconnect.list(function(err, res){
-      if(err){
-        //handle err
+  }
+});
+
+
+
+App.Views.FileContext = Backbone.View.extend({
+  els: [],
+  views: [],
+
+  template: _.template('\
+<ul>\
+<li class="hr mkdir">New Folder</li>\
+<li class="<%= isFile ? "" : "disabled" %> mv">Rename</li>\
+<li class="<%= isFile ? "" : "disabled" %> rm">Delete</li>\
+</ul>'),
+
+  initialize: function(opts){
+    _.bindAll(this, 'render', 'close', 'onClick',
+      'onMkdir', 'onMv', 'onRm');
+    this.delegateEvents();
+
+    this.controller = opts.controller;
+    this.device = opts.device;
+    this.browser = opts.browser;
+    this.file = opts.file;
+
+    this.render();
+
+    this.listenTo(this.controller, 'change:width', this.close);
+    this.listenTo(this.controller, 'change:height', this.close);
+
+    document.addEventListener("click", this.onClick, false);
+  },
+
+  events: {
+    'click .mkdir': 'onMkdir',
+    'click .mv:not(.disabled)': 'onMv',
+    'click .rm:not(.disabled)': 'onRm'
+  },
+
+  onClick: function(e) {
+    document.removeEventListener('click', this.onClick, false);
+    this.close();
+  },
+
+  close: function(){
+    this.undelegateEvents();
+    this.$el.removeData().unbind();
+    this.remove();
+    Backbone.View.prototype.remove.call(this);
+  },
+
+  render: function(){
+    var self = this;
+
+    this.$el.html(this.template({isFile: !_.isNull(self.file)}));
+  },
+
+  onMkdir: function() {
+    var self = this;
+
+    self.controller.modal({
+      systemModal: false,
+      content: '<label>Folder name:</label><input></input>',
+      primaryBtn: {
+        content: 'Save',
+        clickFn: function(modal) {
+          self.controller.loading(true);
+          self.controller.closeModal();
+
+          self.device.fs.mkdir(modal.$('input').val().replace(/\/{2,}/g,'/'), function(err){
+            self.controller.loading(false);
+            self.browser.render();
+          });
+        }
+      },
+      secondaryBtn: {
+        content: 'Cancel',
+        class: 'cancel'
       }
-
-      self.device.parseStreams(res, processFiles);
     });
+  },
 
+  onMv: function() {
+    var self = this;
+
+    self.controller.modal({
+      systemModal: false,
+      content: '<label>New file name:</label><input></input>',
+      primaryBtn: {
+        content: 'Rename',
+        clickFn: function(modal) {
+          self.controller.loading(true);
+          self.controller.closeModal();
+
+          self.device.fs.mv(self.file.name, modal.$('input').val().replace(/\/{2,}/g,'/'), function(err) {
+            self.controller.loading(false);
+            self.browser.render();
+          });
+        }
+      },
+      secondaryBtn: {
+        content: 'Cancel',
+        class: 'cancel'
+      }
+    });
+  },
+
+  onRm: function() {
+    this.browser.deleteFile(this.file.name);
   }
 });
