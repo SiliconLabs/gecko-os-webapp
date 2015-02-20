@@ -152,7 +152,7 @@ App.Models.FileSystem = Backbone.Model.extend({
         to = to.split('/');
 
         newFile = res;
-        newFile.name = _.last(to);
+        newFile.name = (_.last(to) === '') ? _.last(from) : _.last(to);
 
         // check file bytes loaded
         if(newFile.size !== thisFile.size){
