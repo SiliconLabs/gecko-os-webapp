@@ -33,6 +33,7 @@ App.Views.FileBrowser = Backbone.View.extend({
   template: _.template('\
 <div class="content">\
 <h1>Files</h1>\
+<div class="path"></div>\
 <div id="dropbox">Drop files here<br><span>or</span><br>\
 <div class="add-btn">Click to add files<input type="file" multiple="multiple" name="file-select" class="file-select"></div>\
 <div class="overwrite">\
@@ -161,7 +162,8 @@ App.Views.FileBrowser = Backbone.View.extend({
 
   showDir: function(dir) {
     var self = this;
-    $(self.el).find('#file-system').empty();
+    self.$('.path').text((self.device.fs.cwd().path.length) > 1 ? self.device.fs.cwd().path : '');
+    self.$('#file-system').empty();
 
     dir = dir || self.device.fs.cwd();
 

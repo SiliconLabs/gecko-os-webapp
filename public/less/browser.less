@@ -5,12 +5,18 @@
 .browser {
 
   h1 {
-    margin-bottom: 16px;
+    margin-bottom: 32px;
   }
 
   h3 {
     font-weight: 400;
     margin: 8px 0;
+  }
+
+  .path {
+    position: absolute;
+    top: 76px;
+    color: #ccc;
   }
 
   #dropbox {
@@ -108,7 +114,7 @@
         background: @lighter;
       }
 
-      .name, .size, .status, .icon, .remove, .path, .new {
+      .name, .size, .status, .icon, .remove {
         display: inline-block;
         position: absolute;
       }
@@ -147,25 +153,6 @@
         cursor: default;
         border: none;
         color: @medium;
-      }
-
-      .new {
-        right: 8px;
-        padding-right: 32px;
-        cursor: pointer;
-
-        &:hover {
-          color: @dark;
-        }
-
-        .icon {
-          right: 0;
-          left: auto;
-        }
-      }
-
-      .path {
-        padding-left: 6px;
       }
 
       .name {
@@ -308,6 +295,11 @@
 @media(max-width: 768px){
   .browser {
 
+    .path {
+      top: 60px;
+      right: 16px;
+    }
+
     .file-queue, .file-system {
       margin-top: 32px;
 
@@ -336,6 +328,13 @@
           z-index: 1;
           white-space: nowrap;
         }
+
+        &:hover {
+
+          .fade {
+            .gradient-horizontal(rgba(248,248,248,0), rgba(248,248,248,1));
+          }
+        }
       }
 
       .file {
@@ -361,6 +360,10 @@
 
 @media(max-width: 480px){
   .browser {
+
+    .path {
+      top: 56px;
+    }
 
     #dropbox {
 
