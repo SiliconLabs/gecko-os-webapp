@@ -242,18 +242,31 @@ App.Models.FileSystem = Backbone.Model.extend({
         return;
       }
 
-      var splitpath = _.rest(f, 7).join(' ').split('/');
+      var size = Number(f[5]);
 
-      var dir = fileDir(splitpath);
+      // 'this     is my/dumb/directory/////path.avi'
+      // => 'this is my/dumb/directory/path.avi'
+      // => ['this is my', 'dumb', 'directory', 'path.avi']
+      var splitpath = _.rest(f, 7).join(' ').replace(/\/{2,}/g, '/').split('/');
 
-      var filename = splitpath[splitpath.length - 1];
+      var filename = _.last(splitpath);
 
-      if(filename.length === 0){
-        //directory placeholder
+      if(splitpath[0] === '') {
+        //invalid directory OR file - leading /
         return;
       }
 
-      var size = Number(f[5]);
+      if(filename.length === 0 && size > 1){
+        //invalid directory placeholder OR filename with trailing /
+        return;
+      }
+
+      var dir = fileDir(splitpath);
+
+      if(filename.length === 0){
+        //directory placeholder - no file to add
+        return;
+      }
 
       dir.files[filename] = {
         name: filename,
