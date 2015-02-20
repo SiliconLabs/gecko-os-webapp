@@ -56,7 +56,7 @@ App.Models.FileSystem = Backbone.Model.extend({
           dir = self.cwd().dirs[path[0]] = {
             name: path[0],
             parent: self.cwd(),
-            path: (self.cwd().path.length > 1 ? self.cwd().path : '') + '/' + path[0],
+            path: self.cwd().path.substring(1) + '/' + path[0],
             dirs: {},
             files: {}
           };
@@ -152,30 +152,33 @@ App.Models.FileSystem = Backbone.Model.extend({
         to = to.split('/');
 
         newFile = res;
-        newFile.name = (_.last(to) === '') ? _.last(from) : _.last(to);
+        newFile.name = (_.last(to) === '') ? _.last(from) : _.last(to); //keep same filename if none supplied
 
         // check file bytes loaded
         if(newFile.size !== thisFile.size){
           return done(new Error('byte mismatch'));
         }
 
+        // write new location
+        if(to.length > 1){
+          self.cd(_.initial(to), true);
+        }
+
         // rm old file
-        self.rm(from.join('/'), function(err){
+        self.write(
+          [newFile],
+          function(err){
+            if(err){
+              //handle err
+            }
 
-          // write new location
-          if(to.length > 1){
-            self.cd(_.initial(to), true);
-          }
+            //traverse back
+            self.cd(cwd);
 
-          self.write(
-            [newFile],
-            function(err){
+            self.rm(self.cwd().path.substring(1) + (self.cwd().path.length > 1 ? '/' :'') + _.last(from), function(err){
               if(err){
                 //handle err
               }
-
-              //traverse back
-              self.cd(cwd);
 
               done();
             });
@@ -219,7 +222,7 @@ App.Models.FileSystem = Backbone.Model.extend({
           dir.dirs[dirname] = {
             name: dirname,
             parent: dir,
-            path: (dir.path.length > 1 ? dir.path : '') + '/' + dirname,
+            path: dir.path.substring(1) + '/' + dirname,
             dirs: {},
             files: {}
           };
