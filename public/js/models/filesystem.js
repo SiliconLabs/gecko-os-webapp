@@ -56,7 +56,7 @@ App.Models.FileSystem = Backbone.Model.extend({
           dir = self.cwd().dirs[path[0]] = {
             name: path[0],
             parent: self.cwd(),
-            path: self.cwd().path.substring(1) + '/' + path[0],
+            path: (self.cwd().path.length > 1 ? self.cwd().path : '') + '/' + path[0],
             dirs: {},
             files: {}
           };
@@ -222,7 +222,7 @@ App.Models.FileSystem = Backbone.Model.extend({
           dir.dirs[dirname] = {
             name: dirname,
             parent: dir,
-            path: dir.path.substring(1) + '/' + dirname,
+            path: (dir.path.length > 1 ? dir.path : '') + '/' + dirname,
             dirs: {},
             files: {}
           };
