@@ -90,7 +90,8 @@ App.Views.FileBrowser = Backbone.View.extend({
         b = 'auto',
         l = e.clientX;
 
-    var thisFile = null;
+    var thisFile = null,
+        thisDir = null;
 
     if(_.contains(e.currentTarget.classList, 'fs-file')){
       _.each(Object.keys(self.device.fs.cwd().files), function(f){
@@ -98,6 +99,10 @@ App.Views.FileBrowser = Backbone.View.extend({
           thisFile = self.device.fs.cwd().files[f];
         }
       });
+    }
+
+    if(_.contains(e.currentTarget.classList, 'folder')){
+      thisDir = self.device.fs.cwd().dirs[$(e.currentTarget).data('cd').toString()];
     }
 
     self.fileContext = new App.Views.FileContext({
@@ -108,7 +113,8 @@ App.Views.FileBrowser = Backbone.View.extend({
       controller: self.controller,
       device: self.device,
       browser: self,
-      file: thisFile
+      file: thisFile,
+      dir: thisDir
     });
 
     return false;
@@ -227,7 +233,7 @@ App.Views.FileBrowser = Backbone.View.extend({
   onFolder: function(e) {
     e.preventDefault();
 
-    this.showDir(this.device.fs.cd($(e.currentTarget).data('cd')));
+    this.showDir(this.device.fs.cd($(e.currentTarget).data('cd').toString()));
   },
 
   onDelete: function(e) {
@@ -361,7 +367,7 @@ App.Views.FileContext = Backbone.View.extend({
 <ul>\
 <li class="hr mkdir">New Folder</li>\
 <li class="<%= isFile ? "" : "disabled" %> mv">Rename</li>\
-<li class="<%= isFile ? "" : "disabled" %> rm">Delete</li>\
+<li class="<%= isFile || isEmpty ? "" : "disabled" %> rm">Delete</li>\
 </ul>'),
 
   initialize: function(opts){
@@ -373,6 +379,7 @@ App.Views.FileContext = Backbone.View.extend({
     this.device = opts.device;
     this.browser = opts.browser;
     this.file = opts.file;
+    this.dir = opts.dir;
 
     this.render();
 
@@ -403,7 +410,10 @@ App.Views.FileContext = Backbone.View.extend({
   render: function(){
     var self = this;
 
-    this.$el.html(this.template({isFile: !_.isNull(self.file)}));
+    self.$el.html(self.template({
+      isFile: !_.isNull(self.file),
+      isEmpty: (self.dir ? self.device.fs.objectCount(self.dir) : -1) === 0
+    }));
   },
 
   onMkdir: function() {
@@ -411,7 +421,7 @@ App.Views.FileContext = Backbone.View.extend({
 
     self.controller.modal({
       systemModal: false,
-      content: '<label>Folder name:</label><input></input>',
+      content: '<label>Folder name:</label><input autofocus="autofocus"></input>',
       primaryBtn: {
         content: 'Save',
         clickFn: function(modal) {
@@ -436,7 +446,7 @@ App.Views.FileContext = Backbone.View.extend({
 
     self.controller.modal({
       systemModal: false,
-      content: '<label>New file name:</label><input></input>',
+      content: '<label>New file name:</label><input autofocus="autofocus"></input>',
       primaryBtn: {
         content: 'Rename',
         clickFn: function(modal) {
@@ -457,6 +467,7 @@ App.Views.FileContext = Backbone.View.extend({
   },
 
   onRm: function() {
-    this.browser.deleteFile(this.file.name);
+    var name = this.dir ? this.dir.name + '/' : this.file.name;
+    this.browser.deleteFile(name);
   }
 });

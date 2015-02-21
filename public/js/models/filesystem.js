@@ -18,7 +18,8 @@ App.Models.FileSystem = Backbone.Model.extend({
     _.bindAll(this,
       'read', 'write', 'cwd',
       'cd', 'mv',
-      'mkdir', 'rm'
+      'mkdir', 'rm',
+      'objectCount'
     );
 
     self.device = opts.device;
@@ -74,14 +75,21 @@ App.Models.FileSystem = Backbone.Model.extend({
     return this.get('cwd');
   },
 
-  mkdir: function(name, done){
+  mkdir: function(path, done){
     var self = this;
 
-    if(!name) {
+    if(!path) {
       return;
     }
 
-    var cwd = self.get('cwd');
+    var cwd = self.get('cwd').path;
+
+    path = path.split('/');
+    var name = _.last(path);
+
+    if(path.length > 1) {
+      self.cd(_.initial(path));
+    }
 
     if(name.slice(-1) !== '/') {
       name = name + '/';
@@ -96,6 +104,7 @@ App.Models.FileSystem = Backbone.Model.extend({
         if(err){
           //handle err
         }
+
         self.cd(cwd);
 
         if(typeof done === 'function'){
@@ -366,6 +375,21 @@ App.Models.FileSystem = Backbone.Model.extend({
 
       self.device.parseStreams(res, processFiles);
     });
+  },
+
+  objectCount: function(dir) {
+    var self = this;
+
+    var count = 0;
+
+    count = Object.keys(dir.files).length;
+    count += Object.keys(dir.dirs).length;
+
+    _.each(Object.keys(dir.dirs), function(d) {
+      count += self.objectCount(dir.dirs[d]);
+    });
+
+    return count;
   }
 });
 

@@ -17,6 +17,7 @@ App.Views.GoHACKme = Backbone.View.extend({
 
   activatedTemplate: _.template('\
 <div class="content">\
+<h1>Free Services</h1>\
 <a class="ghm ghm-logo" href="https://gohack.me"></a>\
 <h4>Your device is already activated.</h4>\
 <h4>Go to <a href="https://gohack.me/login" data-bypass target="_blank">goHACK.me</a>&nbsp;\
