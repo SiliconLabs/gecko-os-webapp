@@ -221,6 +221,10 @@ App.Views.System = Backbone.View.extend({
             data.webapp = _webapp;
             data.webapp.date = new Date(data.webapp.date);
 
+            if(self.device.get('interface') !== 'wlan') {
+              self.$('.upgrade').hide();
+            }
+
             self.$el.html(self.template(data));
             self.update();
           });

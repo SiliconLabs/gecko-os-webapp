@@ -20,6 +20,7 @@ App.Models.Device = Backbone.Model.extend({
     host: '',
     http_interface: '',
     ip: '',
+    interface: '',
     network_buffer: '',
     mac: '',
     mdns: '',
@@ -255,6 +256,8 @@ App.Models.Device = Backbone.Model.extend({
             }
             self.controller.set('view','network-settings');
           }
+
+          self.set({interface: iface});
 
           $('.nav, .nav ul').addClass(iface);
           $('.nav ul').addClass(iface);
