@@ -136,9 +136,9 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
     if(self.device.get('dhcp')){
       cmds = [
-        {cmd:{flags:0, command:'set ne d e 1'}},
-        {cmd:{flags:0, command:'set wl o e ' + auto_join}},
-        {cmd:{flags:0, command:'save'}}
+        {cmd: 'set', args: {args: 'ne d e 1'}},
+        {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
+        {cmd:'save'}
       ];
     } else {
 
@@ -148,19 +148,19 @@ App.Views.NetworkSettings = Backbone.View.extend({
       var netmask = $(this.el).find('input[name="netmask"]').val();
 
       cmds = [
-        {cmd:{flags:0, command:'set ne d e 0'}},
-        {cmd:{flags:0, command:'set wl o e ' + auto_join}},
-        {cmd:{flags:0, command:'set st i ' + ip}},
-        {cmd:{flags:0, command:'set st g ' + gateway}},
-        {cmd:{flags:0, command:'set st d ' + dns}},
-        {cmd:{flags:0, command:'set st n ' + netmask}},
-        {cmd:{flags:0, command:'save'}}
+        {cmd: 'set', args: {args: 'ne d e 0'}},
+        {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
+        {cmd: 'set', args: {args: 'st i ' + ip}},
+        {cmd: 'set', args: {args: 'st g ' + gateway}},
+        {cmd: 'set', args: {args: 'st d ' + dns}},
+        {cmd: 'set', args: {args: 'st n ' + netmask}},
+        {cmd:'save'}
       ];
     }
 
     async.eachSeries(
       cmds,
-      self.device.postCommand,
+      self.device.issueCommand,
       function(err) {
         self.controller.loading(false);
 
