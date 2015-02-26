@@ -262,7 +262,10 @@ App.Models.Device = Backbone.Model.extend({
           $('.nav, .nav ul').addClass(iface);
           $('.nav ul').addClass(iface);
           $('.nav>a:not(.' + iface +')').each(function(){$(this).removeAttr('href');});
-          $('.nav ul li:not(.' + iface + ') a').each(function(){console.log(this);$(this).attr('disabled', 'disabled');});
+          $('.nav ul li:not(.' + iface + ')').each(function() {
+            $(this).addClass('disabled').attr('title', 'Unavailable in Setup and SoftAP mode');
+            $('a', this).attr('disabled', 'disabled');
+          });
 
           $('.nav ul li').show('fast');
 
