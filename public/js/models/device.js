@@ -406,7 +406,7 @@ App.Models.Device = Backbone.Model.extend({
       self.controller.modal({
         systemModal: true,
         showClose: true,
-        content: '<h2>Upgrade Available</h2><p>Version ' + res.version + ' is now available for upgrade.</p>',
+        content: '<h2>Upgrade Available</h2><p class="center">Version ' + res.version + ' is now available for upgrade.</p>',
         primaryBtn: {
           content: 'Upgrade',
           clickFn: self.webAppUpgrade,
