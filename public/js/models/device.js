@@ -402,7 +402,7 @@ App.Models.Device = Backbone.Model.extend({
 
       // currently no way to roll back to old version
       // only need to check if version is the same
-      if(_webapp.version === res.version){console.log('returning!');return;}
+      if(_webapp.version === res.version){return;}
       self.controller.modal({
         systemModal: true,
         showClose: true,
