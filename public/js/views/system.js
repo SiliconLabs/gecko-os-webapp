@@ -71,7 +71,7 @@ App.Views.System = Backbone.View.extend({
 </div>'),
 
   initialize: function(opts){
-    _.bindAll(this, 'render', 'onClose', 'formatUptime', 'update', 'onUpgrade');
+    _.bindAll(this, 'render', 'onClose', 'formatUptime', 'update', 'systemUpgrade');
     this.delegateEvents();
 
     this.controller = opts.controller;
@@ -86,7 +86,7 @@ App.Views.System = Backbone.View.extend({
   },
 
   events: {
-    'click .upgrade': 'onUpgrade'
+    'click .upgrade': 'systemUpgrade'
   },
 
   formatUptime: function(uptime) {
@@ -125,37 +125,8 @@ App.Views.System = Backbone.View.extend({
       });
   },
 
-  onUpgrade: function() {
-    var self = this;
-
-    self.controller.modal({
-      systemModal: true,
-      content: '<h2>Updating Webapp...</h2><div class="progress-bar"><div class="progress"></div></div>'
-    });
-
-    var files = [
-      'index.html',
-      'wiconnect.js.gz',
-      'wiconnect.css.gz',
-      'unauthorized.html'
-    ];
-
-    var filesComplete = 0;
-
-    async.eachSeries(
-      files,
-      function(file, next) {
-        self.device.wiconnect.http_download(
-          {args: 'http://resources.ack.me/webapp/2.1/latest/' + file + ' webapp/' + file},
-          function(err, res) {
-            filesComplete += 1;
-            $('.progress').css({width: String((filesComplete / files.length)*100) + '%'});
-            next();
-          });
-      },
-      function(err, res) {
-        setTimeout(function(){top.location = top.location;}, 3000);
-      });
+  systemUpgrade: function() {
+    this.device.webAppUpgrade();
   },
 
   render: function(){

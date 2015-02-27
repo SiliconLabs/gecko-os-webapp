@@ -1,4 +1,4 @@
-/*global $:true, Backbone:true, _:true, async:true, App:true, WiConnectDevice:true */
+/*global $:true, Backbone:true, _:true, async:true, App:true, WiConnectDevice:true, _webapp:true */
 /*jshint browser:true */
 /*jshint strict:false */
 
@@ -59,6 +59,7 @@ App.Models.Device = Backbone.Model.extend({
       'issueCommand', 'postCommand',
       'parseCommands', 'parseVariables', 'parseStreams', 'parseGPIO',
       'basicInfo',
+      'checkVersion', 'webAppUpgrade',
       'hashCredentials'
       );
 
@@ -91,6 +92,10 @@ App.Models.Device = Backbone.Model.extend({
         if(self.get('web_setup')) {
           self.controller.loading(false);
           setTimeout(self.checkIn, self.checkInInterval * 1000);
+        }
+
+        if(self.get('interface') === 'wlan'){
+          self.checkVersion();
         }
 
       });
@@ -384,6 +389,67 @@ App.Models.Device = Backbone.Model.extend({
     }
 
     next();
+  },
+
+  checkVersion: function() {
+    var self = this;
+
+    $.ajax({
+      url: 'http://resources.ack.me/webapp/2.1/latest/version.json?' + self.get('mac').replace(/:/g,'').slice(-6),
+      type: 'GET',
+      dataType: 'json'
+    }).done(function(res){
+
+      // currently no way to roll back to old version
+      // only need to check if version is the same
+      if(_webapp.version === res.version){console.log('returning!');return;}
+      self.controller.modal({
+        systemModal: true,
+        showClose: true,
+        content: '<h2>Upgrade Available</h2><p>Version ' + res.version + ' is now available for upgrade.</p>',
+        primaryBtn: {
+          content: 'Upgrade',
+          clickFn: self.webAppUpgrade,
+          class: 'save'
+        },
+        secondaryBtn: {
+          content: 'Later'
+        }
+      });
+    });
+  },
+
+  webAppUpgrade: function() {
+    var self = this;
+
+    self.controller.modal({
+      systemModal: true,
+      content: '<h2>Updating Webapp...</h2><div class="progress-bar"><div class="progress"></div></div>'
+    });
+
+    var files = [
+      'index.html',
+      'wiconnect.js.gz',
+      'wiconnect.css.gz',
+      'unauthorized.html'
+    ];
+
+    var filesComplete = 0;
+
+    async.eachSeries(
+      files,
+      function(file, next) {
+        self.wiconnect.http_download(
+          {args: 'http://resources.ack.me/webapp/2.1/latest/' + file + ' webapp/' + file},
+          function(err, res) {
+            filesComplete += 1;
+            $('.progress').css({width: String((filesComplete / files.length)*100) + '%'});
+            next();
+          });
+      },
+      function(err, res) {
+        setTimeout(function(){top.location = top.location;}, 3000);
+      });
   },
 
   hashCredentials: function(pass, salt) {
