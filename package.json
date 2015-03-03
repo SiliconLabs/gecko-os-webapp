@@ -34,6 +34,9 @@
     "grunt-git-describe": "^2.3.2",
     "grunt-bumpup": "^0.6.2",
     "grunt-tagrelease": "^0.3.3",
-    "grunt-shell": "^1.1.1"
+    "grunt-shell": "^1.1.1",
+    "grunt-htmlclean": "^2.3.2",
+    "grunt-string-replace": "^1.0.0",
+    "grunt-http": "^1.5.0"
   }
 }
