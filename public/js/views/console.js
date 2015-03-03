@@ -261,7 +261,8 @@ App.Views.Console = Backbone.View.extend({
       // Parse out command, args, and trim off whitespace.
       if (this.cmdLine.value && this.cmdLine.value.trim()) {
 
-        cmdPipe = _.filter(this.cmdLine.value.split('|'), function(cmd){return cmd.trim().length > 0;});
+        // split on | unless | is enclose in ""
+        cmdPipe = _.filter(this.cmdLine.value.match(/(?:[^\|"]+|"[^"]*")+/g), function(cmd){return cmd.trim().length > 0;});
 
         self.doCommand(cmdPipe[0], _.rest(cmdPipe));
       }
@@ -412,7 +413,7 @@ App.Views.Console = Backbone.View.extend({
             cmd = self.alias[cmd];
           }
           if(cmd.indexOf('|') > 0) {
-            var cmdPipe = _.filter(this.cmdLine.value.split('|'), function(c){return c.trim().length > 0;});
+            var cmdPipe = _.filter(cmd.match(/(?:[^\|"]+|"[^"]*")+/g), function(c){return c.trim().length > 0;});
             cmd = cmdPipe[0];
             pipe = _.rest(cmdPipe);
           }
