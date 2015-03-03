@@ -89,6 +89,8 @@ var App = {
       }
     });
     $('.menu, .overlay').click(this.onMenu);
+
+    $('.overlay').on('touchmove', function (e){e.preventDefault();}, false);
   },
 
   onMenu: function() {

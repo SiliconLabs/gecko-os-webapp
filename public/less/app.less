@@ -150,7 +150,8 @@ body{
     width: 100%;
     min-height: 100%;
     .box-shadow(-10px 0px 9px 0px rgba(0, 0, 0, 0.4));
-    .transition(left 0.225s);
+    -webkit-transition: -webkit-transform 0.225s;
+    transition: transform 0.225s;
 
     >div {
       display: none;
@@ -433,10 +434,9 @@ a, button {
       }
 
       &.nav-open{
-        left: 70%;
+        .transform(translate3d(70%,0,0));
         overflow: hidden;
         height: 100%;
-        width: 30%;
 
         h1 {
           text-align: left;
