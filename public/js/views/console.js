@@ -416,6 +416,7 @@ App.Views.Console = Backbone.View.extend({
             var cmdPipe = _.filter(cmd.match(/(?:[^\|"]+|"[^"]*")+/g), function(c){return c.trim().length > 0;});
             cmd = cmdPipe[0];
             pipe = _.rest(cmdPipe);
+            return this.doCommand(cmd, pipe, data);
           }
           self.issueCommand({
             cmd: cmd, args: {args: args.join(' '), timeout: 60000},
