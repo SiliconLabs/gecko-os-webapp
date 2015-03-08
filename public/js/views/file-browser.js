@@ -1,4 +1,4 @@
-/*global Backbone:true, $:true, jQuery:true, _:true, async:true, App:true, WiConnectDevice: true */
+/*global Backbone:true, $:true, _:true, async:true, App:true*/
 /*jshint multistr:true */
 /*jshint browser:true */
 /*jshint strict:false */
@@ -386,7 +386,7 @@ App.Views.FileContext = Backbone.View.extend({
     this.listenTo(this.controller, 'change:width', this.close);
     this.listenTo(this.controller, 'change:height', this.close);
 
-    document.addEventListener("click", this.onClick, false);
+    document.addEventListener('click', this.onClick, false);
   },
 
   events: {
@@ -395,7 +395,7 @@ App.Views.FileContext = Backbone.View.extend({
     'click .rm:not(.disabled)': 'onRm'
   },
 
-  onClick: function(e) {
+  onClick: function() {
     document.removeEventListener('click', this.onClick, false);
     this.close();
   },
@@ -428,7 +428,7 @@ App.Views.FileContext = Backbone.View.extend({
           self.controller.loading(true);
           self.controller.closeModal();
 
-          self.device.fs.mkdir(modal.$('input').val().replace(/\/{2,}/g,'/'), function(err){
+          self.device.fs.mkdir(modal.$('input').val().replace(/\/{2,}/g,'/'), function(){
             self.controller.loading(false);
             self.browser.render();
           });
@@ -453,7 +453,7 @@ App.Views.FileContext = Backbone.View.extend({
           self.controller.loading(true);
           self.controller.closeModal();
 
-          self.device.fs.mv(self.file.name, modal.$('input').val().replace(/\/{2,}/g,'/'), function(err) {
+          self.device.fs.mv(self.file.name, modal.$('input').val().replace(/\/{2,}/g,'/'), function() {
             self.controller.loading(false);
             self.browser.render();
           });

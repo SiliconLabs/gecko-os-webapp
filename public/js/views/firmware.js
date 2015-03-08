@@ -13,7 +13,9 @@ App.Views.Firmware = Backbone.View.extend({
 <h1>Firmware Management</h1>\
 <div>\
 <p>The firmware and files on this module can be updated and configured using an online Firmware Management Service. ACKme modules are factory configured with access to the standard WiConnect firmware from the ACKme OTA update server.</p>\
-<p>If you require access to custom firmware services, including access to custom firmware images, files or firmware bundles for this module or a host system, please contact ACKme to setup an account and obtain custom firmware activation credentials. Use the credentials to activate this module in the Custom Firmware Activation panel below.</p>\</div>\<hr>\
+<p>If you require access to custom firmware services, including access to custom firmware images, files or firmware bundles for this module or a host system, please contact ACKme to setup an account and obtain custom firmware activation credentials. Use the credentials to activate this module in the Custom Firmware Activation panel below.</p>\
+</div>\
+<hr>\
 </div>\
 <div class="content"><h1>Firmware Update</h1>\
 <div>\

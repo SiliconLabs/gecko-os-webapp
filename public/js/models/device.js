@@ -52,8 +52,6 @@ App.Models.Device = Backbone.Model.extend({
   },
 
   initialize: function(opts) {
-    var self = this;
-
     _.bindAll(this,
       'init', 'checkIn',
       'issueCommand', 'postCommand',
@@ -104,7 +102,7 @@ App.Models.Device = Backbone.Model.extend({
   checkIn: function() {
     var self = this;
 
-    self.wiconnect.ver(function(err, res) {
+    self.wiconnect.ver(function() {
       setTimeout(self.checkIn, self.checkInInterval * 1000);
     });
   },
