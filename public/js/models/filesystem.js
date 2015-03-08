@@ -205,9 +205,9 @@ App.Models.FileSystem = Backbone.Model.extend({
       self.cd(_.initial(path));
     }
 
-    var filepath = self.cwd().path.substring(1) + (self.cwd().path.length > 1 ? '/' :'') + _.last(path);
+    var filepath = '\"' + self.cwd().path.substring(1) + (self.cwd().path.length > 1 ? '/' :'') + _.last(path) + '\"';
 
-    self.device.wiconnect.fde({args: filepath}, function(err) {
+    self.device.wiconnect.fde({args: filepath}, function() {
       self.cd(cwd);
       done();
     });
@@ -301,13 +301,13 @@ App.Models.FileSystem = Backbone.Model.extend({
     var handleFile = function(commands, thisFile, next) {
       return function(e) {
 
-        var filename = "";
+        var filename = '';
 
         if(self.device.fs.cwd().path.length > 1) {
           //not root dir
-          filename = "\"" + self.device.fs.cwd().path.substring(1) + '/' + thisFile.name + "\"";
+          filename = '\"' + self.device.fs.cwd().path.substring(1) + '/' + thisFile.name + '\"';
         } else {
-          filename = "\"" + thisFile.name + "\"";
+          filename = '\"' + thisFile.name +  '\"';
         }
 
         if(typeof _.findWhere(self.device.fs.cwd().files, {name: filename}) !== 'undefined') {
@@ -315,7 +315,7 @@ App.Models.FileSystem = Backbone.Model.extend({
             return next();
           }
 
-          commands.push({cmd: 'fde', args: {args: "\"" + filename + "\""}});
+          commands.push({cmd: 'fde', args: {args: '\"' + filename + '\"'}});
         }
 
         commands.push({cmd: 'fcr', args: {
@@ -396,7 +396,7 @@ App.Models.FileSystem = Backbone.Model.extend({
 
 // enable binarytransport to read files directly to arraybuffers
 // http://www.henryalgus.com/reading-binary-files-using-jquery-ajax/
-$.ajaxTransport("+binary", function(options, originalOptions, jqXHR){
+$.ajaxTransport('+binary', function(options, originalOptions, jqXHR){
   // check for conditions and support for blob / arraybuffer response type
   if (window.FormData && ((options.dataType && (options.dataType === 'binary')) || (options.data && ((window.ArrayBuffer && options.data instanceof ArrayBuffer) || (window.Blob && options.data instanceof Blob))))) {
     return {
@@ -408,7 +408,7 @@ $.ajaxTransport("+binary", function(options, originalOptions, jqXHR){
             type = options.type,
             async = options.async || true,
             // blob or arraybuffer. Default is blob
-            dataType = options.responseType || "blob",
+            dataType = options.responseType || 'blob',
             data = options.data || null,
             username = options.username || null,
             password = options.password || null;
