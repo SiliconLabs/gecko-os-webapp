@@ -37,6 +37,8 @@
     "grunt-shell": "^1.1.1",
     "grunt-htmlclean": "^2.3.2",
     "grunt-string-replace": "^1.0.0",
-    "grunt-http": "^1.5.0"
+    "grunt-http": "^1.5.0",
+    "grunt-s3": "^0.2.0-alpha.3",
+    "grunt-invalidate-cloudfront": "^0.1.6"
   }
 }

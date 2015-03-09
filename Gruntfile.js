@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 module.exports = function(grunt) {
@@ -163,9 +163,9 @@ module.exports = function(grunt) {
       annotate: false,
     },
     bumpup: {
-        file: 'package.json'
+      file: 'package.json'
     },
-    "git-describe": {
+    'git-describe': {
       options: {},
       build: {}
     },
@@ -197,6 +197,56 @@ module.exports = function(grunt) {
       js: {options: {url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/wiconnect.js.gz%20webapp/wiconnect.js.gz', } },
       css: {options: {url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/wiconnect.css.gz%20webapp/wiconnect.css.gz', } },
       unauth: {options: {url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/unauthorized.html%20webapp/unauthorized.html', } },
+    },
+    s3: {
+      options: {
+        key: '<%= aws.key %>',
+        secret: '<%= aws.secret %>',
+        bucket: '<%= aws.bucket %>',
+        access: 'public-read'
+      },
+      clean: {
+        del: [
+          {src: 'webapp/2.1/latest/version.json'},
+          {src: 'webapp/2.1/latest/index.html'},
+          {src: 'webapp/2.1/latest/wiconnect.js.gz'},
+          {src: 'webapp/2.1/latest/wiconnect.css.gz'},
+          {src: 'webapp/2.1/latest/unauthorized.html'}
+        ]
+      },
+      latest: {
+        upload: [
+          {src: 'out/index.html',               dest: 'webapp/2.1/latest/index.html'},
+          {src: 'out/webapp/wiconnect.js.gz',   dest: 'webapp/2.1/latest/wiconnect.js.gz'},
+          {src: 'out/webapp/wiconnect.css.gz',  dest: 'webapp/2.1/latest/wiconnect.css.gz'},
+          {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.1/latest/unauthorized.html'},
+          {src: 'out/version.json',             dest: 'webapp/2.1/latest/version.json'}
+        ]
+      },
+      ver: {
+        upload: [
+          {src: 'out/index.html',               dest: 'webapp/2.1/<%= pkg.version %>/index.html'},
+          {src: 'out/webapp/wiconnect.js.gz',   dest: 'webapp/2.1/<%= pkg.version %>/wiconnect.js.gz'},
+          {src: 'out/webapp/wiconnect.css.gz',  dest: 'webapp/2.1/<%= pkg.version %>/wiconnect.css.gz'},
+          {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.1/<%= pkg.version %>/unauthorized.html'}
+        ]
+      }
+    },
+    invalidate_cloudfront: {
+      options: {
+        key: '<%= aws.key %>',
+        secret: '<%= aws.secret %>',
+        distribution: '<%= aws.distribution %>'
+      },
+      release: {
+        files: [
+          {dest: 'webapp/2.1/latest/version.json'},
+          {dest: 'webapp/2.1/latest/index.html'},
+          {dest: 'webapp/2.1/latest/wiconnect.js.gz'},
+          {dest: 'webapp/2.1/latest/wiconnect.css.gz'},
+          {dest: 'webapp/2.1/latest/unauthorized.html'}
+        ]
+      }
     }
   });
 
@@ -214,17 +264,24 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-htmlclean');
   grunt.loadNpmTasks('grunt-string-replace');
   grunt.loadNpmTasks('grunt-http');
+  grunt.loadNpmTasks('grunt-s3');
+  grunt.loadNpmTasks('grunt-invalidate-cloudfront');
 
   grunt.event.once('git-describe', function (rev) {
     var pkg = grunt.file.readJSON('package.json');
+
+    grunt.config.set('pkg', pkg);
+
+    // build webapp version date & hash into complied js
     grunt.file.write(
       'public/js/version.js',
-      'var _webapp = '
-        + '{'
-          + 'date:"' + new Date().toISOString() + '", '
-          + 'hash:"' + rev.object + '", '
-          + 'version: "' + pkg.version +'"'
-        +'};',
+      'var _webapp = ' + '{' + 'date:"' + new Date().toISOString() + '", ' + 'hash:"' + rev.object + '", ' + 'version: "' + pkg.version +'"'+'};',
+      {encoding: 'utf8'});
+
+    // version.json for cloudfront autoupdate & metrics
+    grunt.file.write(
+      'out/version.json',
+      '{"version": "' + pkg.version + '"}',
       {encoding: 'utf8'});
   });
 
@@ -237,12 +294,12 @@ module.exports = function(grunt) {
 
     if(!grunt.file.isDir('out/')) {
       grunt.log.writeln('Created output directory.');
-      grunt.file.mkdir('out/')
+      grunt.file.mkdir('out/');
     }
 
     if(!grunt.file.isDir('out/webapp/')) {
       grunt.log.writeln('Created output directory.');
-      grunt.file.mkdir('out/webapp/')
+      grunt.file.mkdir('out/webapp/');
     }
 
     var htmlTask = 'jade:build',
@@ -307,9 +364,20 @@ module.exports = function(grunt) {
       grunt.file.mkdir('out/release/');
     }
 
+    var aws = grunt.file.readJSON('aws.json');
+    grunt.config.set('aws', aws);
+
     grunt.file.copy('out/index.html', 'out/webapp/index.html');
 
-    grunt.task.run(['bumpup:' + type, 'build', 'compress:release', 'tagrelease', 'shell:pushTags']);
+    grunt.task.run([
+      'bumpup:' + type,
+      'build',
+      'compress:release',
+      'tagrelease',
+      's3:clean', 's3:latest', 's3:ver',
+      'invalidate_cloudfront:release',
+      'shell:pushTags'
+    ]);
 
     grunt.file.delete('out/webapp/index.html');
 
@@ -341,4 +409,4 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['build:dev', 'server']);
-}
+};
