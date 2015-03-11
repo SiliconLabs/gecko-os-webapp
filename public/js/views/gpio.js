@@ -160,10 +160,11 @@ App.Views.GPIO = Backbone.View.extend({
   render: function(){
     var self = this;
 
+    clearTimeout(self.poll);
+
     if(this.controller.get('view') !== 'gpio-usage'){
       $(this.el).removeClass('active');
 
-      clearTimeout(self.poll);
       return;
     }
 
