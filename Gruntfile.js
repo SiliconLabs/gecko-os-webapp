@@ -141,10 +141,15 @@ module.exports = function(grunt) {
         }
       },
       js: {
-        files: ['public/js/*.js', 'public/js/**/*.js', 'public/vendor/wiconnect.js'],
-        tasks: ['jshint', 'git-describe', 'string-replace:dev', 'uglify:build', 'compress:build'],
+        files: ['public/js/**/*.js'],
+        tasks: [
+          'jshint', 'git-describe',
+          'buildCopy:dev', 'string-replace:dev',
+          'uglify:build', 'compress:build',
+          'buildCleanup:dev'],
         options: {
-          interupt: true
+          interupt: true,
+          debounceDelay: 5000,
         }
       },
       html: {
@@ -272,6 +277,9 @@ module.exports = function(grunt) {
 
     grunt.config.set('pkg', pkg);
 
+    var config = grunt.file.readJSON('config.json');
+    grunt.config.set('device.host', config.device);
+
     // build webapp version date & hash into complied js
     grunt.file.write(
       'public/js/version.js',
@@ -316,18 +324,20 @@ module.exports = function(grunt) {
 
     if(type === 'dev') {
       // set remote device host
-      var config = grunt.file.readJSON('config.json');
-      grunt.config.set('device.host', config.device);
-      grunt.file.copy('public/js/app.js', 'public/js/.app.js');
-
       hostTask = 'string-replace:dev';
     }
 
     grunt.task.run([
-      'embed-hash', 'lint', hostTask,
+      'embed-hash', 'lint', 'buildCopy:' + type, hostTask,
       'uglify:build', cssTask, htmlTask,
       'compress:build', 'buildCleanup:' + type
     ]);
+  });
+
+  grunt.registerTask('buildCopy', function(type){
+    if(type === 'dev') {
+      grunt.file.copy('public/js/app.js', 'public/js/.app.js');
+    }
   });
 
   grunt.registerTask('buildCleanup', function(type){
