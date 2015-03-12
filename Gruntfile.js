@@ -149,7 +149,7 @@ module.exports = function(grunt) {
           'buildCleanup:dev'],
         options: {
           interupt: true,
-          debounceDelay: 5000,
+          debounceDelay: 5000
         }
       },
       html: {
