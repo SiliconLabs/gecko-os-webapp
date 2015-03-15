@@ -16,7 +16,7 @@ App.Models.Controller = Backbone.Model.extend({
     retries: 3
   },
   ls: null,
-  initialize: function(opts) {
+  initialize: function() {
     var self = this;
 
     _.bindAll(this, 'resize', 'onClose', 'onKey', 'loading', 'modal', 'closeModal');
@@ -26,14 +26,13 @@ App.Models.Controller = Backbone.Model.extend({
     $(window).on('orientationchange', this.resize);
     $(window).on('keyup', this.onKey);
 
-    if (typeof (Storage)!=="undefined"){
+    if(typeof (Storage) !== 'undefined'){
       this.ls=localStorage;
     }
 
     $(document).ajaxError(function(event, jqxhr, settings, exception ) {
       if ( jqxhr.status === 401 ) {
-        $( "div.log" ).text( "Triggered ajaxError handler." );
-        self.modal({content:'Operation not allowed'});
+        self.modal({content: 'Operation not allowed'});
       }
     });
 
