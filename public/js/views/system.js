@@ -197,7 +197,7 @@ App.Views.System = Backbone.View.extend({
             }
 
             self.$el.html(self.template(data));
-            self.poll = setTimeout(self.update, 1000);
+            self.update();
           });
     };
 
