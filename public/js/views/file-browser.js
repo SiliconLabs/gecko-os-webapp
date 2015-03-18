@@ -148,12 +148,8 @@ App.Views.FileBrowser = Backbone.View.extend({
     dropbox.addEventListener('drop',      self.onDrop,      false);
   },
 
-  readFiles: function(next, attempt) {
+  readFiles: function(next) {
     var self = this;
-
-    if(typeof attempt === 'undefined') {
-      attempt = 1;
-    }
 
     var done = function(err, res) {
       if(res.response){
