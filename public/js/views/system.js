@@ -67,7 +67,7 @@ App.Views.System = Backbone.View.extend({
 <input name="version" value="<%- webapp.version %>" disabled></input>\
 <h4>Build Date</h4>\
 <input name="version" value="<%= webapp.date %>" disabled></input>\
-<button class="btn btn-lg active upgrade">Update</button>\
+<% if(_webapp.upgradeAvailable){ %><button class="btn btn-lg active upgrade">Update</button><% } %>\
 </div>'),
 
   initialize: function(opts){
@@ -197,7 +197,7 @@ App.Views.System = Backbone.View.extend({
             }
 
             self.$el.html(self.template(data));
-            self.update();
+            self.poll = setTimeout(self.update, 1000);
           });
     };
 

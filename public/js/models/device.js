@@ -401,19 +401,8 @@ App.Models.Device = Backbone.Model.extend({
       // currently no way to roll back to old version
       // only need to check if version is the same
       if(_webapp.version === res.version){return;}
-      self.controller.modal({
-        systemModal: true,
-        showClose: true,
-        content: '<h2>Upgrade Available</h2><p class="center">Version ' + res.version + ' is now available for upgrade.</p>',
-        primaryBtn: {
-          content: 'Upgrade',
-          clickFn: self.webAppUpgrade,
-          class: 'save'
-        },
-        secondaryBtn: {
-          content: 'Later'
-        }
-      });
+
+      _webapp.upgradeAvailable = true;
     });
   },
 
