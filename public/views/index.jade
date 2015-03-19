@@ -9,7 +9,7 @@ html
     meta(name="apple-mobile-web-app-status-bar-style", content="black")
     link(rel="icon", href="favicon.ico", type="image/x-icon")
     link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
-    link(rel="stylesheet", type="text/css", href="/webapp/wiconnect.css")
+    link(rel="stylesheet", type="text/css", href="#{path}wiconnect.css")
   body
     div.nav
       a.wlan(href="//ack.me", data-bypass, target="_blank")
@@ -30,4 +30,4 @@ html
           div.loading-circle.loading-row3.loading-col2.down
           div.loading-circle.loading-row4.loading-col1.down
     div.overlay
-    script(src='/webapp/wiconnect.js')
+    script(src='#{path}wiconnect.js')

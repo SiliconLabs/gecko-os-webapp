@@ -62,12 +62,12 @@ App.Views.System = Backbone.View.extend({
 <hr>\
 </div>\
 <div class="content">\
-<h1>Webapp</h1>\
+<h1>Web App</h1>\
 <h4>Version</h4>\
 <input name="version" value="<%- webapp.version %>" disabled></input>\
 <h4>Build Date</h4>\
 <input name="version" value="<%= webapp.date %>" disabled></input>\
-<button class="btn btn-lg active upgrade">Update</button>\
+<% if(_webapp.upgradeAvailable){ %><button class="btn btn-lg active upgrade">Update</button><% } %>\
 </div>'),
 
   initialize: function(opts){

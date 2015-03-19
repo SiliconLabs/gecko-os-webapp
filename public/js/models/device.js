@@ -42,13 +42,13 @@ App.Models.Device = Backbone.Model.extend({
   checkInInterval: 45,
   wiconnect: null,
   securityTypes: {
-    'open':0,
-    'wep':1,
-    'wpa-aes':2,
-    'wpa-tkip':3,
-    'wpa2-aes':4,
-    'wpa2-mixed':5,
-    'wpa2-tkip':6
+    'open':       0,
+    'wep':        1,
+    'wpa-aes':    2,
+    'wpa-tkip':   3,
+    'wpa2-aes':   4,
+    'wpa2-mixed': 5,
+    'wpa2-tkip':  6
   },
 
   initialize: function(opts) {
@@ -393,7 +393,7 @@ App.Models.Device = Backbone.Model.extend({
     var self = this;
 
     $.ajax({
-      url: 'http://resources.ack.me/webapp/2.1/latest/version.json?' + self.get('mac').replace(/:/g,'').slice(-6),
+      url: 'http://resources.ack.me/webapp/2.2/latest/version.json?' + self.get('mac').replace(/:/g,'').slice(-6),
       type: 'GET',
       dataType: 'json'
     }).done(function(res){
@@ -401,6 +401,10 @@ App.Models.Device = Backbone.Model.extend({
       // currently no way to roll back to old version
       // only need to check if version is the same
       if(_webapp.version === res.version){return;}
+
+      _webapp.upgradeAvailable = true;
+      _webapp.upgradeManifest = res;
+
       self.controller.modal({
         systemModal: true,
         showClose: true,
@@ -420,34 +424,204 @@ App.Models.Device = Backbone.Model.extend({
   webAppUpgrade: function() {
     var self = this;
 
+    if(_webapp.version === _webapp.upgradeManifest.version) {
+      return;
+    }
+
     self.controller.modal({
       systemModal: true,
       content: '<h2>Updating Webapp...</h2><div class="progress-bar"><div class="progress"></div></div>'
     });
 
-    var files = [
-      'index.html',
-      'wiconnect.js.gz',
-      'wiconnect.css.gz',
-      'unauthorized.html'
-    ];
+    var webappDir;
 
-    var filesComplete = 0;
+    var checkStreams = function(next) {
+      // check for open f.fc
+      self.wiconnect.list(function(err, res){
+        if(err){return next(err);}
 
-    async.eachSeries(
-      files,
-      function(file, next) {
-        self.wiconnect.http_download(
-          {args: 'http://resources.ack.me/webapp/2.1/latest/' + file + ' webapp/' + file},
-          function(err, res) {
-            filesComplete += 1;
-            $('.progress').css({width: String((filesComplete / files.length)*100) + '%'});
-            next();
-          });
-      },
-      function(err, res) {
+        self.parseStreams(res, function(){
+          var openStream = _.filter(self.streams, function(stream) {return stream.info.indexOf('f.fc-1.0.0.0') >= 0;})[0];
+          if(openStream) {
+            return self.wiconnect.close({args: openStream.id}, next);
+          }
+          next();
+        });
+      });
+    };
+
+    var checkFreeSpace = function(next) {
+      var byteCount = _.reduce(_.pluck(_webapp.upgradeManifest.files, 'size'), function(sum, size){return sum + size;});
+
+      self.postCommand({
+        command: 'fcr -o f.fc ' + byteCount,
+        flags: 0
+      }, function(err, res){
+        if(err) {
+          return next(err);
+        }
+
+        var streamID = Number(res.response.replace('\r\n',''));
+
+        if(isNaN(streamID)) {
+          return next(new Error('Not Enough Free Space'));
+        }
+
+        self.wiconnect.close({args: streamID}, next);
+      });
+
+    };
+
+    var getWebAppDir = function(next) {
+      self.wiconnect.get({args: 'ht s r'}, function(err, res) {
+        if(err){
+          return next(err);
+        }
+
+        webappDir = '/' + _.initial(res.response.split('/')).join('/');
+        next();
+      });
+    };
+
+    var getFiles = function(next) {
+      var filesComplete = 0;
+
+      async.eachSeries(
+        _webapp.upgradeManifest.files,
+        function(file, done) {
+          self.wiconnect.http_download(
+            {args: 'http://resources.ack.me/webapp/2.2/latest/' + file.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + file.name},
+            function(err) {
+              if(err) {
+                done(new Error());
+              }
+
+              filesComplete += 1;
+              $('.progress').css({width: String((filesComplete / _webapp.upgradeManifest.files.length)*100) + '%'});
+              done();
+            });
+        },
+        function(err) {
+          next(err);
+        });
+    };
+
+    var reloadFS = function(next) {
+      self.wiconnect.ls({args: '-v'}, function(err, res) {
+        if(err) {
+          return next(err);
+        }
+
+        if(res.response){
+          self.fs.read(res.response.split('\r\n'));
+        }
+
+        next();
+      });
+    };
+
+    var verifyFiles = function(next) {
+      _webapp.upgradeAvailable = false;
+
+      var cwd = self.fs.cwd().path;
+
+      self.fs.cd('/webapp/' + _webapp.upgradeManifest.version);
+
+      async.eachSeries(
+        _webapp.upgradeManifest.files,
+        function(file, done) {
+          var webappFile = self.fs.cwd().files[file.name];
+
+          if(!webappFile) {
+            return done(new Error('File missing: ' + file.name));
+          }
+
+          if(webappFile.size !== file.size) {
+            return done(new Error('File size mismatch: ' + file.name));
+          }
+
+          done();
+        }, function(err) {
+          if(err) {
+            return next(err);
+          }
+
+          self.fs.cd(cwd);
+
+          next();
+        });
+    };
+
+    var switchRoot = function(next) {
+      var root = 'webapp/' + _webapp.upgradeManifest.version + '/';
+
+      async.series([
+        function(done){ self.wiconnect.set({args: 'ht s r ' + root + 'index.html'}, done); },
+        function(done){ self.wiconnect.set({args: 'ht s d ' + root + 'unauthorized.html'}, done); },
+        function(done){ self.wiconnect.save({}, done); },
+        function(done){ self.wiconnect.network_restart({}, done); }
+      ], next);
+    };
+
+    var removeFailed = function(next) {
+      async.eachSeries(
+        _webapp.upgradeManifest.files,
+        function(file, done) {
+
+          self.fs.rm('webapp/' + _webapp.upgradeManifest.version + '/' + file.name, done);
+
+        }, function(err) {
+          if(err) {
+            return next(err);
+          }
+
+          next();
+        });
+    };
+
+    var removeOldVer = function() {
+      var cwd = self.fs.cwd().path;
+
+      self.fs.cd(webappDir);
+console.log(self.fs.cwd());
+      async.eachSeries(
+        _.filter(self.fs.cwd().files, function(file) { return _.contains(_.pluck(_webapp.upgradeManifest.files, 'name'), file.name); }),
+        function(file, done) {
+          self.fs.rm(self.fs.cwd().path + '/' + file.name, done);
+        }, function() {
+          self.fs.cd(cwd);
+        });
+    };
+
+    async.series([
+      getWebAppDir,
+      checkStreams, checkFreeSpace,
+      getFiles,
+      reloadFS, verifyFiles,
+      switchRoot
+    ], function(err) {
+
+      if(err) {
+        self.controller.modal({
+          content: '<h2>Web App update failed.</h2><p class="center">An error occured during the upgrade process.</p>',
+          systemModal: false,
+          showClose: true,
+          primaryBtn: {
+            content: 'Continue'
+          }
+        });
+        return removeFailed();
+      }
+
+      removeOldVer(function() {
+        self.controller.modal({
+          content: '<h2>Web App upated successfully.</h2>',
+          systemModal: true
+        });
         setTimeout(function(){top.location = top.location;}, 3000);
       });
+
+    });
   },
 
   hashCredentials: function(pass, salt) {
