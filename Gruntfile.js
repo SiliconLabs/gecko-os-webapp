@@ -64,6 +64,7 @@ module.exports = function(grunt) {
         },
         files: {
           './out/index.html': './public/views/index.jade',
+          './out/webapp/index.html': './public/views/index.jade',
           './out/webapp/unauthorized.html': './public/views/unauthorized.jade'
         }
       },
@@ -429,7 +430,7 @@ module.exports = function(grunt) {
     var aws = grunt.file.readJSON('aws.json');
     grunt.config.set('aws', aws);
 
-    grunt.file.copy('out/index.html', 'out/webapp/index.html');
+    // grunt.file.copy('out/index.html', 'out/webapp/index.html');
 
     grunt.task.run([
       'bumpup:' + type,
@@ -441,7 +442,7 @@ module.exports = function(grunt) {
       'shell:pushTags'
     ]);
 
-    grunt.file.delete('out/webapp/index.html');
+    // grunt.file.delete('out/webapp/index.html');
 
     grunt.log.writeln('--------------------------------------');
     grunt.log.writeln('Ignore tagrelease deprecation message.');
