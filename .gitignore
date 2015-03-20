@@ -1,6 +1,7 @@
 /public/vendor/*/
 /node_modules/
 /out/index.html
+/out/webapp/version.json
 /out/webapp/wiconnect.js
 /out/webapp/wiconnect.js.gz
 /out/webapp/wiconnect.css
