@@ -469,7 +469,6 @@ App.Models.Device = Backbone.Model.extend({
 
         self.wiconnect.close({args: streamID}, next);
       });
-
     };
 
     var getWebAppDir = function(next) {
@@ -560,10 +559,16 @@ App.Models.Device = Backbone.Model.extend({
         function(done){ self.wiconnect.set({args: 'ht s d ' + root + 'unauthorized.html'}, done); },
         function(done){ self.wiconnect.save({}, done); },
         function(done){ self.wiconnect.network_restart({}, done); }
-      ], next);
+      ], function(){
+        //wait a second after nre before firing next sequence - found bug where immediate request before interface taken down returned 500
+        setTimeout(next, 1000);
+      });
     };
 
     var removeFailed = function(next) {
+      if(!self.fs.get('loaded')){
+        return next();
+      }
       async.eachSeries(
         _webapp.upgradeManifest.files,
         function(file, done) {
@@ -579,17 +584,18 @@ App.Models.Device = Backbone.Model.extend({
         });
     };
 
-    var removeOldVer = function() {
+    var removeOldVer = function(next) {
       var cwd = self.fs.cwd().path;
 
       self.fs.cd(webappDir);
-console.log(self.fs.cwd());
+
       async.eachSeries(
         _.filter(self.fs.cwd().files, function(file) { return _.contains(_.pluck(_webapp.upgradeManifest.files, 'name'), file.name); }),
         function(file, done) {
           self.fs.rm(self.fs.cwd().path + '/' + file.name, done);
         }, function() {
           self.fs.cd(cwd);
+          next();
         });
     };
 
@@ -602,15 +608,16 @@ console.log(self.fs.cwd());
     ], function(err) {
 
       if(err) {
-        self.controller.modal({
-          content: '<h2>Web App update failed.</h2><p class="center">An error occured during the upgrade process.</p>',
-          systemModal: false,
-          showClose: true,
-          primaryBtn: {
-            content: 'Continue'
-          }
+        return removeFailed(function(){
+          self.controller.modal({
+            content: '<h2>Web App update failed.</h2><p class="center">An error occured during the upgrade process.</p>',
+            systemModal: false,
+            showClose: true,
+            primaryBtn: {
+              content: 'Continue'
+            }
+          });
         });
-        return removeFailed();
       }
 
       removeOldVer(function() {
