@@ -4,6 +4,7 @@
 
 App.Models.FileSystem = Backbone.Model.extend({
   defaults: {
+    loaded: false,
     cwd: null,
     fs: {
       parent: null,
@@ -219,7 +220,7 @@ App.Models.FileSystem = Backbone.Model.extend({
     //save cwd before clearing
     var cwd = self.cwd().path;
 
-    self.set({fs: {parent: null, path: '/', dirs: {}, files: {}}});
+    self.set({loaded: true, fs: {parent: null, path: '/', dirs: {}, files: {}}});
 
     var fileDir = function(splitpath, dir) {
       dir = dir || self.get('fs');
