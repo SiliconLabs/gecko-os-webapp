@@ -268,7 +268,8 @@ module.exports = function(grunt) {
           {src: 'out/index.html',               dest: 'webapp/2.2/<%= pkg.version %>/index.html'},
           {src: 'out/webapp/wiconnect.js.gz',   dest: 'webapp/2.2/<%= pkg.version %>/wiconnect.js.gz'},
           {src: 'out/webapp/wiconnect.css.gz',  dest: 'webapp/2.2/<%= pkg.version %>/wiconnect.css.gz'},
-          {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.2/<%= pkg.version %>/unauthorized.html'}
+          {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.2/<%= pkg.version %>/unauthorized.html'},
+          {src: 'out/version.json',             dest: 'webapp/2.2/<%= pkg.version %>/version.json'}
         ]
       }
     },
