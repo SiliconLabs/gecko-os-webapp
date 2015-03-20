@@ -431,15 +431,15 @@ module.exports = function(grunt) {
 
     grunt.file.copy('out/index.html', 'out/webapp/index.html');
 
-    // grunt.task.run([
-    //   'bumpup:' + type,
-    //   'build:release',
-    //   'compress:release',
-    //   'tagrelease',
-    //   's3:clean', 's3:latest', 's3:ver',
-    //   'invalidate_cloudfront:release',
-    //   'shell:pushTags'
-    // ]);
+    grunt.task.run([
+      'bumpup:' + type,
+      'build:release',
+      'compress:release',
+      'tagrelease',
+      's3:clean', 's3:latest', 's3:ver',
+      'invalidate_cloudfront:release',
+      'shell:pushTags'
+    ]);
 
     grunt.file.delete('out/webapp/index.html');
 
