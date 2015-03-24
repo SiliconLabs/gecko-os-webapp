@@ -261,7 +261,7 @@ module.exports = function(grunt) {
           {src: 'out/webapp/wiconnect.js.gz',   dest: 'webapp/2.2/latest/wiconnect.js.gz'},
           {src: 'out/webapp/wiconnect.css.gz',  dest: 'webapp/2.2/latest/wiconnect.css.gz'},
           {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.2/latest/unauthorized.html'},
-          {src: 'out/version.json',             dest: 'webapp/2.2/latest/version.json'}
+          {src: 'out/webapp/version.json',      dest: 'webapp/2.2/latest/version.json'}
         ]
       },
       ver: {
@@ -270,7 +270,7 @@ module.exports = function(grunt) {
           {src: 'out/webapp/wiconnect.js.gz',   dest: 'webapp/2.2/<%= pkg.version %>/wiconnect.js.gz'},
           {src: 'out/webapp/wiconnect.css.gz',  dest: 'webapp/2.2/<%= pkg.version %>/wiconnect.css.gz'},
           {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.2/<%= pkg.version %>/unauthorized.html'},
-          {src: 'out/version.json',             dest: 'webapp/2.2/<%= pkg.version %>/version.json'}
+          {src: 'out/webapp/version.json',      dest: 'webapp/2.2/<%= pkg.version %>/version.json'}
         ]
       }
     },
@@ -447,6 +447,19 @@ module.exports = function(grunt) {
     grunt.log.writeln('--------------------------------------');
     grunt.log.writeln('Ignore tagrelease deprecation message.');
     grunt.log.writeln('--------------------------------------');
+  });
+
+  grunt.registerTask('s3force', function(){
+    var pkg = grunt.file.readJSON('package.json');
+    grunt.config.set('pkg', pkg);
+
+    var aws = grunt.file.readJSON('aws.json');
+    grunt.config.set('aws', aws);
+
+    grunt.task.run([
+      's3:clean', 's3:latest', 's3:ver',
+      'invalidate_cloudfront:release'
+    ]);
   });
 
   grunt.registerTask('http', function(){
