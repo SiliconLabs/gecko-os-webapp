@@ -334,8 +334,8 @@ module.exports = function(grunt) {
 
     // version.json for cloudfront autoupdate & metrics
     var ver = '{';
-    ver += '"version": "' + pkg.version + '", ';
-    ver += '"files": [';
+    ver += '"version":"' + pkg.version + '",';
+    ver += '"files":[';
     ver +=    '{"name":"index.html","size":' + fs.statSync('out/index.html').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/index.html")) + '"},';
     ver +=    '{"name":"wiconnect.js.gz","size":' + fs.statSync('out/webapp/wiconnect.js.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/wiconnect.js.gz")) + '"},';
     ver +=    '{"name":"wiconnect.css.gz","size":' + fs.statSync('out/webapp/wiconnect.css.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/wiconnect.css.gz")) + '"},';
