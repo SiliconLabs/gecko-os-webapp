@@ -645,7 +645,7 @@ App.Models.Device = Backbone.Model.extend({
 
       removeOldVer(function() {
         self.controller.modal({
-          content: '<h2>Web App upated successfully.</h2>',
+          content: '<h2>Web App updated successfully.</h2>',
           systemModal: true
         });
         setTimeout(function(){top.location = top.location;}, 3000);
