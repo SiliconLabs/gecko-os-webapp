@@ -451,7 +451,7 @@ App.Views.FileContext = Backbone.View.extend({
           self.controller.loading(true);
           self.controller.closeModal();
 
-          self.device.fs.mkdir(modal.$('input').val().replace(/\/{2,}/g,'/'), function(){
+          self.device.fs.mkdir(modal.$('input').val().replace(/\/{2,}/g,'/').replace(/\/$/, ''), function(){
             self.controller.loading(false);
             self.browser.render();
           });
@@ -476,7 +476,7 @@ App.Views.FileContext = Backbone.View.extend({
           self.controller.loading(true);
           self.controller.closeModal();
 
-          self.device.fs.mv(self.file.name, modal.$('input').val().replace(/\/{2,}/g,'/'), function() {
+          self.device.fs.mv(self.file.name, modal.$('input').val().replace(/\/{2,}/g,'/').replace(/\/$/, ''), function() {
             self.controller.loading(false);
             self.browser.render();
           });
