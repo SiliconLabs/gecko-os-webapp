@@ -1,1 +1,1 @@
-var _webapp = {date:"2015-03-30T01:11:08.092Z", hash:"90d5568", version: "2.2.5"};
+var _webapp = {date:"2015-03-30T04:44:08.282Z", hash:"37d8228", version: "2.2.6"};
