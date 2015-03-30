@@ -149,7 +149,9 @@ App.Views.System = Backbone.View.extend({
   },
 
   systemUpgrade: function() {
-    this.device.webAppUpgrade();
+    var self = this;
+    clearTimeout(self.poll);
+    self.device.webAppUpgrade();
   },
 
   render: function(){
