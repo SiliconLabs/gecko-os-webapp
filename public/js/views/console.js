@@ -1,4 +1,4 @@
-/*global Backbone:true, $:true, _:true, App:true, Terminal:true, _webapp:true */
+/*global Backbone:true, async:true,  $:true, _:true, App:true, Terminal:true, _webapp:true */
 /*jshint multistr:true */
 /*jshint browser:true */
 /*jshint strict:false */
@@ -43,21 +43,27 @@ App.Views.Console = Backbone.View.extend({
     rm: 'fde'
   },
 
-  template: _.template('\
+  templates: {
+    terminal: _.template('\
 <h1>Console</h1>\
 <div class="terminal">\
 <output></output>\
+</div>'),
+
+    input: _.template('\
 <div id="input-line" class="input-line">\
 <div class="prompt">&gt;</div>&nbsp;<div><input class="cmdline" autofocus spellcheck="false" autocapitalize="off" /></div>\
-</div>\
+</div>'),
+
+    next: _.template('\
 <div id="next-line" class="input-line">\
 <div><input class="nextline" spellcheck="false" autocapitalize="off" /></div>\
-</div>\
-</div>'),
+</div>')
+  },
 
   initialize: function(opts) {
 
-    _.bindAll(this, 'render',
+    _.bindAll(this, 'render', 'addCmdLine',
               'onClose', 'onClick',
               'onCommand', 'issueCommand', 'doCommand',
               'historyHandler', 'tabComplete',
@@ -98,18 +104,58 @@ App.Views.Console = Backbone.View.extend({
   },
 
   render: function() {
-    if(this.controller.get('view') !== 'console'){
-      $(this.el).removeClass('active');
+    var self = this;
+
+    if(self.controller.get('view') !== 'console'){
+      $(self.el).removeClass('active');
       return;
     }
 
-    this.$el.html(this.template()).addClass('active');
+    self.$el.html(self.templates.terminal()).addClass('active');
 
-    this.output = $(this.el).find('output')[0];
+    self.output = $(self.el).find('output')[0];
+
+    self.printLine('WiConnect Web App Console - v' + _webapp.version);
+
+    if(self.device.commands.length > 0 && Object.keys(self.device.variables).length > 0){
+      //commands and variables already loaded, nothing to do
+      return self.addCmdLine();
+    }
+
+    async.waterfall([
+      function(next) {
+        self.printLine('loading commands...');
+        self.device.wiconnect.help({args: 'commands'}, function(err, res){
+          if(err) {
+            return next(err);
+          }
+          self.device.parseCommands(res, next);
+        });
+      },
+      function(next) {
+        self.printLine('loading variables...');
+        self.device.wiconnect.help({args: 'variables'}, function(err, res){
+          if(err) {
+            return next(err);
+          }
+          self.device.parseVariables(res, next);
+        });
+      }
+    ], function(err){
+      if(err) {
+        //handle err
+      }
+
+      self.printLine('Ready.');
+      return self.addCmdLine();
+    });
+  },
+
+  addCmdLine: function(){
+    this.$('.terminal').append(this.templates.input());
+    this.$('.terminal').append(this.templates.next());
     this.cmdLine = $(this.el).find('#input-line .cmdline')[0];
-
     this.cmdLine.focus();
-
   },
 
   onClick: function(e) {

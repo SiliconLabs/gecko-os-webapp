@@ -241,9 +241,7 @@ App.Models.Device = Backbone.Model.extend({
     var self = this;
 
     var cmds = [
-      {property: 'web_setup', cmd: 'setup', args: {args: 'status'}, ret: false},
-      {cmd: 'help', args: {args: 'commands'}, done: self.parseCommands},
-      {cmd: 'help', args: {args: 'variables'}, done: self.parseVariables}
+      {property: 'web_setup', cmd: 'setup', args: {args: 'status'}, ret: false}
     ];
 
     async.eachSeries(
