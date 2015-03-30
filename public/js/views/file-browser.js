@@ -1,4 +1,4 @@
-/*global Backbone:true, $:true, _:true, async:true, App:true*/
+/*global Backbone:true, $:true, _:true, async:true, App:true, _webapp:true*/
 /*jshint multistr:true */
 /*jshint browser:true */
 /*jshint strict:false */
@@ -93,7 +93,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
   events: {
     //drag and drop events need to be handled outside backbone to access event.dataTransfer
-    'click .fs-file .status' : 'onDelete',
+    'click .deletable .status' : 'onDelete',
     'click .file-system .folder': 'onFolder',
     'change .file-select' : 'onFileSelect',
     'contextmenu .file-system .file': 'onRightClick',
@@ -226,11 +226,18 @@ App.Views.FileBrowser = Backbone.View.extend({
       function(filename) {
         var file = dirfiles[filename];
         file.name = filename;
-        file.state = '';
+        file.state = [];
         file.link = false;
 
         if(!_.contains(['00','01','81'], file.type.substring(2,4))){ //FW-791
-          file.state = 'fs-file';
+          file.state = ['fs-file','deletable'];
+        }
+
+        // do not let web app delete itself
+        if(self.device.fs.cwd().path === '/webapp/' + _webapp.version) {
+          if(_.contains(['index.html', 'wiconnect.js.gz', 'wiconnect.css.gz', 'unauthorized.html'], file.name)){
+            file.state = _.without(file.state, 'deletable');
+          }
         }
 
         if(!(file.flags & 0x1A)) { //FW-791
@@ -246,6 +253,8 @@ App.Views.FileBrowser = Backbone.View.extend({
         } else {
           file.size = file.size + ' bytes';
         }
+
+        file.state = file.state.join(' ');
 
         $(self.el).find('#file-system').append(self.fileTemplate(file));
       });
