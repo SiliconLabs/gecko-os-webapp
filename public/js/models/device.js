@@ -431,9 +431,9 @@ App.Models.Device = Backbone.Model.extend({
       self.controller.modal({
         systemModal: true,
         showClose: true,
-        content: '<h2>Upgrade Available</h2><p class="center">Version ' + res.version + ' is now available for upgrade.</p>',
+        content: '<h2>Update Available</h2><p class="center">Version ' + res.version + ' is now available for update.</p>',
         primaryBtn: {
-          content: 'Upgrade',
+          content: 'Update',
           clickFn: self.webAppUpgrade,
           class: 'save'
         },
@@ -633,7 +633,7 @@ App.Models.Device = Backbone.Model.extend({
       if(err) {
         return removeFailed(function(){
           self.controller.modal({
-            content: '<h2>Web App update failed.</h2><p class="center">An error occured during the upgrade process.</p>',
+            content: '<h2>Web App update failed.</h2><p class="center">An error occured during the update process.</p>',
             systemModal: false,
             showClose: true,
             primaryBtn: {
