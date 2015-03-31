@@ -30,7 +30,6 @@ html
     meta(name="apple-mobile-web-app-status-bar-style", content="black")
     link(rel="icon", href="favicon.ico", type="image/x-icon")
     link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
-    link(rel="stylesheet", type="text/css", href="#{path}wiconnect.css")
   body
     div.nav
       a.wlan(href="//ack.me", data-bypass, target="_blank")
@@ -51,4 +50,21 @@ html
           div.loading-circle.loading-row3.loading-col2.down
           div.loading-circle.loading-row4.loading-col1.down
     div.overlay
-    script(src='#{path}wiconnect.js')
+    script.
+      var assetsLoaded = 0;
+      var assets = [
+        {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '#{path}wiconnect.css'}},
+        {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '#{path}wiconnect.js'}}
+      ];
+      for(var i = 0; i < assets.length; i++) {
+        var asset = document.createElement(assets[i].tag);
+        for(var j = 0; j < Object.keys(assets[i].attrs).length; j++) {
+          asset[Object.keys(assets[i].attrs)[j]] = assets[i].attrs[Object.keys(assets[i].attrs)[j]];
+        }
+        document[assets[i].pos].appendChild(asset);
+        asset.addEventListener('load', assetLoad);
+        asset.addEventListener('error', assetErr);
+      }
+      function assetLoad(e){assetsLoaded++;if(assetsLoaded === assets.length && (typeof _webapp === 'undefined')){top.location = '/.recovery.html';}}
+      function assetErr(e){top.location = '/.recovery.html';}
+      
