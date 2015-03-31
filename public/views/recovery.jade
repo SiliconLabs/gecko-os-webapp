@@ -208,6 +208,7 @@ html
         return str.replace('\r\n','');
       };
 
+      //default response handler
       var defRes = function(err, res, next){
         if(err) {
           return next(err);
@@ -305,7 +306,7 @@ html
                   }
                   return next(err || new Error('download failed'));
                 }
-                s('complete');
+                s('downloaded');
                 dl(f+1);
               });
             };
@@ -316,29 +317,17 @@ html
         },
         'set-root': {
           fn: function(data, next) {
-            w.post({url: host + '/command',
-              data: JSON.stringify({flags:0, command: 'set ht s r /webapp/index.html'})
-            }, function(err, res) {
-              defRes(err, res, next);
-            });
+            w.post({url: host + '/command', data: JSON.stringify({flags:0, command: 'set ht s r /webapp/index.html'}) }, function(err, res) {defRes(err, res, next); });
           }
         },
         'save': {
           fn: function(data, next) {
-            w.post({url: host + '/command',
-              data: JSON.stringify({flags:0, command: 'save'})
-            }, function(err, res) {
-              defRes(err, res, next);
-            });
+            w.post({url: host + '/command', data: JSON.stringify({flags:0, command: 'save'}) }, function(err, res) {defRes(err, res, next); });
           }
         },
         'network-restart': {
           fn: function(data, next) {
-            w.post({url: host + '/command',
-              data: JSON.stringify({flags:0, command: 'nre'})
-            }, function(err, res) {
-              defRes(err, res, next);
-            });
+            w.post({url: host + '/command', data: JSON.stringify({flags:0, command: 'nre'}) }, function(err, res) {defRes(err, res, next); });
           }
         },
         'reconnect': {
@@ -358,12 +347,6 @@ html
             };
 
             reconnect();
-          }
-        },
-        'finish':{
-          fn: function(data, next) {
-            output.log(JSON.stringify(data));
-            next();
           }
         }
       };
