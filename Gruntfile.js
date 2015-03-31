@@ -78,7 +78,8 @@ module.exports = function(grunt) {
         files: {
           './out/index.html': './public/views/index.jade',
           './out/webapp/index.html': './public/views/index.jade',
-          './out/webapp/unauthorized.html': './public/views/unauthorized.jade'
+          './out/webapp/unauthorized.html': './public/views/unauthorized.jade',
+          './out/webapp/recovery.html': './public/views/recovery.jade'
         }
       },
       basicDev: {

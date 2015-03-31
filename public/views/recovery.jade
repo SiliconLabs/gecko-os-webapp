@@ -1,0 +1,377 @@
+html
+  head
+    title WiConnect Web App Recovery
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable = no")
+    meta(name="apple-mobile-web-app-capable", content="yes")
+    meta(name="apple-mobile-web-app-status-bar-style", content="black")
+    style.
+      body {
+        font-family: monospace;
+        background: #AF6123;
+        height: 100vh;
+        margin: 0;
+      }
+      h4 {
+        margin: 0;
+      }
+      code {
+        background: #f2f2f2;
+        display: block;
+        padding: 8px;
+        border-radius: 2px;
+        -webkit-box-shadow: inset 0px 0px 4px 0px rgba(0,0,0,0.125);
+        -moz-box-shadow: inset 0px 0px 4px 0px rgba(0,0,0,0.125);
+        box-shadow: inset 0px 0px 4px 0px rgba(0,0,0,0.125);
+      }
+      code line {
+        display: block;
+      }
+      code line span {
+        float: right;
+      }
+      button {
+        position: absolute;
+        top: 32px;
+        right: 32px;
+        background: #79A321;
+        border: 0;
+        padding: 8px 16px;
+        color: #ffffff;
+        border-radius: 2px;
+        -webkit-box-shadow: 1px 2px 1px rgba(0,0,0,.125);
+        -moz-box-shadow: 1px 2px 1px rgba(0,0,0,.125);
+        box-shadow: 1px 2px 1px rgba(0,0,0,.125);
+        cursor: pointer;
+      }
+      .recovery {
+        position: relative;
+        top: 12vh;
+        background: #fff;
+        max-width: 656px;
+        margin: auto;
+        padding: 16px 32px;
+        box-shadow: 1px 2px 6px #000;
+      }
+      .hidden {
+        display: none;
+      }
+      .err {
+        color:#AD2327;
+      }
+      .pass {
+        color:#238D1D;
+      }
+      @media(max-width: 768px) {
+        .unauth {
+          margin: 0 16px;
+        }
+      }
+  body
+    div.recovery
+      h2 Web App Recovery
+      h4 Output
+      code#output
+      button Recover
+    script.
+      var w = {};
+
+      w.send = function(args, callback) {
+        var x = new XMLHttpRequest();
+        if('withCredentials' in x) {
+        }else if(typeof XDomainRequest != "undefined") {
+          // fknIE
+          x = new XDomainRequest();
+        }else{
+            return new Error('CORS not supported');
+        };
+
+        args.url = args.url || '/command';
+        args.async = args.async || true;
+
+        x.timeout = 30000;
+
+        x.open(args.method, args.url, args.async);
+
+        x.onreadystatechange = function() {
+          if (x.readyState === 4 && x.status === 200) {
+            return callback(null, JSON.parse(x.responseText));
+          }
+          if (x.readyState === 4) {
+            return callback(new Error(x.status), x.responseText);
+          }
+        };
+
+        if(args.contentType){
+          //avoid CORS preflight
+          x.setRequestHeader('Content-type', args.contentType);
+        }
+
+
+        x.send(args.data);
+      };
+
+      w.get = function(args, callback) {
+        args.method = 'GET';
+        w.send(args, callback);
+      }
+
+      w.post = function(args, callback) {
+        args.method = 'POST';
+        w.send(args, callback);
+      }
+
+      //task runner
+      var run = function(seq, done, logging) {
+        //sequence:{
+        //  'process-name': {
+        //    fn: function(){},
+        //    [onErr]: function(){} || break,
+        //    [retries]: 3 || 0
+        //  },
+        //  'next-process': {}
+        //}
+        logging = logging || false;
+
+        if(seq.length <= 0) {
+          return done();
+        }
+
+        var data = {};
+
+        var runner = function(q, attempt){
+          if(q === Object.keys(seq).length) {
+            return done(null, data);
+          }
+
+          var k = Object.keys(seq)[q];
+
+          attempt = attempt || 0;
+          seq[k].retries = seq[k].retries || 3;
+
+          var s;
+          if(logging) {
+            s = output.log('<b>running</b> <u>' + k + '</u>');
+          }
+
+          seq[k].fn(data, function(err, res) {
+            if(err){
+              if(logging) {
+                s('<b class="err">error</b>');
+              }
+
+              if(seq[k].retries < attempt) {
+                return runner(q, attempt++);
+              }
+
+              if(typeof seq[k].onErr === 'function') {
+                return seq[k].onErr(err, done);
+              }
+
+              return done(err);
+            }
+
+            if(logging) {
+              s('<b class="pass">complete</b>');
+            }
+
+            data[k] = res;
+
+            runner(q+1);
+          });
+        };
+
+        runner(0);
+      };
+
+      var output = {
+        el: document.getElementById('output'),
+        log: function() {
+          var args = Array.prototype.slice.call(arguments);
+          var line = document.createElement('line');
+          line.innerHTML = args.join(' ');
+          this.el.appendChild(line);
+
+          //add status placeholder
+          var status = document.createElement('span');
+          line.appendChild(status);
+
+          //return method to update status placeholder
+          return function(s){status.innerHTML = s;};
+        }
+      }
+
+      var host = 'http://192.168.10.111';
+
+      var clean = function(str) {
+        return str.replace('\r\n','');
+      };
+
+      var defRes = function(err, res, next){
+        if(err) {
+          return next(err);
+        }
+        if(clean(res.response).toLowerCase() === 'command failed') {
+          return next(new Error());
+        }
+        return next(null, clean(res.response));
+      };
+
+      //recovery sequence
+      var recSeq = {
+        'start':{
+          fn: function(data, next) {
+            output.log('starting recovery');
+            next();
+          }
+        },
+        'setup':{
+          fn: function(data, next) {
+            w.get({url: host + '/command/setup%20status'}, function(err, res) {defRes(err, res, next);});
+          }
+        },
+        'http-interface':{
+          fn: function(data, next) {
+            w.get({url: host + '/command/get%20ht%20s%20i'}, function(err, res) {defRes(err, res, next);});
+          }
+        },
+        'default-interface':{
+          fn: function(data, next) {
+            w.get({url: host + '/command/get%20ne%20f'}, function(err, res) {defRes(err, res, next);});
+          }
+        },
+        'interface':{
+          fn: function(data, next) {
+            if(Boolean(Number(data.setup))) {
+              return next(new Error('Recovery not available in web setup mode.'))
+            }
+            var iface = data['http-interface'];
+            if(iface === 'default') {
+              iface = data['default-interface'];
+            }
+            if(iface !== 'wlan'){
+              return next(new Error('Recovery not available in SoftAP mode.'));
+            }
+            next();
+          }
+        },
+        'version':{
+          fn: function(data, next) {
+            w.get({url: host + '/command/ver'}, function(err, res) {
+              if(err) {
+                return next(err);
+              }
+              if(clean(res.response).toLowerCase() === 'command failed') {
+                return next(new Error());
+              }
+              var ver = clean(res.response).split(',')[0].split('-');
+              ver = ver[ver.length-1];
+              ver = ver.split('.').slice(0,2).join('.');
+
+              return next(null, ver);
+            });
+          }
+        },
+        'manifest':{
+          fn: function(data, next) {
+            var status = output.log('retrieving manifest from CDN: resources.ack.me/webapp/' + data.version + '/release');
+
+            w.get({url:'http://resources.ack.me/webapp/' + data.version + '/release/version.json'}, function(err, res){
+              status('done');
+              next(err, res);
+            });
+          }
+        },
+        'download-webapp': {
+          fn: function(data, next) {
+            var dl = function(f, attempt) {
+              if(f >= data.manifest.files.length) {
+                return next(null);
+              }
+
+              attempt = Number(attempt) || 1;
+
+              var file = data.manifest.files[f];
+              var s = output.log('downloading', file.name, '(' + Number(attempt) + '/3)');
+              s('downloading');
+              w.post({url: host + '/command',
+                data: JSON.stringify({flags:0, command: 'http_download -e -c ' + file.crc + ' http://resources.ack.me/webapp/' + data.version + '/release/' + file.name + ' /webapp/' + file.name})
+              }, function(err, res) {
+                if(err || (clean(res.response).toLowerCase() === 'command failed')) {
+                  s('failed');
+                  if(attempt < 3) {
+                    return dl(f, attempt+1);
+                  }
+                  return next(err || new Error('download failed'));
+                }
+                s('complete');
+                dl(f+1);
+              });
+            };
+
+            dl(0);
+
+          }
+        },
+        'set-root': {
+          fn: function(data, next) {
+            w.post({url: host + '/command',
+              data: JSON.stringify({flags:0, command: 'set ht s r /webapp/index.html'})
+            }, function(err, res) {
+              defRes(err, res, next);
+            });
+          }
+        },
+        'save': {
+          fn: function(data, next) {
+            w.post({url: host + '/command',
+              data: JSON.stringify({flags:0, command: 'save'})
+            }, function(err, res) {
+              defRes(err, res, next);
+            });
+          }
+        },
+        'network-restart': {
+          fn: function(data, next) {
+            w.post({url: host + '/command',
+              data: JSON.stringify({flags:0, command: 'nre'})
+            }, function(err, res) {
+              defRes(err, res, next);
+            });
+          }
+        },
+        'reconnect': {
+          fn: function(data, next) {
+            var reconnect = function(attempt) {
+              attempt = Number(attempt) || 1;
+
+              w.get({url: host + '/command/ver'}, function(err, res) {
+                if(err) {
+                  if(attempt < 10){
+                    return reconnect(attempt+1);
+                  }
+                  return next(new Error('unable to reconnect to device'));
+                }
+                return next(err, res);
+              });
+            };
+
+            reconnect();
+          }
+        },
+        'finish':{
+          fn: function(data, next) {
+            output.log(JSON.stringify(data));
+            next();
+          }
+        }
+      };
+
+
+      run(recSeq, function(err, res){
+        if(err) {
+          return output.log('<b class="err">Error:</b>')(err.message);
+        }
+        output.log('<b class="pass">Recovery complete.</b>')('redirecting in 5 seconds');
+      }, true);
