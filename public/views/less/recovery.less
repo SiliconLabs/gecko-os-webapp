@@ -1,0 +1,87 @@
+body {
+  font-family: monospace;
+  background: #AF6123;
+  height: 100vh;
+  margin: 0;
+}
+
+.recovery {
+  position: relative;
+  top: 12vh;
+  background: #fff;
+  max-width: 656px;
+  margin: auto;
+  padding: 16px 32px;
+  box-shadow: 1px 2px 6px #000;
+
+  h4 {
+    margin: 0;
+  }
+
+  code {
+    background: #f2f2f2;
+    display: block;
+    padding: 8px;
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0px 0px 4px 0px rgba(0,0,0,0.125);
+    -moz-box-shadow: inset 0px 0px 4px 0px rgba(0,0,0,0.125);
+    box-shadow: inset 0px 0px 4px 0px rgba(0,0,0,0.125);
+
+    line {
+      display: block;
+
+      span {
+        float: right;
+      }
+    }
+  }
+
+  button {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    background: #79A321;
+    border: 0;
+    padding: 8px 16px;
+    color: #ffffff;
+    border-radius: 2px;
+    -webkit-box-shadow: 1px 2px 1px rgba(0,0,0,.125);
+    -moz-box-shadow: 1px 2px 1px rgba(0,0,0,.125);
+    box-shadow: 1px 2px 1px rgba(0,0,0,.125);
+    cursor: pointer;
+
+    &#save {
+      position: relative;
+      right: auto;
+      top: auto;
+      margin: 8px 0 24px 0;
+      min-width: 80px;
+    }
+  }
+
+  input {
+    font-family: monospace;
+    padding: 8px;
+    outline: none;
+    transition: all 0.3s;
+    display: block;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .err {
+    color:#AD2327;
+  }
+
+  .pass {
+    color:#238D1D;
+  }
+}
+
+@media(max-width: 768px) {
+  .recovery {
+    margin: 0 16px;
+  }
+}

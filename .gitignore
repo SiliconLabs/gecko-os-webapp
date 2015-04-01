@@ -10,4 +10,7 @@
 /out/webapp/unauthorized.html
 /out/webapp/*.map
 /out/version.json
+/public/views/js/*.min.*
+/public/views/less/*.js
+/public/views/css/
 aws.json

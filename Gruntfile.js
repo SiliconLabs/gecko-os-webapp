@@ -34,7 +34,9 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/webapp/wiconnect.css': 'public/less/*.less'
+          'out/webapp/wiconnect.css': 'public/less/*.less',
+          'public/views/css/recovery.css': 'public/views/less/recovery.less',
+          'public/views/css/unauthorized.css': 'public/views/less/unauthorized.less',
         }
       },
       css: {
@@ -66,7 +68,8 @@ module.exports = function(grunt) {
         files: {
           './out/index.html': './public/views/index.jade',
           './out/webapp/index.html': './public/views/index.jade',
-          './out/webapp/unauthorized.html': './public/views/unauthorized.jade'
+          './out/webapp/unauthorized.html': './public/views/unauthorized.jade',
+          './out/webapp/recovery.html': './public/views/recovery.jade'
         }
       },
       dev: {
@@ -128,6 +131,14 @@ module.exports = function(grunt) {
                 'public/js/*.js',
                 'public/js/*/*.js'
               ]
+          },
+          {
+            dest: 'public/views/js/recovery.min.js',
+            src: 'public/views/js/recovery.js'
+          },
+          {
+            dest: 'public/views/js/index.min.js',
+            src: 'public/views/js/index.js'
           }]
       }
     },
@@ -149,6 +160,26 @@ module.exports = function(grunt) {
           archive: function () {
             var pkg = grunt.file.readJSON('package.json');
             return 'out/release/Release-' + pkg.version + '.zip';
+          }
+        },
+        files: [
+          {
+            expand: true,
+            src: [
+              'out/webapp/index.html',
+              'out/webapp/unauthorized.html',
+              'out/webapp/wiconnect.js.gz',
+              'out/webapp/wiconnect.css.gz',
+              'out/webapp/version.json'
+            ]
+          }
+        ]
+      },
+      official: {
+        options: {
+          archive: function () {
+            var pkg = grunt.file.readJSON('package.json');
+            return 'out/release/Release-' + pkg.version + '-official.zip';
           }
         },
         files: [
@@ -283,7 +314,7 @@ module.exports = function(grunt) {
         secret: '<%= aws.secret %>',
         distribution: '<%= aws.distribution %>'
       },
-      release: {
+      latest: {
         files: [
           {dest: 'webapp/2.2/latest/version.json'},
           {dest: 'webapp/2.2/latest/index.html'},
@@ -433,19 +464,15 @@ module.exports = function(grunt) {
     var aws = grunt.file.readJSON('aws.json');
     grunt.config.set('aws', aws);
 
-    // grunt.file.copy('out/index.html', 'out/webapp/index.html');
-
     grunt.task.run([
       'bumpup:' + type,
       'build:release',
       'compress:release',
       'tagrelease',
       's3:clean', 's3:latest', 's3:ver',
-      'invalidate_cloudfront:release',
+      'invalidate_cloudfront:latest',
       'shell:pushTags'
     ]);
-
-    // grunt.file.delete('out/webapp/index.html');
 
     grunt.log.writeln('--------------------------------------');
     grunt.log.writeln('Ignore tagrelease deprecation message.');
@@ -464,6 +491,7 @@ module.exports = function(grunt) {
       'invalidate_cloudfront:release'
     ]);
   });
+
 
   grunt.registerTask('http', function(){
     var done = this.async();
