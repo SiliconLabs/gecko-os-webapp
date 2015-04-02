@@ -1,7 +1,7 @@
 var assetsLoaded = 0;
 var assets = [
-  {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '#{path}wiconnect.css'}},
-  {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '#{path}wiconnect.js'}}
+  {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}wiconnect.css'}},
+  {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}wiconnect.js'}}
 ];
 for(var i = 0; i < assets.length; i++) {
   var asset = document.createElement(assets[i].tag);

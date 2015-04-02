@@ -8,6 +8,7 @@
 /out/webapp/wiconnect.css.gz
 /out/webapp/index.html
 /out/webapp/unauthorized.html
+/out/webapp/recovery.html
 /out/webapp/*.map
 /out/version.json
 /public/views/js/*.min.*

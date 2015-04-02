@@ -59,25 +59,7 @@ module.exports = function(grunt) {
       }
     },
     jade: {
-      release: {
-        options: {
-          data: {
-            path: '/webapp/<%= pkg.version %>/'
-          }
-        },
-        files: {
-          './out/index.html': './public/views/index.jade',
-          './out/webapp/index.html': './public/views/index.jade',
-          './out/webapp/unauthorized.html': './public/views/unauthorized.jade',
-          './out/webapp/recovery.html': './public/views/recovery.jade'
-        }
-      },
-      dev: {
-        options: {
-          data: {
-            path: '/webapp/'
-          }
-        },
+      build: {
         files: {
           './out/index.html': './public/views/index.jade',
           './out/webapp/index.html': './public/views/index.jade',
@@ -188,6 +170,7 @@ module.exports = function(grunt) {
             src: [
               'out/webapp/index.html',
               'out/webapp/unauthorized.html',
+              'out/webapp/recovery.html',
               'out/webapp/wiconnect.js.gz',
               'out/webapp/wiconnect.css.gz',
               'out/webapp/version.json'
@@ -207,7 +190,7 @@ module.exports = function(grunt) {
       js: {
         files: ['public/js/**/*.js'],
         tasks: [
-          'jshint', 'git-describe', 'jade:dev',
+          'jshint', 'git-describe', 'jade:build',
           'buildCopy:dev', 'string-replace:dev',
           'uglify:build', 'compress:build',
           'buildCleanup:dev'],
@@ -218,7 +201,7 @@ module.exports = function(grunt) {
       },
       html: {
         files: ['public/views/*.jade'],
-        tasks: ['jade:dev', 'compress:build'],
+        tasks: ['jade:build', 'compress:build'],
         options: {
           interupt: true
         }
@@ -259,7 +242,18 @@ module.exports = function(grunt) {
           }]
         }
       },
-      deploy: {}
+      deploy: {},
+      release: {
+        files: {
+          'public/views/js/index.min.js': 'public/views/js/index.min.js'
+        },
+        options: {
+          replacements: [{
+            pattern: /#\{path\}/g,
+            replacement: '<%= release.path %>'
+          }]
+        }
+      }
     },
     http: {
       commands:[
@@ -397,7 +391,15 @@ module.exports = function(grunt) {
       grunt.file.mkdir('out/webapp/');
     }
 
-    var htmlTask = 'jade:' + type,
+    var release = {path: ''};
+
+    if(type === 'release'){
+      release = {path: pkg.version + '/'};
+    }
+
+    grunt.config.set('release', release);
+
+    var htmlTask = 'jade:build',
         cssTask  = 'less:build',
         hostTask = 'string-replace:deploy';
 
@@ -538,5 +540,31 @@ module.exports = function(grunt) {
     grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
   });
 
-  grunt.registerTask('default', ['build:dev', 'server']);
+  grunt.registerTask('default', ['server']);
+
+  grunt.registerTask('official', function(type){
+    var tasks = [];
+
+    type = type ? type : 'patch';
+    tasks.push('bumpup:' + type);
+
+    tasks.push('embed-hash');
+    tasks.push('uglify:build');
+
+    grunt.config.set('release', {path:''});
+
+    tasks.push('string-replace:release');
+
+    tasks.push('less:build');
+    tasks.push('jade:build');
+
+    tasks.push('compress:build');
+
+    tasks.push('writeVersion');
+
+    tasks.push('compress:official')
+
+    grunt.task.run(tasks);
+
+  });
 };
