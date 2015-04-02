@@ -1,7 +1,7 @@
 {
   "name": "wiconnect_webgui",
   "description": "WiConnect Web Setup",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "author": {
     "name": "Andrew Mitchell",
     "email": "andrew.mitchell@ack.me"
