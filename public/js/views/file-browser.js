@@ -117,11 +117,7 @@ App.Views.FileBrowser = Backbone.View.extend({
         thisDir = null;
 
     if(_.contains(e.currentTarget.classList, 'fs-file')){
-      _.each(Object.keys(self.device.fs.cwd().files), function(f){
-        if(self.device.fs.cwd().files[f].id === $(e.currentTarget).data('id')){
-          thisFile = self.device.fs.cwd().files[f];
-        }
-      });
+      thisFile = _.find(self.device.fs.cwd().files, function(f){ return f.id === $(e.currentTarget).data('id');});
     }
 
     if(_.contains(e.currentTarget.classList, 'folder')){
@@ -234,7 +230,7 @@ App.Views.FileBrowser = Backbone.View.extend({
         }
 
         // do not let web app delete itself
-        if(self.device.fs.cwd().path === '/webapp/' + _webapp.version) {
+        if(_.contains(['/webapp', '/webapp/' + _webapp.version], self.device.fs.cwd().path)) {
           if(_.contains(['index.html', 'wiconnect.js.gz', 'wiconnect.css.gz', 'unauthorized.html'], file.name)){
             file.state = _.without(file.state, 'deletable');
           }
@@ -398,6 +394,7 @@ App.Views.FileContext = Backbone.View.extend({
   template: _.template('\
 <ul>\
 <li class="hr mkdir">New Folder</li>\
+<li class="<%= link ? "" : "disabled" %> save"><% if(link) { %><a href="<%= url %>" data-bypass target="_blank">Save</a><% }else{ %>Save<% } %></li>\
 <li class="<%= isFile ? "" : "disabled" %> mv">Rename</li>\
 <li class="<%= isFile || isEmpty ? "" : "disabled" %> rm">Delete</li>\
 </ul>'),
@@ -424,7 +421,8 @@ App.Views.FileContext = Backbone.View.extend({
   events: {
     'click .mkdir': 'onMkdir',
     'click .mv:not(.disabled)': 'onMv',
-    'click .rm:not(.disabled)': 'onRm'
+    'click .rm:not(.disabled)': 'onRm',
+    'click .save:not(.disabled)': 'onSave'
   },
 
   onClick: function() {
@@ -442,10 +440,22 @@ App.Views.FileContext = Backbone.View.extend({
   render: function(){
     var self = this;
 
-    self.$el.html(self.template({
+    var data = {
       isFile: !_.isNull(self.file),
-      isEmpty: (self.dir ? self.device.fs.objectCount(self.dir) : -1) === 0
-    }));
+      isEmpty: (self.dir ? self.device.fs.objectCount(self.dir) : -1) === 0,
+      link: false,
+      url: ''
+    };
+
+    if(!_.isNull(self.file) && !(self.file.flags & 0x1A)) { //FW-791
+      data.link = true;
+
+      data.url = (self.device.get('host').slice(-1) === '/') ? self.device.get('host').substring(0, (self.device.get('host').length - 2)) : self.device.get('host');
+      data.url += self.device.fs.cwd().path + ((self.device.fs.cwd().path.length > 1) ? '/' : '');
+      data.url += self.file.name;
+    }
+
+    self.$el.html(self.template(data));
   },
 
   onMkdir: function() {
