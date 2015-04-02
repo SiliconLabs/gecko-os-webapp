@@ -267,8 +267,11 @@ var recSeq = {
     };
     dl(0);
   },
-  'set-root': function(data, next) {
+  'set-web-root': function(data, next) {
     w.post({url: host + '/command', data: JSON.stringify({flags:0, command: 'set ht s r webapp/index.html'}) }, function(err, res) {defRes(err, res, next); });
+  },
+  'set-setup-root': function(data, next) {
+    w.post({url: host + '/command', data: JSON.stringify({flags:0, command: 'set se w r webapp/index.html'}) }, function(err, res) {defRes(err, res, next); });
   },
   'save': function(data, next) {
     w.post({url: host + '/command', data: JSON.stringify({flags:0, command: 'save'}) }, function(err, res) {defRes(err, res, next); });
@@ -283,7 +286,7 @@ var recSeq = {
       w.get({url: host + '/command/ver'}, function(err, res) {
         if(err) {
           s('timeout');
-          if(attempt < 3){
+          if(attempt < 3){ //3 retries * 3 taskmanager retries * 30sec timeout
             return reconnect(attempt+1);
           }
           return next(new Error('unable to reconnect to device'));

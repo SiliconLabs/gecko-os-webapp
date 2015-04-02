@@ -578,6 +578,7 @@ App.Models.Device = Backbone.Model.extend({
       async.series([
         function(done){ self.wiconnect.set({args: 'ht s r ' + root + 'index.html'}, done); },
         function(done){ self.wiconnect.set({args: 'ht s d ' + root + 'unauthorized.html'}, done); },
+        function(done){ self.wiconnect.set({args: 'se w r ' + root + 'index.html'}, done); },
         function(done){ self.wiconnect.save({}, done); },
         function(done){ self.wiconnect.network_restart({}, done); }
       ], function(){
