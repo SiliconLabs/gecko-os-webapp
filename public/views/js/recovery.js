@@ -252,7 +252,7 @@ var recSeq = {
       var s = output.log('downloading', file.name, '(' + Number(attempt) + '/3)');
       s('downloading');
       w.post({url: host + '/command',
-        data: JSON.stringify({flags:0, command: 'http_download -e -c ' + file.crc + ' http://resources.ack.me/webapp/' + data.version + '/release/' + file.name + ' webapp/' + file.name})
+        data: JSON.stringify({flags:0, command: 'http_download -c ' + file.crc + ' http://resources.ack.me/webapp/' + data.version + '/release/' + file.name + ' webapp/' + file.name})
       }, function(err, res) {
         if(err || (clean(res.response).toLowerCase() === 'command failed')) {
           s('failed');

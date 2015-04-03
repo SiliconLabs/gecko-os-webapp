@@ -510,7 +510,7 @@ App.Models.Device = Backbone.Model.extend({
         _webapp.upgradeManifest.files,
         function(file, done) {
           self.wiconnect.http_download(
-            {args: '-e -c ' + file.crc + ' http://resources.ack.me/webapp/2.2/latest/' + file.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + file.name},
+            {args: '-c ' + file.crc + ' http://resources.ack.me/webapp/2.2/latest/' + file.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + file.name},
             function(err) {
               if(err) {
                 done(new Error());
