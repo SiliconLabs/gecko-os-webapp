@@ -88,11 +88,11 @@ module.exports = function(grunt) {
     },
     uglify: {
       build: {
-        mangle: true,
-        compress: true,
-        // options: {
-        //   sourceMap: true,
-        // },
+        options: {
+          mangle: true,
+          compress: {warnings: false},
+          // sourceMap: true
+        },
         files: [{
             dest: 'out/webapp/wiconnect.js',
             src: [
@@ -261,8 +261,8 @@ module.exports = function(grunt) {
         {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/wiconnect.js.gz%20webapp/2.2.0/wiconnect.js.gz'},
         {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/wiconnect.css.gz%20webapp/2.2.0/wiconnect.css.gz'},
         {name: 'unauth',url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/unauthorized.html%20webapp/2.2.0/unauthorized.html'},
-        {name: 'root',  url: 'http://<%= device.host %>/command/set%20ht%20s%20r%20webapp/2.2.0/index.html'},
-        {name: 'denied',url: 'http://<%= device.host %>/command/set%20ht%20s%20d%20webapp/2.2.0/unauthorized.html'},
+        {name: 'root',  url: 'http://<%= device.host %>/command/set%20ht%20s%20r%20webapp/index.html'},
+        {name: 'denied',url: 'http://<%= device.host %>/command/set%20ht%20s%20d%20webapp/unauthorized.html'},
         {name: 'save',  url: 'http://<%= device.host %>/command/save'},
         {name: 'reboot',url: 'http://<%= device.host %>/command/reboot'}
       ]
@@ -401,7 +401,7 @@ module.exports = function(grunt) {
 
     var htmlTask = 'jade:build',
         cssTask  = 'less:build',
-        hostTask = 'string-replace:deploy';
+        hostTask = 'string-replace:release';
 
     if(grunt.file.isDir('public/html/')){
       htmlTask = 'htmlclean:build';
@@ -562,7 +562,7 @@ module.exports = function(grunt) {
 
     tasks.push('writeVersion');
 
-    tasks.push('compress:official')
+    tasks.push('compress:official');
 
     grunt.task.run(tasks);
 
