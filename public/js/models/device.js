@@ -509,17 +509,26 @@ App.Models.Device = Backbone.Model.extend({
       async.eachSeries(
         _webapp.upgradeManifest.files,
         function(file, done) {
-          self.wiconnect.http_download(
-            {args: '-c ' + file.crc + ' http://resources.ack.me/webapp/2.2/latest/' + file.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + file.name},
-            function(err) {
-              if(err) {
-                done(new Error());
-              }
 
-              filesComplete += 1;
-              $('.progress').css({width: String((filesComplete / _webapp.upgradeManifest.files.length)*100) + '%'});
-              done();
-            });
+          var httpDownload = function(f, cb, attempt) {
+            attempt = attempt || 1;
+            self.wiconnect.http_download(
+              {args: '-c ' + f.crc + ' http://resources.ack.me/webapp/2.2/latest/' + f.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + f.name},
+              function(err, res) {
+                if(err || res.response.replace('\r\n').toLowerCase() === 'command failed') {
+                  if(attempt < 3) {
+                    return httpDownload(f, cb, attempt+1);
+                  }
+                  return cb(new Error());
+                }
+
+                filesComplete += 1;
+                $('.progress').css({width: String((filesComplete / _webapp.upgradeManifest.files.length)*100) + '%'});
+                cb();
+              });
+          };
+
+          httpDownload(file, done);
         },
         function(err) {
           next(err);
