@@ -456,6 +456,17 @@ App.Models.Device = Backbone.Model.extend({
 
     var webappDir;
 
+    var getWebAppDir = function(next) {
+      self.wiconnect.get({args: 'ht s r'}, function(err, res) {
+        if(err){
+          return next(err);
+        }
+
+        webappDir = '/' + _.initial(res.response.split('/')).join('/');
+        next();
+      });
+    };
+
     var checkStreams = function(next) {
       // check for open f.fc
       self.wiconnect.list(function(err, res){
@@ -492,13 +503,31 @@ App.Models.Device = Backbone.Model.extend({
       });
     };
 
-    var getWebAppDir = function(next) {
-      self.wiconnect.get({args: 'ht s r'}, function(err, res) {
-        if(err){
-          return next(err);
+    var checkRecovery = function(next) {
+      var cwd = self.fs.cwd().path;
+
+      if(!_.contains(Object.keys(self.fs.cd().files), '.recovery.html')) {
+        self.fs.cd(cwd);
+        return getRecovery(next);
+      }
+
+      self.fs.cd(cwd);
+      next();
+    };
+
+    var getRecovery = function(next, attempt) {
+      attempt = attempt || 1;
+
+      self.wiconnect.http_download({
+        args: ' http://resources.ack.me/webapp/2.2/release/recovery.html .recovery.html'
+      }, function(err, res){
+        if(err || (res.response.replace('\r\n', '').toLowerCase() === 'command failed')) {
+          if(attempt < 3) {
+            return getRecovery(next, attempt+1);
+          }
+          return next(new Error('Error retrieving .recovery.html'));
         }
 
-        webappDir = '/' + _.initial(res.response.split('/')).join('/');
         next();
       });
     };
@@ -512,20 +541,20 @@ App.Models.Device = Backbone.Model.extend({
 
           var httpDownload = function(f, cb, attempt) {
             attempt = attempt || 1;
-            self.wiconnect.http_download(
-              {args: '-c ' + f.crc + ' http://resources.ack.me/webapp/2.2/latest/' + f.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + f.name},
-              function(err, res) {
-                if(err || res.response.replace('\r\n').toLowerCase() === 'command failed') {
-                  if(attempt < 3) {
-                    return httpDownload(f, cb, attempt+1);
-                  }
-                  return cb(new Error());
+            self.wiconnect.http_download({
+              args: '-c ' + f.crc + ' http://resources.ack.me/webapp/2.2/latest/' + f.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + f.name
+            }, function(err, res) {
+              if(err || (res.response.replace('\r\n', '').toLowerCase() === 'command failed')) {
+                if(attempt < 3) {
+                  return httpDownload(f, cb, attempt+1);
                 }
+                return cb(new Error());
+              }
 
-                filesComplete += 1;
-                $('.progress').css({width: String((filesComplete / _webapp.upgradeManifest.files.length)*100) + '%'});
-                cb();
-              });
+              filesComplete += 1;
+              $('.progress').css({width: String((filesComplete / _webapp.upgradeManifest.files.length)*100) + '%'});
+              cb();
+            });
           };
 
           httpDownload(file, done);
@@ -535,7 +564,7 @@ App.Models.Device = Backbone.Model.extend({
         });
     };
 
-    var reloadFS = function(next) {
+    var readFS = function(next) {
       self.wiconnect.ls({args: '-v'}, function(err, res) {
         if(err) {
           return next(err);
@@ -633,8 +662,9 @@ App.Models.Device = Backbone.Model.extend({
     async.series([
       getWebAppDir,
       checkStreams, checkFreeSpace,
+      readFS, checkRecovery,
       getFiles,
-      reloadFS, verifyFiles,
+      readFS, verifyFiles,
       switchRoot
     ], function(err) {
 
