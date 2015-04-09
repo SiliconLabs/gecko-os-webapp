@@ -399,28 +399,37 @@ module.exports = function(grunt) {
 
     grunt.config.set('release', release);
 
-    var htmlTask = 'jade:build',
-        cssTask  = 'less:build',
-        hostTask = 'string-replace:release';
+    // var htmlTask = 'jade:build',
+    //     cssTask  = 'less:build';
 
-    if(grunt.file.isDir('public/html/')){
-      htmlTask = 'htmlclean:build';
-    }
+    // if(grunt.file.isDir('public/html/')){
+    //   htmlTask = 'htmlclean:build';
+    // }
+    //
+    // if(grunt.file.isDir('public/css/')){
+    //   cssTask = 'less:css';
+    // }
 
-    if(grunt.file.isDir('public/css/')){
-      cssTask = 'less:css';
-    }
+    var tasks = [];
+
+    tasks.push('embed-hash');
+    tasks.push('lint');
+    tasks.push('buildCopy:' + type);
 
     if(type === 'dev') {
       // set remote device host
-      hostTask = 'string-replace:dev';
+      tasks.push('string-replace:dev');
     }
 
-    grunt.task.run([
-      'embed-hash', 'lint', 'buildCopy:' + type, hostTask,
-      'uglify:build', cssTask, htmlTask,
-      'compress:build', 'buildCleanup:' + type, 'writeVersion'
-    ]);
+    tasks.push('uglify:build');
+    tasks.push('string-replace:release');
+    tasks.push('less:build');
+    tasks.push('jade:build');
+    tasks.push('compress:build');
+    tasks.push('buildCleanup:' + type);
+    tasks.push('writeVersion');
+
+    grunt.task.run(tasks);
   });
 
   grunt.registerTask('buildCopy', function(type){
@@ -470,10 +479,10 @@ module.exports = function(grunt) {
       'bumpup:' + type,
       'build:release',
       'compress:release',
-      'tagrelease',
+      // 'tagrelease',
       's3:clean', 's3:latest', 's3:ver',
-      'invalidate_cloudfront:latest',
-      'shell:pushTags'
+      'invalidate_cloudfront:latest'
+      // 'shell:pushTags'
     ]);
 
     grunt.log.writeln('--------------------------------------');
@@ -490,7 +499,7 @@ module.exports = function(grunt) {
 
     grunt.task.run([
       's3:clean', 's3:latest', 's3:ver',
-      'invalidate_cloudfront:release'
+      'invalidate_cloudfront:latest'
     ]);
   });
 
