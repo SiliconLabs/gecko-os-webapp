@@ -480,10 +480,10 @@ module.exports = function(grunt) {
       'bumpup:' + type,
       'build:release',
       'compress:release',
-      // 'tagrelease',
+      'tagrelease',
       's3:clean', 's3:latest', 's3:ver',
-      'invalidate_cloudfront:latest'
-      // 'shell:pushTags'
+      'invalidate_cloudfront:latest',
+      'shell:pushTags'
     ]);
 
     grunt.log.writeln('--------------------------------------');
