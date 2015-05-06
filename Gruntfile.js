@@ -189,11 +189,12 @@ module.exports = function(grunt) {
       },
       js: {
         files: ['public/js/**/*.js'],
-        tasks: [
-          'jshint', 'git-describe', 'jade:build',
-          'buildCopy:dev', 'string-replace:dev',
-          'uglify:build', 'compress:build',
-          'buildCleanup:dev'],
+        // tasks: [
+        //  'jshint', 'git-describe', 'jade:build',
+        //  'buildCopy:dev', 'string-replace:dev',
+        //  'uglify:build', 'compress:build',
+        //  'buildCleanup:dev'],
+        tasks: ['build:dev'],
         options: {
           interupt: true,
           debounceDelay: 5000
