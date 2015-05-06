@@ -76,7 +76,7 @@ App.Views.FileBrowser = Backbone.View.extend({
   initialize: function(opts){
     _.bindAll(this, 'render', 'setupEvents', 'onClose', 'onDelete', 'deleteFile',
               'onDragleave', 'onDragenter', 'onDragover', 'onDrop', 'onRightClick',
-              'readFiles', 'showDir', 'onFolder');
+              'readFiles', 'showDir', 'onFolder', 'processUploads');
 
     this.delegateEvents();
 
@@ -338,8 +338,6 @@ App.Views.FileBrowser = Backbone.View.extend({
     e.stopPropagation();
     e.preventDefault();
 
-    $(e.target).addClass('dropped').removeClass('over').text('uploading files');
-
     this.processUploads(e.dataTransfer.files);
   },
 
@@ -352,7 +350,10 @@ App.Views.FileBrowser = Backbone.View.extend({
 
   processUploads: function(files) {
     var self = this;
-    self.overwrite = $($('#overwrite')[0]).is(':checked');
+
+    this.overwrite = $($('#overwrite')[0]).is(':checked');
+
+    $('#dropbox').addClass('dropped').removeClass('over').text('uploading files');
 
     self.controller.loading(true);
 
@@ -372,7 +373,7 @@ App.Views.FileBrowser = Backbone.View.extend({
       function() {
         $(self.el).find('.file-queue').slideDown('fast');
 
-        self.device.fs.write(files, function(err){
+        self.device.fs.write(files, {overwrite: self.overwrite}, function(err){
           self.controller.loading(false);
 
           if(err) {
@@ -381,7 +382,6 @@ App.Views.FileBrowser = Backbone.View.extend({
           self.render();
         });
       });
-
   }
 });
 

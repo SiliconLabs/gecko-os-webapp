@@ -318,7 +318,16 @@ App.Models.FileSystem = Backbone.Model.extend({
     self.cd(cwd);
   },
 
-  write: function(files, done) {
+  write: function(files, opts, done) {
+    if(typeof opts === 'function'){
+      done = opts;
+      opts = {};
+    }
+
+    if(typeof done !== 'function'){
+      done = function(){};
+    }
+
     var self = this;
     var cmds = [];
 
@@ -334,12 +343,12 @@ App.Models.FileSystem = Backbone.Model.extend({
           filename = '\"' + thisFile.name +  '\"';
         }
 
-        if(typeof _.findWhere(self.device.fs.cwd().files, {name: filename}) !== 'undefined') {
-          if(!self.overwrite) {
+        if(typeof _.findWhere(self.device.fs.cwd().files, {name: thisFile.name}) !== 'undefined') {
+          if(!opts.overwrite) {
             return next();
           }
 
-          commands.push({cmd: 'fde', args: {args: '\"' + filename + '\"'}});
+          commands.push({cmd: 'fde', args: {args: filename}});
         }
 
         commands.push({cmd: 'fcr', args: {
