@@ -76,7 +76,8 @@ App.Views.FileBrowser = Backbone.View.extend({
   initialize: function(opts){
     _.bindAll(this, 'render', 'setupEvents', 'onClose', 'onDelete', 'deleteFile',
               'onDragleave', 'onDragenter', 'onDragover', 'onDrop', 'onRightClick',
-              'readFiles', 'showDir', 'onFolder', 'processUploads');
+              'readFiles', 'showDir', 'onFolder',
+              'processUploads');
 
     this.delegateEvents();
 
@@ -352,7 +353,6 @@ App.Views.FileBrowser = Backbone.View.extend({
     var self = this;
 
     this.overwrite = $($('#overwrite')[0]).is(':checked');
-
     $('#dropbox').addClass('dropped').removeClass('over').text('uploading files');
 
     self.controller.loading(true);

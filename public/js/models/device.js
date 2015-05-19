@@ -633,7 +633,7 @@ App.Models.Device = Backbone.Model.extend({
         _webapp.upgradeManifest.files,
         function(file, done) {
 
-          self.fs.rm('webapp/' + _webapp.upgradeManifest.version + '/' + file.name, done);
+          self.fs.rm('/webapp/' + _webapp.upgradeManifest.version + '/' + file.name, done);
 
         }, function(err) {
           if(err) {

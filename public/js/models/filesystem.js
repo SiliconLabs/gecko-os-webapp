@@ -229,6 +229,11 @@ App.Models.FileSystem = Backbone.Model.extend({
       self.cd(_.initial(path));
     }
 
+    if(self.cwd().path.indexOf(_.initial(path).join('/')) === -1){
+      //path does not exist
+      return done();
+    }
+
     var filepath = '\"' + self.cwd().path.substring(1) + (self.cwd().path.length > 1 ? '/' :'') + _.last(path) + '\"';
 
     self.device.wiconnect.fde({args: filepath}, function() {
