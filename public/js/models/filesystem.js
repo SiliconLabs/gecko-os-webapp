@@ -229,9 +229,11 @@ App.Models.FileSystem = Backbone.Model.extend({
       self.cd(_.initial(path));
     }
 
-    if(self.cwd().path.indexOf(_.initial(path).join('/')) === -1){
-      //path does not exist
-      return done();
+    if(_.initial(path).length > 0){
+      if(self.cwd().path.substr(self.cwd().path.length - _.initial(path).join('/').length).indexOf(_.initial(path).join('/')) === -1){
+        //path does not exist
+        return done();
+      }
     }
 
     var filepath = '\"' + self.cwd().path.substring(1) + (self.cwd().path.length > 1 ? '/' :'') + _.last(path) + '\"';
