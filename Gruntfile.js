@@ -550,7 +550,7 @@ module.exports = function(grunt) {
     grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
   });
 
-  grunt.registerTask('default', ['server']);
+  grunt.registerTask('default', ['build:dev', 'server']);
 
   grunt.registerTask('official', function(type){
     var tasks = [];
