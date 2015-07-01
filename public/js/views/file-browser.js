@@ -378,7 +378,16 @@ App.Views.FileBrowser = Backbone.View.extend({
 
           if(err) {
             //handle err
+            self.controller.modal({
+              systemModal: false,
+              content: '<h2>Error uploading file.</h2>',
+              primaryBtn: {
+                content: 'Continue'
+              },
+              showClose: true
+            });
           }
+
           self.render();
         });
       });

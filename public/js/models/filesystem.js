@@ -362,7 +362,8 @@ App.Models.FileSystem = Backbone.Model.extend({
           flags: 4,
           filename: filename,
           data: e.target.result,
-          timeout: 30000
+          timeout: 30000,
+          acceptCommandFailed: false
         }});
 
         return next();
@@ -411,6 +412,7 @@ App.Models.FileSystem = Backbone.Model.extend({
     self.device.wiconnect.list(function(err, res){
       if(err){
         //handle err
+        return done(err);
       }
 
       self.device.parseStreams(res, processFiles);
