@@ -34,24 +34,18 @@ App.Views.Firmware = Backbone.View.extend({
 <div class="content">\
 <h1>Firmware Management</h1>\
 <div>\
-<p>The firmware and files on this module can be updated and configured using an online Firmware Management Service. ACKme modules are factory configured with access to the standard WiConnect firmware from the ACKme OTA update server.</p>\
-<p>If you require access to custom firmware services, including access to custom firmware images, files or firmware bundles for this module or a host system, please contact ACKme to setup an account and obtain custom firmware activation credentials. Use the credentials to activate this module in the Custom Firmware Activation panel below.</p>\
+<p>The applications, resources and ZentriOS running on this device can be wirelessly updated using the Zentri Device Management Service.</p>\
+<p>Custom applications can also be developed using the ZentriOS Software Development Kit.</p>\
+<p>For more information and to gain access to development tools, visit the <a href="https://zentri.com/developers">Zentri developer page</a>.</p>\
 </div>\
 <hr>\
 </div>\
-<div class="content"><h1>Firmware Update</h1>\
+<div class="content">\
+<h1>Firmware Update</h1>\
 <div>\
-<div class="col-60">\
-<h4>Firmware Management Host</h4>\
-<input name="ota_host" class="ota_host" value="<%- ota_host %>">\
-</div>\
-<div class="col-40">\
-<h4>Port</h4>\
-<input name="ota_port" class="ota_port" value="<%- ota_port %>">\
-</div>\
 <div>\
-<h4>Firmware Bundle</h4>\
-<input type="text" placeholder="Latest Version" name="bundle" class="bundle" value="">\
+<h4>Bundle Version</h4>\
+<input type="text" placeholder="Latest" name="bundle" class="bundle" value="">\
 </div>\
 <div class="right">\
 <h5>force update</h5>\
@@ -62,30 +56,6 @@ App.Views.Firmware = Backbone.View.extend({
 </div>\
 <button class="btn btn-lg active right upgrade">Update</button><div class="clear">\
 </div>\
-</div>\
-<hr>\
-</div>\
-<div class="content">\
-<h1>Custom Firmware Activation</h1>\
-<div>\
-<p>Activate this module for custom firmware and files by entering your Activation ID and Password obtained from ACKme.</p>\
-<div>\
-<h4>Activation ID</h4>\
-<input type="text" id="activation_id" name="activation_id" class="activation_id" value="">\
-</div>\
-<div>\
-<h4>Password</h4>\
-<input type="password" id="activation_password" name="activation_password" class="activation_password" value="">\
-</div>\
-<div class="right">\
-<h5>show password</h5>\
-<div class="wiconnect-cbx secondary small">\
-<input type="checkbox" value="show-password" id="show-password" name="show-password" />\
-<label for="show-password"></label>\
-</div>\
-</div>\
-<button class="btn btn-lg active activate">Activate</button>\
-<div class="clear"></div>\
 </div>'),
 
   initialize: function(opts){
@@ -120,29 +90,8 @@ App.Views.Firmware = Backbone.View.extend({
 
     self.controller.loading(true);
 
-    //draw empty
     this.$el.html(this.template(this.device.toJSON())).addClass('active');
-
-    var cmds = [
-      {property: 'ota_host', cmd: 'get', args: {args: 'ot h'}, ret: false},
-      {property: 'ota_port', cmd: 'get', args: {args: 'ot p'}, ret: false}
-    ];
-
-    async.eachSeries(
-      cmds,
-      self.device.issueCommand,
-      function(err) {
-
-        //check still active view
-        if(self.controller.get('view') !== 'firmware'){
-          $(self.el).removeClass('active');
-          return;
-        }
-        self.$el.html(self.template(self.device.toJSON())).addClass('active');
-
-        self.controller.loading(false);
-
-      });
+    self.controller.loading(false);
   },
 
   onPassword: function(e) {
@@ -157,21 +106,6 @@ App.Views.Firmware = Backbone.View.extend({
     var self = this;
 
     var cmds = [];
-
-    var ota_host = $(this.el).find('input[name="ota_host"]').val();
-    var ota_port = $(this.el).find('input[name="ota_port"]').val();
-
-    if(ota_host !== self.device.get('ota_host').replace('\r\n', '')) { //ota host changed
-      cmds.push({cmd: 'set', args: {flags: 0, args:'ot h ' + ota_host}});
-    }
-
-    if(ota_port !== self.device.get('ota_port').replace('\r\n', '')) { //ota port changed
-      cmds.push({cmd: 'set', args: {flags: 0, args:'ot p ' + ota_port}});
-    }
-
-    if(cmds.length > 0) { //something to save
-      cmds.push({cmd: 'save'});
-    }
 
     var force = $(this.el).find('input[name="force"]').is(':checked') ? ' -f' : '';
     var bundle = $(this.el).find('input[name="bundle"]').val().trim();

@@ -32,19 +32,24 @@ App.Views.Cloud = Backbone.View.extend({
 
   template: _.template('\
 <div class="content">\
-<h1>Cloud Services</h1>\
-<p>ACKme modules interoperate with cloud vendors offering services for device monitoring, control and messaging. Cloud services pre-installed on this module need to be enabled by a secure activation process prior to use.</p>\
+<h1>Zentri Device Management Service</h1>\
+<p>Zentri Device Management Service instantly allows ZentriOS powered devices to be provisioned with a unique secure identity and configuration.</p>\
+<p>The service is built to deliver secure, encrypted, product-specific over the air (OTA) updates to products that are in-market.</p>\
+<p>A product inventory view is built into the service displaying real-time product updates including geo-location and status of the product.</p>\
+<p>Visit <a href="https://www.zentri.com/products#zentri-device">Zentri Device Management Service</a> for more information.</p>\
 <div class="clear"></div>\
 <hr>\
 </div>\
 <div class="content">\
-<h1>Commercial Services</h1>\
-<a class="sdc-logo" href="https://sensors.com" target="_blank"></a>\
-<h4>The Complete Silicon-to-Cloud&trade; IoT Framework Solution</h4>\
+<h1>Zentri Cloud Service</h1>\
+<p>Customers who go beyond secure updates and product inventory can monitor and control their product using the Cloud Connector and Zentri Cloud Service.</p>\
+<p>The service additionally allows secure delivery of analytics captured from the product to the cloud.</p>\
+<p>A typical customer for this service requires deployment of the service in days or weeks and relies on Zentri’s cloud infrastructure for product monitoring, control and capturing product analytics.</p>\
+<p>The RESTful and WebSocket APIs that are part of the service may be used to compose operational dashboards or plug-in to existing dashboards.</p>\
+<p>Visit <a href="https://www.zentri.com/products#zentri-cloud-service">Zentri Cloud Service</a> for more information.</p>\
 <div class="clear"></div>\
 <hr>\
-</div>\
-<div class="gohackme"></div>'),
+</div>'),
 
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose');
@@ -71,11 +76,5 @@ App.Views.Cloud = Backbone.View.extend({
       return;
     }
     this.$el.html(this.template()).addClass('active');
-
-    self.gohackme = new App.Views.GoHACKme({
-      el: $('.gohackme'),
-      controller: self.controller,
-      device: self.device
-    });
   }
 });
