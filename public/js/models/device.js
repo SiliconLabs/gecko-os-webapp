@@ -414,7 +414,7 @@ App.Models.Device = Backbone.Model.extend({
     var self = this;
 
     $.ajax({
-      url: 'http://resources.ack.me/webapp/2.2/latest/version.json?' + self.get('mac').replace(/:/g,'').slice(-6),
+      url: 'http://resources.zentri.com/webapp/3.0/latest/version.json?' + self.get('mac').replace(/:/g,'').slice(-6),
       type: 'GET',
       dataType: 'json'
     }).done(function(res){
@@ -519,7 +519,7 @@ App.Models.Device = Backbone.Model.extend({
       attempt = attempt || 1;
 
       self.wiconnect.http_download({
-        args: ' http://resources.ack.me/webapp/2.2/release/recovery.html .recovery.html'
+        args: ' http://resources.zentri.com/webapp/3.0/release/recovery.html .recovery.html'
       }, function(err, res){
         if(err || (res.response.replace('\r\n', '').toLowerCase() === 'command failed')) {
           if(attempt < 3) {
@@ -542,7 +542,7 @@ App.Models.Device = Backbone.Model.extend({
           var httpDownload = function(f, cb, attempt) {
             attempt = attempt || 1;
             self.wiconnect.http_download({
-              args: '-c ' + f.crc + ' http://resources.ack.me/webapp/2.2/latest/' + f.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + f.name
+              args: '-c ' + f.crc + ' http://resources.zentri.com/webapp/3.0/latest/' + f.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + f.name
             }, function(err, res) {
               if(err || (res.response.replace('\r\n', '').toLowerCase() === 'command failed')) {
                 if(attempt < 3) {

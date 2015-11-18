@@ -217,25 +217,10 @@ var recSeq = {
     output.log('starting recovery');
     next();
   },
-  'version': function(data, next) {
-    w.get({url: host + '/command/ver'}, function(err, res) {
-      if(err) {
-        return next(err);
-      }
-      if(clean(res.response).toLowerCase() === 'command failed') {
-        return next(new Error());
-      }
-      var ver = clean(res.response).split(',')[0].split('-');
-      ver = ver[ver.length-1];
-      ver = ver.split('.').slice(0,2).join('.');
-
-      return next(null, ver);
-    });
-  },
   'manifest': function(data, next) {
-    var status = output.log('retrieving manifest from CDN: resources.ack.me/webapp/' + data.version + '/release');
+    var status = output.log('retrieving manifest from CDN: resources.zentri.com/webapp/3.0/release');
 
-    w.get({url:'http://resources.ack.me/webapp/' + data.version + '/release/version.json'}, function(err, res){
+    w.get({url:'http://resources.zentri.com/webapp/3.0/release/version.json'}, function(err, res){
       status('done');
       next(err, res);
     });
@@ -252,7 +237,7 @@ var recSeq = {
       var s = output.log('downloading', file.name, '(' + Number(attempt) + '/3)');
       s('downloading');
       w.post({url: host + '/command',
-        data: JSON.stringify({flags:0, command: 'http_download -c ' + file.crc + ' http://resources.ack.me/webapp/' + data.version + '/release/' + file.name + ' webapp/' + file.name})
+        data: JSON.stringify({flags:0, command: 'http_download -c ' + file.crc + ' http://resources.zentri.com/webapp/3.0/release/' + file.name + ' webapp/' + file.name})
       }, function(err, res) {
         if(err || (clean(res.response).toLowerCase() === 'command failed')) {
           s('failed');
