@@ -34,7 +34,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/webapp/wiconnect.css': 'public/less/*.less',
+          'out/webapp/zentrios.css': 'public/less/*.less',
           'public/views/css/recovery.css': 'public/views/less/recovery.less',
           'public/views/css/unauthorized.css': 'public/views/less/unauthorized.less',
         }
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/webapp/wiconnect.css': 'public/css/wiconnect.css'
+          'out/webapp/zentrios.css': 'public/css/zentrios.css'
         }
       },
       basicDev: {
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
           compress: false
         },
         files: {
-          './public/css/wiconnect.css': 'public/less/*.less'
+          './public/css/zentrios.css': 'public/less/*.less'
         }
       }
     },
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
           // sourceMap: true
         },
         files: [{
-            dest: 'out/webapp/wiconnect.js',
+            dest: 'out/webapp/zentrios.js',
             src: [
                 'public/vendor/jquery/dist/jquery.min.js',
                 // 'public/vendor/zepto.js/src/zepto.js',
@@ -133,8 +133,8 @@ module.exports = function(grunt) {
         },
         expand: true,
         files: {
-          'out/webapp/wiconnect.js.gz': 'out/webapp/wiconnect.js',
-          'out/webapp/wiconnect.css.gz': 'out/webapp/wiconnect.css'
+          'out/webapp/zentrios.js.gz': 'out/webapp/zentrios.js',
+          'out/webapp/zentrios.css.gz': 'out/webapp/zentrios.css'
         }
       },
       release: {
@@ -150,8 +150,8 @@ module.exports = function(grunt) {
             src: [
               'out/webapp/index.html',
               'out/webapp/unauthorized.html',
-              'out/webapp/wiconnect.js.gz',
-              'out/webapp/wiconnect.css.gz',
+              'out/webapp/zentrios.js.gz',
+              'out/webapp/zentrios.css.gz',
               'out/webapp/version.json'
             ]
           }
@@ -171,8 +171,8 @@ module.exports = function(grunt) {
               'out/webapp/index.html',
               'out/webapp/unauthorized.html',
               'out/webapp/recovery.html',
-              'out/webapp/wiconnect.js.gz',
-              'out/webapp/wiconnect.css.gz',
+              'out/webapp/zentrios.js.gz',
+              'out/webapp/zentrios.css.gz',
               'out/webapp/version.json'
             ]
           }
@@ -259,8 +259,8 @@ module.exports = function(grunt) {
     http: {
       commands:[
         {name: 'index', url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/index.html%20webapp/2.2.0/index.html'},
-        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/wiconnect.js.gz%20webapp/2.2.0/wiconnect.js.gz'},
-        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/wiconnect.css.gz%20webapp/2.2.0/wiconnect.css.gz'},
+        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/zentrios.js.gz%20webapp/2.2.0/zentrios.js.gz'},
+        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/zentrios.css.gz%20webapp/2.2.0/zentrios.css.gz'},
         {name: 'unauth',url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/unauthorized.html%20webapp/2.2.0/unauthorized.html'},
         {name: 'root',  url: 'http://<%= device.host %>/command/set%20ht%20s%20r%20webapp/index.html'},
         {name: 'denied',url: 'http://<%= device.host %>/command/set%20ht%20s%20d%20webapp/unauthorized.html'},
@@ -277,29 +277,29 @@ module.exports = function(grunt) {
       },
       clean: {
         del: [
-          {src: 'webapp/2.2/latest/version.json'},
-          {src: 'webapp/2.2/latest/index.html'},
-          {src: 'webapp/2.2/latest/wiconnect.js.gz'},
-          {src: 'webapp/2.2/latest/wiconnect.css.gz'},
-          {src: 'webapp/2.2/latest/unauthorized.html'}
+          {src: 'webapp/3.0/latest/version.json'},
+          {src: 'webapp/3.0/latest/index.html'},
+          {src: 'webapp/3.0/latest/zentrios.js.gz'},
+          {src: 'webapp/3.0/latest/zentrios.css.gz'},
+          {src: 'webapp/3.0/latest/unauthorized.html'}
         ]
       },
       latest: {
         upload: [
-          {src: 'out/index.html',               dest: 'webapp/2.2/latest/index.html'},
-          {src: 'out/webapp/wiconnect.js.gz',   dest: 'webapp/2.2/latest/wiconnect.js.gz'},
-          {src: 'out/webapp/wiconnect.css.gz',  dest: 'webapp/2.2/latest/wiconnect.css.gz'},
-          {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.2/latest/unauthorized.html'},
-          {src: 'out/webapp/version.json',      dest: 'webapp/2.2/latest/version.json'}
+          {src: 'out/index.html',               dest: 'webapp/3.0/latest/index.html'},
+          {src: 'out/webapp/zentrios.js.gz',   dest: 'webapp/3.0/latest/zentrios.js.gz'},
+          {src: 'out/webapp/zentrios.css.gz',  dest: 'webapp/3.0/latest/zentrios.css.gz'},
+          {src: 'out/webapp/unauthorized.html', dest: 'webapp/3.0/latest/unauthorized.html'},
+          {src: 'out/webapp/version.json',      dest: 'webapp/3.0/latest/version.json'}
         ]
       },
       ver: {
         upload: [
-          {src: 'out/index.html',               dest: 'webapp/2.2/<%= pkg.version %>/index.html'},
-          {src: 'out/webapp/wiconnect.js.gz',   dest: 'webapp/2.2/<%= pkg.version %>/wiconnect.js.gz'},
-          {src: 'out/webapp/wiconnect.css.gz',  dest: 'webapp/2.2/<%= pkg.version %>/wiconnect.css.gz'},
-          {src: 'out/webapp/unauthorized.html', dest: 'webapp/2.2/<%= pkg.version %>/unauthorized.html'},
-          {src: 'out/webapp/version.json',      dest: 'webapp/2.2/<%= pkg.version %>/version.json'}
+          {src: 'out/index.html',               dest: 'webapp/3.0/<%= pkg.version %>/index.html'},
+          {src: 'out/webapp/zentrios.js.gz',   dest: 'webapp/3.0/<%= pkg.version %>/zentrios.js.gz'},
+          {src: 'out/webapp/zentrios.css.gz',  dest: 'webapp/3.0/<%= pkg.version %>/zentrios.css.gz'},
+          {src: 'out/webapp/unauthorized.html', dest: 'webapp/3.0/<%= pkg.version %>/unauthorized.html'},
+          {src: 'out/webapp/version.json',      dest: 'webapp/3.0/<%= pkg.version %>/version.json'}
         ]
       }
     },
@@ -311,11 +311,11 @@ module.exports = function(grunt) {
       },
       latest: {
         files: [
-          {dest: 'webapp/2.2/latest/version.json'},
-          {dest: 'webapp/2.2/latest/index.html'},
-          {dest: 'webapp/2.2/latest/wiconnect.js.gz'},
-          {dest: 'webapp/2.2/latest/wiconnect.css.gz'},
-          {dest: 'webapp/2.2/latest/unauthorized.html'}
+          {dest: 'webapp/3.0/latest/version.json'},
+          {dest: 'webapp/3.0/latest/index.html'},
+          {dest: 'webapp/3.0/latest/zentrios.js.gz'},
+          {dest: 'webapp/3.0/latest/zentrios.css.gz'},
+          {dest: 'webapp/3.0/latest/unauthorized.html'}
         ]
       }
     }
@@ -364,8 +364,8 @@ module.exports = function(grunt) {
     ver += '"version":"' + pkg.version + '",';
     ver += '"files":[';
     ver +=    '{"name":"index.html","size":' + fs.statSync('out/index.html').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/index.html")) + '"},';
-    ver +=    '{"name":"wiconnect.js.gz","size":' + fs.statSync('out/webapp/wiconnect.js.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/wiconnect.js.gz")) + '"},';
-    ver +=    '{"name":"wiconnect.css.gz","size":' + fs.statSync('out/webapp/wiconnect.css.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/wiconnect.css.gz")) + '"},';
+    ver +=    '{"name":"zentrios.js.gz","size":' + fs.statSync('out/webapp/zentrios.js.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/zentrios.js.gz")) + '"},';
+    ver +=    '{"name":"zentrios.css.gz","size":' + fs.statSync('out/webapp/zentrios.css.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/zentrios.css.gz")) + '"},';
     ver +=    '{"name":"unauthorized.html","size":' + fs.statSync('out/webapp/unauthorized.html').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/unauthorized.html")) + '"}';
     ver += ']}';
 
