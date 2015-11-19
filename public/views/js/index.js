@@ -1,7 +1,7 @@
 var assetsLoaded = 0;
 var assets = [
-  {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}wiconnect.css'}},
-  {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}wiconnect.js'}}
+  {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}zentrios.css'}},
+  {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}zentrios.js'}}
 ];
 for(var i = 0; i < assets.length; i++) {
   var asset = document.createElement(assets[i].tag);
