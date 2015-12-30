@@ -135,8 +135,7 @@ App.Views.Connect = Backbone.View.extend({
 
     var nwks = $(self.el).find('.networks');
 
-
-    _.each(_.sortBy(this.networks, function(n) {return -n.rssi;}), function(network) {
+    _.chain(self.networks).sortBy(function(n){return -n.rssi;}).uniq(function(n) {return n.ssid;}).map(function(network) {
       self.views.push(new App.Views.Network({
         network: network,
         el: $('<div />')
@@ -144,7 +143,7 @@ App.Views.Connect = Backbone.View.extend({
           .attr('data-network', network.id)
           .appendTo(nwks)
       }));
-    });
+    }).value();
 
     nwks.slideDown(125);
   },
