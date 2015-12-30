@@ -53,29 +53,30 @@ body .main>div {
       left: 50%;
       margin-top: -42.5px;
       margin-left: -42.5px;
-      .transform(skew(-5deg,-5deg) rotateY(20deg) rotateX(-15deg));
+      // .transform(skew(-5deg,-5deg) rotateY(20deg) rotateX(-15deg));
 
       .loading-circle {
         position: absolute;
-        width: 22px;
-        height: 22px;
-        background-color: #ad2327;
+        width: 18px;
+        height: 18px;
+        background-color: #fff;
+        border: 2px solid #f05f22;
         border-radius: 12%;
         .animation(1750ms loading infinite);
         .transform(scale(0));
 
-        .generate-delay(7);
+        .generate-delay(9);
 
-        &:nth-child(2n) {
-          background-color: #5a5a5b;
-        }
+        // &:nth-child(2n) {
+        //   background-color: #5a5a5b;
+        // }
 
-        &:last-child {
-          background-color: #5a5a5b;
-        }
+        // &:last-child {
+        //   background-color: #5a5a5b;
+        // }
 
         &.loading-row1 {
-          top: 1.3px;
+          // top: 1.3px;
 
           &.up {
             top: -4px;
@@ -83,7 +84,7 @@ body .main>div {
         }
 
         &.loading-row2 {
-          top: 17.95px;
+          top: 18px;
 
           &.up {
             top: 12.65px;
@@ -91,7 +92,7 @@ body .main>div {
         }
 
         &.loading-row3 {
-          top: 34.55px;
+          top: 36px;
 
           &.down {
             top: 39.85px;
@@ -99,7 +100,7 @@ body .main>div {
         }
 
         &.loading-row4 {
-          top: 54.2px;
+          top: 54px;
 
           &.down {
             top: 56.5px;
@@ -107,7 +108,7 @@ body .main>div {
         }
 
         &.loading-col1 {
-          left: 18.85px;
+          left: 18px;
 
           &.down {
             left: 23.85px;
@@ -115,7 +116,7 @@ body .main>div {
         }
 
         &.loading-col2 {
-          left: 35.5px;
+          left: 36px;
 
           &.up, &.down {
             left: 40.5px;
@@ -123,7 +124,7 @@ body .main>div {
         }
 
         &.loading-col3 {
-          left: 54.15px;
+          left: 54px;
 
           &.up {
             left: 57.15px;
