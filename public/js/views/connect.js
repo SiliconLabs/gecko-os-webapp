@@ -191,7 +191,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 <h4>BSSID</h4>\
 <input name="bssid" value="<%- bssid %>" disabled></input>\
 </div>\
-<div>\
+<div class="wlan-password">\
 <h4>Password</h4>\
 <input name="password" type="password" value="" autocapitalize="off"></input>\
 </div>\
@@ -212,7 +212,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 <div class="mdns">\
 <div>\
 <h4>Device Name</h4>\
-<input name="mdns" placeholder="ackme-<%= mac %>" value="<%= mdns %>"></input>\
+<input name="mdns" placeholder="zentrios-<%= mac %>" value="<%= mdns %>"></input>\
 </div>\
 </div>\
 <div>\
@@ -336,8 +336,9 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var password = $(this.el).find('input[name="password"]').val();
     cmds = [
-      {cmd: 'set', args: {args:'wl s \"' + self.network.ssid + '\"'}},
-      {cmd: 'set', args: {args:'wl p \"' + password + '\"'}}
+      {cmd: 'set', args: {args: 'wl c ' + (self.network.security === 'WEP' ? 'WEP' : 'Auto')}},
+      {cmd: 'set', args: {args: 'wl s \"' + self.network.ssid + '\"'}},
+      {cmd: 'set', args: {args: 'wl p \"' + password + '\"'}}
     ];
 
     if(advanced){
@@ -366,7 +367,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         var mac = self.device.get('mac');
         mac = mac.substring(mac.length - 4).replace(':','');
 
-        mdns = mdns.length > 0 ? mdns : 'ackme-' + mac;
+        mdns = mdns.length > 0 ? mdns : 'zentrios-' + mac;
         mdns = mdns.toLowerCase();
 
         self.mdns = mdns;
@@ -459,7 +460,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         });
     };
 
-    if(self.device.get('web_setup')) {
+    if(self.device.get('web_setup') && !_.contains(['Open', 'WEP'], self.network.security)) {
       self.controller.modal({systemModal: true, content:'<h2>Verifying password...</h2>'});
       return verifyCredentials();
     }
@@ -485,6 +486,10 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     if(!self.device.get('web_setup')) {
       $('.reconnect').hide();
+    }
+
+    if(self.network.security === 'Open'){
+      $('.wlan-password').hide();
     }
   },
 
