@@ -32,7 +32,7 @@ App.Views.Connect = Backbone.View.extend({
   template: _.template('\
 <div class="content">\
 <h1>Connect</h1>\
-<button class="btn btn-lg manual">Manual</button>\
+<button class="btn btn-lg manual">Other...</button>\
 <button class="btn btn-lg active scan">Scan</button>\
 <div class="wifi-scan wifi-logo">\
 <div class="wifi-bar"></div>\
@@ -204,7 +204,7 @@ App.Views.QuickConnect = Backbone.View.extend({
   views: [],
   template: _.template('\
 <div class="content">\
-<h2><%- (ssid.length > 0 ? ssid : "Manual setup") %></h2>\
+<h2><%- (ssid.length > 0 ? ssid : "Other network") %></h2>\
 <div class="ssid">\
 <h4>SSID</h4>\
 <input name="ssid" type="text" value="" autocapitalize="off"></input>\
