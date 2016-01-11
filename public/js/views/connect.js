@@ -32,6 +32,7 @@ App.Views.Connect = Backbone.View.extend({
   template: _.template('\
 <div class="content">\
 <h1>Connect</h1>\
+<button class="btn btn-lg manual">Manual</button>\
 <button class="btn btn-lg active scan">Scan</button>\
 <div class="wifi-scan wifi-logo">\
 <div class="wifi-bar"></div>\
@@ -59,7 +60,8 @@ App.Views.Connect = Backbone.View.extend({
   },
   events: {
     'click .scan': 'onScan',
-    'click .network': 'onNetwork'
+    'click .network': 'onNetwork',
+    'click .manual': 'onNetwork'
   },
   onScan: function() {
     var self = this;
@@ -68,6 +70,8 @@ App.Views.Connect = Backbone.View.extend({
       this.connectView.onClose();
       $(this.el).find('.connect-modal').empty();
     }
+
+    this.$('.manual').addClass('scanning');
 
     this.$('.scan')
       .text('Scanning...')
@@ -120,6 +124,8 @@ App.Views.Connect = Backbone.View.extend({
   onResults: function() {
     var self = this;
 
+    this.$('.manual').removeClass('scanning');
+
     $(this.el).find('.scan')
       .text('Rescan')
       .removeClass('scanning')
@@ -154,10 +160,23 @@ App.Views.Connect = Backbone.View.extend({
       this.connectView.onClose();
     }
 
+    var network = {
+      id: -1,
+      channel: '',
+      rssi: 0,
+      bssid: '',
+      security: '',
+      ssid: ''
+    };
+
+    if(!_.contains(e.currentTarget.classList, 'manual')) {
+      network = _.findWhere(this.networks, {id: $(e.currentTarget).data('network')});
+    }
+
     this.connectView = new App.Views.QuickConnect({
       device: this.device,
       controller: this.controller,
-      network: _.findWhere(this.networks, {id: $(e.currentTarget).data('network')}),
+      network: network,
       el: $('<div />')
         .addClass('connect-modal modal')
         .appendTo(this.$el)
@@ -185,16 +204,26 @@ App.Views.QuickConnect = Backbone.View.extend({
   views: [],
   template: _.template('\
 <div class="content">\
-<h2><%- ssid %></h2>\
-<div>\
+<h2><%- (ssid.length > 0 ? ssid : "Manual setup") %></h2>\
+<div class="ssid">\
+<h4>SSID</h4>\
+<input name="ssid" type="text" value="" autocapitalize="off"></input>\
+</div>\
+<div class="bssid">\
 <h4>BSSID</h4>\
 <input name="bssid" value="<%- bssid %>" disabled></input>\
+</div>\
+<div class="security-type btn-bar">\
+<h4>Security type</h4>\
+<button class="btn btn-lg btn-security btn-security-wpa active pressed">WPA2 / WPA</button>\
+<button class="btn btn-lg btn-security btn-security-open">Open</button>\
+<button class="btn btn-lg btn-security btn-security-wep">WEP</button>\
 </div>\
 <div class="wlan-password">\
 <h4>Password</h4>\
 <input name="password" type="password" value="" autocapitalize="off"></input>\
 </div>\
-<div class="right">\
+<div class="right show-password">\
 <h5>show password</h5>\
 <div class="wiconnect-cbx secondary small">\
 <input type="checkbox" value="show-password" id="show-password" name="show-password" />\
@@ -222,7 +251,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 <h4>Advanced Settings</h4>\
 </div>\
 <div class="advanced">\
-<div>\
+<div class="btn-bar">\
 <button class="btn btn-lg btn-ip btn-dhcp active pressed col-50">DHCP</button>\
 <button class="btn btn-lg btn-ip btn-static col-50">Static</button>\
 </div>\
@@ -253,7 +282,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>'),
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose',
-              'onReconnect', 'onAdvanced', 'onAddressing', 'onPassword',
+              'onReconnect', 'onAdvanced', 'onAddressing', 'onPassword', 'onSecurity',
               'onIPv4',
               'onCancel', 'onSave', 'onSetupExit'
               );
@@ -273,6 +302,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     'change #reconnect': 'onReconnect',
     'change #show-advanced': 'onAdvanced',
     'change #show-password': 'onPassword',
+    'click .btn-security': 'onSecurity',
     'click .btn-ip': 'onAddressing',
     'blur .ipv4': 'onIPv4',
     'keyup .ipv4.invalid': 'onIPv4',
@@ -312,16 +342,34 @@ App.Views.QuickConnect = Backbone.View.extend({
     $(this.el).find('.advanced').slideToggle(125);
   },
 
+  onSecurity: function(e) {
+    var thisBtn = $(e.currentTarget);
+    this.$('.btn-security.active').removeClass('active pressed');
+    thisBtn.addClass('active pressed');
+
+    this.network.security = 'Auto';
+
+    if(thisBtn.hasClass('btn-security-wep')){
+      this.network.security = 'WEP';
+    }
+
+    if(thisBtn.hasClass('btn-security-open')){
+      return this.$('.wlan-password, .show-password').hide();
+    }
+
+    this.$('.wlan-password, .show-password').show();
+  },
+
   onAddressing: function(e) {
     var thisBtn = $(e.currentTarget);
-    $(this.el).find('.btn-ip.active').removeClass('active pressed');
+    this.$('.btn-ip.active').removeClass('active pressed');
     thisBtn.addClass('active pressed');
 
     if(!thisBtn.hasClass('btn-static')){
-      return $(this.el).find('.static').slideUp(125);
+      return this.$('.static').slideUp(125);
     }
 
-    $(this.el).find('.static').slideDown(125);
+    this.$('.static').slideDown(125);
   },
 
   onSave: function() {
@@ -330,6 +378,10 @@ App.Views.QuickConnect = Backbone.View.extend({
     var cmds = [];
 
     self.reconnect = $($(this.el).find('input[name="reconnect"]')[0]).is(':checked');
+
+    if(self.network.ssid.length === 0){
+      self.network.ssid = $(this.el).find('input[name="ssid"]').val();
+    }
 
     var advanced = $($(this.el).find('input[name="show-advanced"]')[0]).is(':checked');
 
@@ -388,7 +440,6 @@ App.Views.QuickConnect = Backbone.View.extend({
       self.controller.loading(true);
     }
 
-
     var credentialFail = function(err, res) {
       return self.controller.modal({
         systemModal: true,
@@ -407,10 +458,14 @@ App.Views.QuickConnect = Backbone.View.extend({
     };
 
     var saveSettings = function() {
-      self.controller.modal({
-        systemModal: true,
-        content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'
-      });
+      if(self.device.get('web_setup')){
+        self.controller.modal({
+          systemModal: true,
+          content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'
+        });
+      } else {
+        self.controller.loading(true);
+      }
 
       async.eachSeries(
         cmds,
@@ -487,8 +542,18 @@ App.Views.QuickConnect = Backbone.View.extend({
       $('.reconnect').hide();
     }
 
+    if(self.network.ssid.length > 0){
+      this.$('.ssid').hide();
+    } else {
+      this.$('.bssid').hide();
+    }
+
+    if(self.network.security.length > 0){
+      this.$('.security-type').hide();
+    }
+
     if(self.network.security === 'Open'){
-      $('.wlan-password').hide();
+      this.$('.wlan-password, .show-password').hide();
     }
   },
 
