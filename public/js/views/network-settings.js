@@ -87,9 +87,9 @@ App.Views.NetworkSettings = Backbone.View.extend({
     this.$el.html(this.template(this.device.toJSON())).addClass('active');
 
     var cmds = [
-      {property: 'ssid', cmd: 'get', args: {args: 'wl s'}, ret: false },
-      {property: 'rssi', cmd: 'rssi', ret: false },
-      {property: 'dhcp', cmd: 'get', args: {args: 'ne d e'}, ret: false },
+      {property: 'ssid', cmd: 'get',      args: {args: 'wl s'},   ret: false },
+      {property: 'rssi', cmd: 'rssi',                             ret: false },
+      {property: 'dhcp', cmd: 'get',      args: {args: 'wl d e'}, ret: false },
       {property: 'auto_join', cmd: 'get', args: {args: 'wl o e'}, ret: false }
     ];
 
@@ -159,7 +159,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
 
     if(self.device.get('dhcp')){
       cmds = [
-        {cmd: 'set', args: {args: 'ne d e 1'}},
+        {cmd: 'set', args: {args: 'wl d e 1'}},
         {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
         {cmd:'save'}
       ];
@@ -171,12 +171,12 @@ App.Views.NetworkSettings = Backbone.View.extend({
       var netmask = $(this.el).find('input[name="netmask"]').val();
 
       cmds = [
-        {cmd: 'set', args: {args: 'ne d e 0'}},
+        {cmd: 'set', args: {args: 'wl d e 0'}},
         {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
-        {cmd: 'set', args: {args: 'st i ' + ip}},
-        {cmd: 'set', args: {args: 'st g ' + gateway}},
-        {cmd: 'set', args: {args: 'st d ' + dns}},
-        {cmd: 'set', args: {args: 'st n ' + netmask}},
+        {cmd: 'set', args: {args: 'wl t i ' + ip}},
+        {cmd: 'set', args: {args: 'wl t g ' + gateway}},
+        {cmd: 'set', args: {args: 'wl t d ' + dns}},
+        {cmd: 'set', args: {args: 'wl t n ' + netmask}},
         {cmd:'save'}
       ];
     }
@@ -239,16 +239,16 @@ App.Views.NetworkSettingsView = Backbone.View.extend({
 
     if(this.device.get('dhcp')){
       cmds = [
-        {property: 'netmask', cmd: 'get', args: {args: 'ne n'}, ret: false },
-        {property: 'ip', cmd: 'get', args: {args: 'ne i'}, ret: false },
-        {property: 'gateway', cmd: 'get', args: {args: 'ne g'}, ret: false }
+        {property: 'netmask', cmd: 'get', args: {args: 'wl n n'}, ret: false },
+        {property: 'ip',      cmd: 'get', args: {args: 'wl n i'}, ret: false },
+        {property: 'gateway', cmd: 'get', args: {args: 'wl n g'}, ret: false }
       ];
     } else {
       cmds = [
-        {property: 'netmask', cmd: 'get', args: {args: 'st n'}, ret: false },
-        {property: 'ip', cmd: 'get', args: {args: 'st i'}, ret: false },
-        {property: 'gateway', cmd: 'get', args: {args: 'st g'}, ret: false },
-        {property: 'dns', cmd: 'get', args: {args: 'st d'}, ret: false }
+        {property: 'netmask', cmd: 'get', args: {args: 'wl t n'}, ret: false },
+        {property: 'ip',      cmd: 'get', args: {args: 'wl t i'}, ret: false },
+        {property: 'gateway', cmd: 'get', args: {args: 'wl t g'}, ret: false },
+        {property: 'dns',     cmd: 'get', args: {args: 'wl t d'}, ret: false }
       ];
     }
 

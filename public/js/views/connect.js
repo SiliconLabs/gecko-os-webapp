@@ -395,7 +395,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     if(advanced){
       var dhcp = _.contains($(this.el).find('button.btn-ip.active')[0].classList, 'btn-dhcp');
 
-      cmds.push({cmd: 'set', args: {args: 'ne d e ' + (dhcp ? 1 : 0)}});
+      cmds.push({cmd: 'set', args: {args: 'wl d e ' + (dhcp ? 1 : 0)}});
 
       if(!dhcp){
         var ip      = $(this.el).find('input[name="ip"]').val();
@@ -403,10 +403,10 @@ App.Views.QuickConnect = Backbone.View.extend({
         var dns     = $(this.el).find('input[name="dns"]').val();
         var netmask = $(this.el).find('input[name="netmask"]').val();
 
-        cmds.push({cmd: 'set', args: {args:'st i ' + ip}});
-        cmds.push({cmd: 'set', args: {args:'st g ' + gateway}});
-        cmds.push({cmd: 'set', args: {args:'st d ' + dns}});
-        cmds.push({cmd: 'set', args: {args:'st n ' + netmask}});
+        cmds.push({cmd: 'set', args: {args:'wl t i ' + ip}});
+        cmds.push({cmd: 'set', args: {args:'wl t g ' + gateway}});
+        cmds.push({cmd: 'set', args: {args:'wl t d ' + dns}});
+        cmds.push({cmd: 'set', args: {args:'wl t n ' + netmask}});
       }
     }
 
