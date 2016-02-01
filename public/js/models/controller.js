@@ -28,6 +28,7 @@
 App.Models.Controller = Backbone.Model.extend({
   views: {},
   defaults: {
+    ready: false,
     loading: true,
     size: null,
     width: null,
@@ -175,6 +176,3 @@ App.Models.Controller = Backbone.Model.extend({
       });
   }
 });
-
-
-

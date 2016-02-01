@@ -270,18 +270,25 @@ App.Models.Device = Backbone.Model.extend({
             web_setup: web_setup
           });
 
-          var iface;
+          var iface, view;
 
           if(web_setup){
             iface = 'setup';
-            self.controller.set('view','connect');
+            view = 'connect';
           } else {
             iface = self.get('http_interface');
             if(iface === 'default') {
               iface = self.get('default_interface');
             }
-            self.controller.set('view','network-settings');
+            view = 'network-settings';
           }
+
+          view = Backbone.history.getFragment().length > 0 ? Backbone.history.getFragment() : view;
+
+          self.controller.set({
+            ready: true,
+            view: view
+          });
 
           self.set({interface: iface});
 

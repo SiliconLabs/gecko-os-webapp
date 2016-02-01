@@ -113,6 +113,8 @@ App.Views.Console = Backbone.View.extend({
 
     self.$el.html(self.templates.terminal()).addClass('active');
 
+    self.controller.loading(false);
+
     self.output = $(self.el).find('output')[0];
 
     self.printLine('ZentriOS Web App Console - v' + _webapp.version);

@@ -76,5 +76,6 @@ App.Views.Cloud = Backbone.View.extend({
       return;
     }
     this.$el.html(this.template()).addClass('active');
+    this.controller.loading(false);
   }
 });

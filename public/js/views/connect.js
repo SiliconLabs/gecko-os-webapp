@@ -190,8 +190,8 @@ App.Views.Connect = Backbone.View.extend({
       $(this.el).removeClass('active');
       return;
     }
-
     this.$el.html(this.template()).addClass('active');
+    self.controller.loading(false);
 
     self.onScan();
   }

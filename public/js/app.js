@@ -40,6 +40,7 @@ var App = {
   Models: {},
   Views: {},
   views: {},
+  router: {},
   menu: false,
   start: function(){
 
@@ -77,7 +78,7 @@ var App = {
         li.addClass(mode);
       });
 
-      a.attr('href', thisView.el);
+      a.attr('href', '#' + thisView.el);
       a.text(thisView.nav);
 
       a.appendTo(li);
@@ -96,15 +97,28 @@ var App = {
       controller: App.controller
     });
 
-    Backbone.history.start({pushState: true});
+    var MyRouter = Backbone.Router.extend({
+      routes: {'*actions':'doRoute'}
+    });
+
+    self.router = new MyRouter();
+
+    self.router.on('route:doRoute', function(route){
+      var appView = _.findWhere(appViews, {el: route});
+      if(!appView) {
+        return;
+      }
+      document.title = 'ZentriOS Web App - ' + appView.nav;
+      if(self.controller.get('ready')){
+        self.controller.set('view', route);
+      }
+    });
+
+    Backbone.history.start();
 
     $(document).on('click', 'a:not([data-bypass])', function(e) {
       var href = $(this).attr("href");
       var protocol = this.protocol + "//";
-      if (href.slice(0, protocol.length) !== protocol) {
-        e.preventDefault();
-        App.controller.set({view: href});
-      }
       if(_.contains(['small', 'medium'], App.controller.get('size'))) {
         self.onMenu();
       }
