@@ -35,16 +35,16 @@ App.Views.System = Backbone.View.extend({
 <div class="content">\
 <h1>System</h1>\
 <div>\
-<h4>Version</h4>\
-<input name="version" value="<%- version %>" disabled></input>\
+<h4>Product Version</h4>\
+<input name="version" value="<%- product_version %>" disabled></input>\
 </div>\
 <div>\
 <h4>Build Date</h4>\
 <input name="date" value="<%- date %>" disabled></input>\
 </div>\
 <div>\
-<h4>Module</h4>\
-<input name="module" value="<%- module %>" disabled></input>\
+<h4>ZentriOS Version</h4>\
+<input name="module" value="<%- os_version %>" disabled></input>\
 </div>\
 <div>\
 <h4>Board</h4>\
@@ -127,10 +127,10 @@ App.Views.System = Backbone.View.extend({
     var self = this;
 
     var cmds = [
-        {property: 'memory', cmd: 'get', args: {args: 'sy o'}, ret: false},
-        {property: 'network_buffer', cmd: 'get', args: {args: 'ne b u'}, ret: false},
-        {property: 'uptime', cmd: 'get', args: {args: 'ti u'}, ret: false},
-        {property: 'utc', cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
+        {property: 'memory',          cmd: 'get', args: {args: 'sy e u'}, ret: false},
+        {property: 'network_buffer',  cmd: 'get', args: {args: 'ne b u'}, ret: false},
+        {property: 'uptime',          cmd: 'get', args: {args: 'ti u'}, ret: false},
+        {property: 'utc',             cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
       ];
 
     async.eachSeries(
@@ -178,24 +178,25 @@ App.Views.System = Backbone.View.extend({
 
 
     var parseVersion = function(err, res) {
-      var version = res.response.split(',')[0],
-          dateModule = res.response.split(',')[1].trim().replace('Built:','').split(' for '),
-          board = res.response.split(',')[2];
+      var product_version = res.response.split(',')[0].trim(),
+          date = res.response.split(',')[1].trim(),
+          os_version = res.response.split(',')[2].trim(),
+          board = res.response.split(',')[3].replace('Board:','');
 
       self.device.set({
-        version: version,
-        date: dateModule[0],
-        module: dateModule[1],
+        product_version: product_version,
+        date: date,
+        os_version: os_version,
         board: board.trim().replace('Board:', '')
       });
 
       var cmds = [
-          {property: 'mac', cmd: 'get', args: {args: 'wl m'}, ret: true},
-          {property: 'memory', cmd: 'get', args: {args: 'sy o'}, ret: false},
-          {property: 'network_buffer', cmd: 'get', args: {args: 'ne b u'}, ret: false},
-          {property: 'uptime', cmd: 'get', args: {args: 'ti u'}, ret: false},
-          {property: 'uuid', cmd: 'get', args: {args: 'sy u'}, ret: true},
-          {property: 'utc', cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
+          {property: 'mac',             cmd: 'get', args: {args: 'wl m'},         ret: true},
+          {property: 'memory',          cmd: 'get', args: {args: 'sy e u'},       ret: false},
+          {property: 'network_buffer',  cmd: 'get', args: {args: 'ne b u'},       ret: false},
+          {property: 'uptime',          cmd: 'get', args: {args: 'ti u'},         ret: false},
+          {property: 'uuid',            cmd: 'get', args: {args: 'sy u'},         ret: true},
+          {property: 'utc',             cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
         ];
 
         async.eachSeries(

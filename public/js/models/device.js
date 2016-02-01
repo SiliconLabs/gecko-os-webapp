@@ -59,6 +59,8 @@ App.Models.Device = Backbone.Model.extend({
     uptime: '',
     uuid: '',
     version: '',
+    product_version: '',
+    os_version: '',
     web_setup: '',
     wlan: ''
   },
