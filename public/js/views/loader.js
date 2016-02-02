@@ -30,15 +30,9 @@ App.Views.Loader = Backbone.View.extend({
   els: [],
   views: [],
   template: _.template('\
-<div class="loading-circle loading-row1 loading-col1"></div>\
-<div class="loading-circle loading-row1 loading-col2"></div>\
-<div class="loading-circle loading-row1 loading-col3"></div>\
-<div class="loading-circle loading-row2 loading-col1"></div>\
-<div class="loading-circle loading-row2 loading-col2"></div>\
-<div class="loading-circle loading-row2 loading-col3"></div>\
-<div class="loading-circle loading-row3 loading-col1"></div>\
-<div class="loading-circle loading-row3 loading-col2"></div>\
-<div class="loading-circle loading-row3 loading-col3"></div>'),
+<div class="path"><div class="circle"></div></div>\
+<div class="path"><div class="circle"></div></div>\
+<div class="path"><div class="circle"></div></div>'),
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose');
     this.delegateEvents();

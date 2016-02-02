@@ -23,12 +23,6 @@
 
 @import "mixins.less";
 
-.generate-delay(@n, @i: 1) when (@i =< @n) {
-  &:nth-of-type(@{i}) {
-    .animation-delay(@i * 40ms);
-  }
-  .generate-delay(@n, (@i + 1));
-}
 
 body .main>div {
 
@@ -47,88 +41,41 @@ body .main>div {
     .loading {
       position: absolute;
       display: block;
-      width: 85px;
-      height: 85px;
+      width: 48px;
+      height: 48px;
       top: 50%;
       left: 50%;
-      margin-top: -42.5px;
-      margin-left: -42.5px;
+      margin-top: -24px;
+      margin-left: -24px;
+      animation: 3s cubic-bezier(.55,0,.45,1) 0s infinite forwards turn;
       // .transform(skew(-5deg,-5deg) rotateY(20deg) rotateX(-15deg));
 
-      .loading-circle {
+      .path {
+        // border: 1px solid #00f;
+        height: 24px;
+        width: 48px;
         position: absolute;
-        width: 18px;
-        height: 18px;
-        background-color: #fff;
-        border: 2px solid #f05f22;
-        border-radius: 12%;
-        .animation(1750ms loading infinite);
-        .transform(scale(0));
+        transform: translate(24px, 12px);
+        transform-origin: 0 50%;
 
-        .generate-delay(9);
-
-        // &:nth-child(2n) {
-        //   background-color: #5a5a5b;
-        // }
-
-        // &:last-child {
-        //   background-color: #5a5a5b;
-        // }
-
-        &.loading-row1 {
-          // top: 1.3px;
-
-          &.up {
-            top: -4px;
-          }
+        &:nth-of-type(2) {
+          transform: translate(24px, 12px) rotate(120deg);
         }
 
-        &.loading-row2 {
-          top: 18px;
-
-          &.up {
-            top: 12.65px;
-          }
+        &:nth-of-type(3) {
+          transform: translate(24px, 12px) rotate(240deg);
         }
 
-        &.loading-row3 {
-          top: 36px;
-
-          &.down {
-            top: 39.85px;
-          }
-        }
-
-        &.loading-row4 {
-          top: 54px;
-
-          &.down {
-            top: 56.5px;
-          }
-        }
-
-        &.loading-col1 {
-          left: 18px;
-
-          &.down {
-            left: 23.85px;
-          }
-        }
-
-        &.loading-col2 {
-          left: 36px;
-
-          &.up, &.down {
-            left: 40.5px;
-          }
-        }
-
-        &.loading-col3 {
-          left: 54px;
-
-          &.up {
-            left: 57.15px;
-          }
+        .circle {
+          background: #f05f22;
+          width: 24px;
+          height: 24px;
+          left: 0;
+          border-radius: 50%;
+          transform: scale(0.33);
+          position: absolute;
+          animation: 0.5s linear 0s infinite alternate path;
+          animation-timing-function: cubic-bezier(.55,0,.45,1);
         }
       }
     }
@@ -150,38 +97,75 @@ body .main>div {
   }
 }
 
-@-webkit-keyframes loading {
-  0% {.transform(scale(0));}
-  27.28% {.transform(scale(1));}
-  36.36% {.transform(scale(0.86));}
-  54.55% {.transform(scale(0.86));}
-  63.64% {.transform(scale(0));}
-  100% {.transform(scale(0));}
+@-webkit-keyframes turn {
+  0% {.transform(rotate(0deg));}
+  33% {.transform(rotate(240deg));}
+  67% {.transform(rotate(480deg));}
+  100% {.transform(rotate(720deg));}
 }
 
-@-moz-keyframes loading {
-  0% {.transform(scale(0));}
-  27.28% {.transform(scale(1));}
-  36.36% {.transform(scale(0.86));}
-  54.55% {.transform(scale(0.86));}
-  63.64% {.transform(scale(0));}
-  100% {.transform(scale(0));}
+@-moz-keyframes turn {
+  0% {.transform(rotate(0deg));}
+  33% {.transform(rotate(240deg));}
+  67% {.transform(rotate(480deg));}
+  100% {.transform(rotate(720deg));}
 }
 
-@-o-keyframes loading {
-  0% {.transform(scale(0));}
-  27.28% {.transform(scale(1));}
-  36.36% {.transform(scale(0.86));}
-  54.55% {.transform(scale(0.86));}
-  63.64% {.transform(scale(0));}
-  100% {.transform(scale(0));}
+@-o-keyframes turn {
+  0% {.transform(rotate(0deg));}
+  33% {.transform(rotate(240deg));}
+  67% {.transform(rotate(480deg));}
+  100% {.transform(rotate(720deg));}
 }
 
-@keyframes loading {
-  0% {.transform(scale(0));}
-  27.28% {.transform(scale(1));}
-  36.36% {.transform(scale(0.86));}
-  54.55% {.transform(scale(0.86));}
-  63.64% {.transform(scale(0));}
-  100% {.transform(scale(0));}
+@keyframes turn {
+  0% {.transform(rotate(0deg));}
+  33% {.transform(rotate(240deg));}
+  67% {.transform(rotate(480deg));}
+  100% {.transform(rotate(720deg));}
 }
+
+@-webkit-keyframes path {
+  0% {
+    left: 0;
+    .transform(scale(0.33));
+  }
+  100% {
+     left: ~"calc(100% - 24px)";
+     .transform(scale(0.56));
+  }
+}
+
+@-moz-keyframes path {
+  0% {
+    left: 0;
+    .transform(scale(0.33));
+  }
+  100% {
+     left: ~"calc(100% - 24px)";
+     .transform(scale(0.56));
+  }
+}
+
+@-o-keyframes path {
+  0% {
+    left: 0;
+    .transform(scale(0.33));
+  }
+  100% {
+     left: ~"calc(100% - 24px)";
+     .transform(scale(0.56));
+  }
+}
+
+@keyframes path {
+  0% {
+    left: 0;
+    .transform(scale(0.33));
+  }
+  100% {
+     left: ~"calc(100% - 24px)";
+     .transform(scale(0.56));
+  }
+}
+
