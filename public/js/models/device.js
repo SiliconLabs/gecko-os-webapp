@@ -263,7 +263,7 @@ App.Models.Device = Backbone.Model.extend({
           var web_setup = Boolean(Number(self.get('web_setup')));
 
           self.set({
-            ip: extractVar(res.response, 'network.ip:'),
+            ip: extractVar(res.response, 'wlan.network.ip:'),
             mac: extractVar(res.response, 'wlan.mac:'),
             http_interface: extractVar(res.response, 'http.server.interface:'),
             default_interface: extractVar(res.response, 'network.default_interface:'),
