@@ -514,7 +514,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         });
     };
 
-    if(self.device.get('web_setup') && !_.contains(['Open', 'WEP'], self.network.security)) {
+    if(self.device.get('web_setup') && (self.network.security.length > 0) && !_.contains(['Open', 'WEP'], self.network.security)) {
       self.controller.modal({systemModal: true, content:'<h2>Verifying password...</h2>'});
       return verifyCredentials();
     }
