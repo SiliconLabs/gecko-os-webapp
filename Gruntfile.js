@@ -6,7 +6,8 @@ module.exports = function(grunt) {
   var fs      = require('fs'),
       request = require('request'),
       async   = require('async'),
-      crc     = require('./tasks/helpers/crc.js');
+      crc     = require('./tasks/helpers/crc.js'),
+      git     = require('git-rev-2');
 
   grunt.initConfig({
     pkg: '<json:package.json>',
@@ -16,7 +17,6 @@ module.exports = function(grunt) {
         curly: true,
         eqeqeq: true,
         immed: true,
-        latedef: true,
         newcap: true,
         noarg: true,
         sub: true,
@@ -58,13 +58,13 @@ module.exports = function(grunt) {
         }
       }
     },
-    jade: {
+    pug: {
       build: {
         files: {
-          './out/index.html': './public/views/index.jade',
-          './out/webapp/index.html': './public/views/index.jade',
-          './out/webapp/unauthorized.html': './public/views/unauthorized.jade',
-          './out/webapp/recovery.html': './public/views/recovery.jade'
+          './out/index.html': './public/views/index.pug',
+          './out/webapp/index.html': './public/views/index.pug',
+          './out/webapp/unauthorized.html': './public/views/unauthorized.pug',
+          './out/webapp/recovery.html': './public/views/recovery.pug'
         }
       },
       basicDev: {
@@ -72,8 +72,8 @@ module.exports = function(grunt) {
           pretty: true
         },
         files: {
-          './public/html/index.html': './public/views/index.jade',
-          './public/html/unauthorized.html': './public/views/unauthorized.jade'
+          './public/html/index.html': './public/views/index.pug',
+          './public/html/unauthorized.html': './public/views/unauthorized.pug'
         }
       }
     },
@@ -189,11 +189,6 @@ module.exports = function(grunt) {
       },
       js: {
         files: ['public/js/**/*.js'],
-        // tasks: [
-        //  'jshint', 'git-describe', 'jade:build',
-        //  'buildCopy:dev', 'string-replace:dev',
-        //  'uglify:build', 'compress:build',
-        //  'buildCleanup:dev'],
         tasks: ['build:dev'],
         options: {
           interupt: true,
@@ -201,8 +196,8 @@ module.exports = function(grunt) {
         }
       },
       html: {
-        files: ['public/views/*.jade'],
-        tasks: ['jade:build', 'compress:build'],
+        files: ['public/views/*.pug'],
+        tasks: ['pug:build', 'compress:build'],
         options: {
           interupt: true
         }
@@ -217,10 +212,6 @@ module.exports = function(grunt) {
     },
     bumpup: {
       file: 'package.json'
-    },
-    'git-describe': {
-      options: {},
-      build: {}
     },
     shell: {
       options: {
@@ -323,12 +314,11 @@ module.exports = function(grunt) {
 
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-jade');
+  grunt.loadNpmTasks('grunt-contrib-pug');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-git-describe');
   grunt.loadNpmTasks('grunt-bumpup');
   grunt.loadNpmTasks('grunt-tagrelease');
   grunt.loadNpmTasks('grunt-shell');
@@ -337,7 +327,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-s3');
   grunt.loadNpmTasks('grunt-invalidate-cloudfront');
 
-  grunt.event.once('git-describe', function (rev) {
+
+
+  grunt.registerTask('lint', ['jshint']);
+
+  grunt.registerTask('embed-hash', function(){
     var pkg = grunt.file.readJSON('package.json');
 
     grunt.config.set('pkg', pkg);
@@ -346,15 +340,19 @@ module.exports = function(grunt) {
     grunt.config.set('device.host', config.device);
 
     // build webapp version date & hash into complied js
-    grunt.file.write(
-      'public/js/version.js',
-      'var _webapp = ' + '{' + 'date:"' + new Date().toISOString() + '", ' + 'hash:"' + rev.object + '", ' + 'version: "' + pkg.version +'"'+'};',
-      {encoding: 'utf8'});
+    git.short(function(err, hash){
+      if(err){
+        return;
+      }
+
+      grunt.file.write(
+        'public/js/version.js',
+        'var _webapp = ' + '{' + 'date:"' + new Date().toISOString() + '", ' + 'hash:"' + hash + '", ' + 'version: "' + pkg.version +'"'+'};',
+        {encoding: 'utf8'});
+
+      });
   });
 
-  grunt.registerTask('lint', ['jshint']);
-
-  grunt.registerTask('embed-hash', ['git-describe']);
 
   grunt.registerTask('writeVersion', function(){
     var pkg = grunt.file.readJSON('package.json');
@@ -400,7 +398,7 @@ module.exports = function(grunt) {
 
     grunt.config.set('release', release);
 
-    // var htmlTask = 'jade:build',
+    // var htmlTask = 'pug:build',
     //     cssTask  = 'less:build';
 
     // if(grunt.file.isDir('public/html/')){
@@ -425,7 +423,7 @@ module.exports = function(grunt) {
     tasks.push('uglify:build');
     tasks.push('string-replace:release');
     tasks.push('less:build');
-    tasks.push('jade:build');
+    tasks.push('pug:build');
     tasks.push('compress:build');
     tasks.push('buildCleanup:' + type);
     tasks.push('writeVersion');
@@ -449,12 +447,12 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('no-jade', function() {
+  grunt.registerTask('no-pug', function() {
     if(!grunt.file.isDir('public/html/')) {
       grunt.log.writeln('Created HTML directory.');
       grunt.file.mkdir('public/html/');
     }
-    grunt.task.run(['jade:basicDev']);
+    grunt.task.run(['pug:basicDev']);
   });
 
   grunt.registerTask('no-less', function() {
@@ -566,7 +564,7 @@ module.exports = function(grunt) {
     tasks.push('string-replace:release');
 
     tasks.push('less:build');
-    tasks.push('jade:build');
+    tasks.push('pug:build');
 
     tasks.push('compress:build');
 
