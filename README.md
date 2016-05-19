@@ -1,8 +1,8 @@
-# ACKme WiConnect WebApp
+# ZentriOS Web App
 
 ## Installation
 
-The WiConnect WebApp uses the following development tools:
+The ZentriOS Web App uses the following development tools:
 
 * [Node.js](http://nodejs.org)
 * [Grunt](http://gruntjs.com)
@@ -30,7 +30,7 @@ Will run a local nodejs server on port 5002 for testing
 
 Will start a task that listens for file changes, and compile/compress HTML, CSS and JS
 
-When developing on a local server and communicating with a remote device, set the option `host:'[device IP]'` when creating the device model in `/public/js/app.js`. _N.B. a comma will have to be added between the key value pairs (the line above) as this adds an additional property to the object._ To sucessfully communicate with a remote device, the WiConnect variable `http.server.cors_origin` needs to be set appropriately.
+When developing on a local server and communicating with a remote device, set the option `host:'[device IP]'` when creating the device model in `/public/js/app.js`. _N.B. a comma will have to be added between the key value pairs (the line above) as this adds an additional property to the object._ To sucessfully communicate with a remote device, the ZentriOS variable `http.server.cors_origin` needs to be set appropriately.
 
 If a grunt task fails to run and an error about missing packages is displayed, you may need to run `npm install` to install any missing packages.
 
@@ -58,12 +58,12 @@ grunt release:patch
 
 ## Licence
 
-WiConnect Web App, WiConnect JS API Library & WiConnect JS Build System
+ZentriOS Web App, ZentriOS JS API Library & ZentriOS JS Build System
 
 Copyright (C) 2015, Sensors.com, Inc.
 All Rights Reserved.
 
-The WiConnect Web App, WiConnect JavaScript API and WiConnect JS build system
+The ZentriOS Web App, ZentriOS JavaScript API and ZentriOS JS build system
 are provided free of charge by Sensors.com. The combined source code, and
 all derivatives, are licensed by Sensors.com SOLELY for use with devices
 manufactured by ACKme Networks, or approved by Sensors.com.
