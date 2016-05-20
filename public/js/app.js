@@ -5,7 +5,7 @@
 /*
   * Zentri Web App, Zentri JS API Library & Zentri JS Build System
   *
-  * Copyright (C) 2015, Sensors.com, Inc.
+  * Copyright (C) 2016, Zentri
   * All Rights Reserved.
   *
   * The Zentri Web App, Zentri JavaScript API and Zentri JS build system
