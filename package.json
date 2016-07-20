@@ -1,7 +1,7 @@
 {
   "name": "zentrios_webapp",
-  "description": "ZentriOS Web App",
-  "version": "3.0.3",
+  "description": "ZentriOS WL Web App",
+  "version": "1.0.0",
   "author": {
     "name": "Andrew Mitchell",
     "email": "brew@zentri.me"
@@ -22,7 +22,8 @@
     "async": "^1.5.2",
     "express": "^4.13.4",
     "less": "^2.7.1",
-    "pug": "^2.0.0-alpha7"
+    "pug": "^2.0.0-alpha7",
+    "zentriosjs": "git+ssh://git@bitbucket.org/zentri/zentriosjs.git#WL"
   },
   "devDependencies": {
     "async": "^1.5.2",
