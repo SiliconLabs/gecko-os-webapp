@@ -238,7 +238,7 @@ App.Models.FileSystem = Backbone.Model.extend({
 
     var filepath = '\"' + self.cwd().path.substring(1) + (self.cwd().path.length > 1 ? '/' :'') + _.last(path) + '\"';
 
-    self.device.wiconnect.fde({args: filepath}, function() {
+    self.device.zentrios.fde({args: filepath}, function() {
       self.cd(cwd);
       done();
     });
@@ -409,7 +409,7 @@ App.Models.FileSystem = Backbone.Model.extend({
         });
     };
 
-    self.device.wiconnect.list(function(err, res){
+    self.device.zentrios.list(function(err, res){
       if(err){
         //handle err
         return done(err);

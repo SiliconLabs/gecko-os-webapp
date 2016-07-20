@@ -117,7 +117,7 @@ App.Views.Connect = Backbone.View.extend({
     self.device.issueCommand(
       {property: 'mdns', cmd: 'get', args: {args: 'md n', ret: false}},
       function(err, res) {
-        self.device.wiconnect.scan({args: '-v', timeout: 20000}, scanComplete);
+        self.device.zentrios.scan({args: '-v', timeout: 20000}, scanComplete);
       });
 
   },
@@ -225,13 +225,13 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 <div class="right show-password">\
 <h5>show password</h5>\
-<div class="wiconnect-cbx secondary small">\
+<div class="zentri-cbx secondary small">\
 <input type="checkbox" value="show-password" id="show-password" name="show-password" />\
 <label for="show-password"></label>\
 </div>\
 </div>\
 <div class="reconnect">\
-<div class="wiconnect-cbx small-margin">\
+<div class="zentri-cbx small-margin">\
 <input type="checkbox" value="None" id="reconnect" name="reconnect"/>\
 <label for="reconnect"></label>\
 </div>\
@@ -244,7 +244,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 </div>\
 <div>\
-<div class="wiconnect-cbx">\
+<div class="zentri-cbx">\
 <input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
 <label for="show-advanced"></label>\
 </div>\
@@ -486,38 +486,6 @@ App.Views.QuickConnect = Backbone.View.extend({
           self.remove();
         });
     };
-
-    var attempt = 1;
-
-    var verifyCredentials = function() {
-      self.device.wiconnect.nve(
-        {args: 'wifi \"' + self.network.ssid + '\" ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((self.device.securityTypes[self.network.security.toLowerCase()] > 0) ? ' ' + self.device.securityTypes[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(password, self.network.ssid) : '')},
-        function(err, res){
-          if(res.response.replace('\r\n','') !== 'Success') {
-            //timeout or Command Failed
-            if(attempt >= 3){
-              return credentialFail();
-            }
-
-            attempt += 1;
-
-            //need to wait a few seconds to prevent eating all the beacons
-            return setTimeout(verifyCredentials, 3000);
-          }
-
-          self.controller.modal({
-            systemModal: true,
-            content: '<h2>Success!<br>Your network password is correct.</h2>'
-          });
-
-          setTimeout(saveSettings, 2000);
-        });
-    };
-
-    if(self.device.get('web_setup') && (self.network.security.length > 0) && !_.contains(['Open', 'WEP'], self.network.security)) {
-      self.controller.modal({systemModal: true, content:'<h2>Verifying password...</h2>'});
-      return verifyCredentials();
-    }
 
     saveSettings();
   },
