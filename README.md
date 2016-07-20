@@ -1,4 +1,4 @@
-# ZentriOS Web App
+# ZentriOS-WL Web App
 
 ## Installation
 
