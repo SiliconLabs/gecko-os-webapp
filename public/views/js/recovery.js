@@ -218,9 +218,9 @@ var recSeq = {
     next();
   },
   'manifest': function(data, next) {
-    var status = output.log('retrieving manifest from CDN: resources.zentri.com/webapp/3.0/release');
+    var status = output.log('retrieving manifest from CDN: resources.zentri.com/webapp/WL/1.0/release');
 
-    w.get({url:'http://resources.zentri.com/webapp/3.0/release/version.json'}, function(err, res){
+    w.get({url:'http://resources.zentri.com/webapp/WL/1.0/release/version.json'}, function(err, res){
       status('done');
       next(err, res);
     });
@@ -237,7 +237,7 @@ var recSeq = {
       var s = output.log('downloading', file.name, '(' + Number(attempt) + '/3)');
       s('downloading');
       w.post({url: host + '/command',
-        data: JSON.stringify({flags:0, command: 'http_download -c ' + file.crc + ' http://resources.zentri.com/webapp/3.0/release/' + file.name + ' webapp/' + file.name})
+        data: JSON.stringify({flags:0, command: 'http_download -c ' + file.crc + ' http://resources.zentri.com/webapp/WL/1.0/release/' + file.name + ' webapp/' + file.name})
       }, function(err, res) {
         if(err || (clean(res.response).toLowerCase() === 'command failed')) {
           s('failed');
