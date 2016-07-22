@@ -29,7 +29,6 @@
 App.Views.System = Backbone.View.extend({
   els: [],
   views: [],
-  poll: null,
 
   template: _.template('\
 <div class="content">\
@@ -99,6 +98,8 @@ App.Views.System = Backbone.View.extend({
 
     this.controller = opts.controller;
     this.device = opts.device;
+
+    this.poll = null;
 
     this.listenTo(this.controller, 'change:view', this.render);
     this.render();
