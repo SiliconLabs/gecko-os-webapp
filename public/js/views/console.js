@@ -464,8 +464,6 @@ App.Views.Console = Backbone.View.extend({
         self.reconnect.delay   = 1000;
       /* falls through */
       case 'reboot':
-      case 'ghm_activate':
-      case 'gac':
         //no piping
         self.reconnect.attempt = 0;
         self.controller.modal({systemModal: true, content:'<h2>' + self.reconnect.content +'</h2><div class="progress-bar"><div class="progress"></div></div>'});
