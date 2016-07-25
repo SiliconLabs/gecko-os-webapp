@@ -60,17 +60,9 @@ App.Views.System = Backbone.View.extend({
 <div>\
 <h4>Memory Usage</h4>\
 </div>\
-<div class="col-33">\
+<div class="col-100">\
 <h5>Heap</h5>\
 <input name="memory" value="<%- memory %>%" disabled></input>\
-</div>\
-<div class="col-33">\
-<h5>Network Tx</h5>\
-<input name="tx" value="<%- tx %>%" disabled></input>\
-</div>\
-<div class="col-33">\
-<h5>Network Rx</h5>\
-<input name="rx" value="<%- rx %>%" disabled></input>\
 </div>\
 <div>\
 <h4>Uptime</h4>\
@@ -129,7 +121,6 @@ App.Views.System = Backbone.View.extend({
 
     var cmds = [
         {property: 'memory',          cmd: 'get', args: {args: 'sy e u'}, ret: false},
-        {property: 'network_buffer',  cmd: 'get', args: {args: 'ne b u'}, ret: false},
         {property: 'uptime',          cmd: 'get', args: {args: 'ti u'}, ret: false},
         {property: 'utc',             cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
       ];
@@ -141,8 +132,6 @@ App.Views.System = Backbone.View.extend({
 
         $(self.el).find('input[name="time"]').val(self.device.get('utc').replace('\r\n',''));
         $(self.el).find('input[name="memory"]').val(self.device.get('memory') + '%');
-        $(self.el).find('input[name="rx"]').val(Number(self.device.get('network_buffer').replace('\r\n','').split(',')[0].split(':')[1]) + '%');
-        $(self.el).find('input[name="tx"]').val(Number(self.device.get('network_buffer').replace('\r\n','').split(',')[1].split(':')[1]) + '%');
         $(self.el).find('input[name="uptime"]').val(self.formatUptime(self.device.get('uptime')));
 
         self.poll = setTimeout(self.update, 1000);
@@ -194,7 +183,6 @@ App.Views.System = Backbone.View.extend({
       var cmds = [
           {property: 'mac',             cmd: 'get', args: {args: 'wl m'},         ret: true},
           {property: 'memory',          cmd: 'get', args: {args: 'sy e u'},       ret: false},
-          {property: 'network_buffer',  cmd: 'get', args: {args: 'ne b u'},       ret: false},
           {property: 'uptime',          cmd: 'get', args: {args: 'ti u'},         ret: false},
           {property: 'uuid',            cmd: 'get', args: {args: 'sy u'},         ret: true},
           {property: 'utc',             cmd: 'get', args: {args: 'time.rtc utc'}, ret: false}
@@ -214,8 +202,6 @@ App.Views.System = Backbone.View.extend({
 
             data = self.device.toJSON();
             data.uptime = self.formatUptime(data.uptime);
-            data.tx = self.device.get('network_buffer').replace('\r\n','').split(',')[1].split(':')[1];
-            data.rx = self.device.get('network_buffer').replace('\r\n','').split(',')[0].split(':')[1];
             data.webapp = _webapp;
             data.webapp.date = new Date(data.webapp.date);
 
