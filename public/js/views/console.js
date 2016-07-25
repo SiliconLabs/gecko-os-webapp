@@ -543,7 +543,7 @@ App.Views.Console = Backbone.View.extend({
             .replace(/'/g, '&apos;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/g, "<a href='$1$2.$3$4' target='_blank'>$1$2.$3$4</a>");
+            .replace(/(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\#\w \.-]*)*\/?/g, "<a href='$1$2.$3$4' target='_blank'>$1$2.$3$4</a>");
 
     var html = '<div class="ls-files">' + line + '</div>';
 
