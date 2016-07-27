@@ -29,6 +29,7 @@
 App.Views.Connect = Backbone.View.extend({
   els: [],
   views: [],
+
   template: _.template('\
 <div class="content">\
 <h1>Connect</h1>\
@@ -45,6 +46,7 @@ App.Views.Connect = Backbone.View.extend({
 <div class="no-results">No networks found.<br>Click Rescan to try again.</div>\
 <div class="clear"></div>\
 </div>'),
+
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose', 'onScan', 'onResults');
     this.delegateEvents();
@@ -55,14 +57,17 @@ App.Views.Connect = Backbone.View.extend({
     this.listenTo(this.controller, 'change:view', this.render);
     this.render();
   },
+
   onClose: function(){
     this.stopListening();
   },
+
   events: {
     'click .scan': 'onScan',
     'click .network': 'onNetwork',
     'click .manual': 'onNetwork'
   },
+
   onScan: function() {
     var self = this;
 
@@ -114,13 +119,10 @@ App.Views.Connect = Backbone.View.extend({
       self.onResults();
     };
 
-    self.device.issueCommand(
-      {property: 'mdns', cmd: 'get', args: {args: 'md n', ret: false}},
-      function(err, res) {
-        self.device.zentrios.scan({args: '-v', timeout: 20000}, scanComplete);
-      });
-
+    self.device.zentrios.scan({args: '-v', timeout: 20000}, scanComplete);
   },
+
+
   onResults: function() {
     var self = this;
 
@@ -153,6 +155,8 @@ App.Views.Connect = Backbone.View.extend({
 
     nwks.slideDown(125);
   },
+
+
   onNetwork: function(e) {
     var self = this;
 
@@ -183,6 +187,8 @@ App.Views.Connect = Backbone.View.extend({
     });
 
   },
+
+
   render: function() {
     var self = this;
 
@@ -202,6 +208,7 @@ App.Views.Connect = Backbone.View.extend({
 App.Views.QuickConnect = Backbone.View.extend({
   els: [],
   views: [],
+
   template: _.template('\
 <div class="content">\
 <h2><%- (ssid.length > 0 ? ssid : "Other network") %></h2>\
@@ -228,19 +235,6 @@ App.Views.QuickConnect = Backbone.View.extend({
 <div class="zentri-cbx secondary small">\
 <input type="checkbox" value="show-password" id="show-password" name="show-password" />\
 <label for="show-password"></label>\
-</div>\
-</div>\
-<div class="reconnect">\
-<div class="zentri-cbx small-margin">\
-<input type="checkbox" value="None" id="reconnect" name="reconnect"/>\
-<label for="reconnect"></label>\
-</div>\
-<h4>Reconnect to device</h4>\
-</div>\
-<div class="mdns">\
-<div>\
-<h4>Device Name</h4>\
-<input name="mdns" placeholder="zentrios-<%= mac %>" value="<%= mdns %>"></input>\
 </div>\
 </div>\
 <div>\
@@ -280,9 +274,10 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 <div class="clear"></div>\
 </div>'),
+
   initialize: function(opts){
     _.bindAll(this, 'render', 'onClose',
-              'onReconnect', 'onAdvanced', 'onAddressing', 'onPassword', 'onSecurity',
+              'onAdvanced', 'onAddressing', 'onPassword', 'onSecurity',
               'onIPv4',
               'onCancel', 'onSave', 'onSetupExit'
               );
@@ -295,11 +290,12 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     this.render();
   },
+
   onClose: function(){
     this.stopListening();
   },
+
   events: {
-    'change #reconnect': 'onReconnect',
     'change #show-advanced': 'onAdvanced',
     'change #show-password': 'onPassword',
     'click .btn-security': 'onSecurity',
@@ -309,11 +305,15 @@ App.Views.QuickConnect = Backbone.View.extend({
     'click .cancel': 'onCancel',
     'click .save': 'onSave'
   },
+
+
   onCancel: function() {
     $('.connect>.content').show();
 
     this.remove();
   },
+
+
   onIPv4: function(e) {
     var thisAdd = $(e.currentTarget);
 
@@ -326,6 +326,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     thisAdd.removeClass('invalid');
   },
 
+
   onPassword: function(e) {
     if($(this.el).find('#show-password').is(':checked')) {
       $(this.el).find('input[name="password"]').attr('type', 'text');
@@ -334,13 +335,11 @@ App.Views.QuickConnect = Backbone.View.extend({
     $(this.el).find('input[name="password"]').attr('type', 'password');
   },
 
-  onReconnect: function(e) {
-    $(this.el).find('.mdns').slideToggle(125);
-  },
 
   onAdvanced: function(e) {
     $(this.el).find('.advanced').slideToggle(125);
   },
+
 
   onSecurity: function(e) {
     var thisBtn = $(e.currentTarget);
@@ -360,6 +359,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     this.$('.wlan-password, .show-password').show();
   },
 
+
   onAddressing: function(e) {
     var thisBtn = $(e.currentTarget);
     this.$('.btn-ip.active').removeClass('active pressed');
@@ -372,12 +372,11 @@ App.Views.QuickConnect = Backbone.View.extend({
     this.$('.static').slideDown(125);
   },
 
+
   onSave: function() {
     var self = this;
 
     var cmds = [];
-
-    self.reconnect = $($(this.el).find('input[name="reconnect"]')[0]).is(':checked');
 
     if(self.network.ssid.length === 0){
       self.network.ssid = $(this.el).find('input[name="ssid"]').val();
@@ -407,27 +406,6 @@ App.Views.QuickConnect = Backbone.View.extend({
         cmds.push({cmd: 'set', args: {args:'wl t g ' + gateway}});
         cmds.push({cmd: 'set', args: {args:'wl t d ' + dns}});
         cmds.push({cmd: 'set', args: {args:'wl t n ' + netmask}});
-      }
-    }
-
-    if(self.device.get('web_setup')) {
-      cmds.push({cmd: 'set', args: {args:'wl o e 1'}});
-
-      if(self.reconnect){
-        var mdns = $(this.el).find('input[name="mdns"]').val().trim();
-        var mac = self.device.get('mac');
-        mac = mac.substring(mac.length - 4).replace(':','');
-
-        mdns = mdns.length > 0 ? mdns : 'zentrios-' + mac;
-        mdns = mdns.toLowerCase();
-
-        self.mdns = mdns;
-
-        cmds.push({cmd: 'set', args: {args:'ht s e 1'}});
-        cmds.push({cmd: 'set', args: {args:'md e 1'}});
-        cmds.push({cmd: 'set', args: {args:'md n ' + mdns}});
-        cmds.push({cmd: 'set', args: {args:'md s http'}});
-        cmds.push({cmd: 'set', args: {args:'ht s c *'}});
       }
     }
 
@@ -461,7 +439,7 @@ App.Views.QuickConnect = Backbone.View.extend({
       if(self.device.get('web_setup')){
         self.controller.modal({
           systemModal: true,
-          content:'<h2>Waiting for device to connect to \'' + self.network.ssid + '\'...</h2><div class="progress-bar"><div class="progress"></div></div>'
+          content:'<h2>Saving Network Settings.</h2>'
         });
       } else {
         self.controller.loading(true);
@@ -490,16 +468,13 @@ App.Views.QuickConnect = Backbone.View.extend({
     saveSettings();
   },
 
+
   render: function() {
     var self = this;
 
     var data = this.network;
     var mac = self.device.get('mac');
     data.mac = mac.substring(mac.length - 4).replace(':','').toLowerCase();
-    data.mdns = self.device.get('mdns').replace('\r\n', '');
-    if(data.mdns[data.mdns.length-1] === '#'){
-      data.mdns = data.mdns.substring(0, data.mdns.length-1) + data.mac;
-    }
 
     this.$el.html(this.template(data));
     if(_.contains(['medium ', 'small'], this.controller.get('size'))) {
@@ -525,44 +500,15 @@ App.Views.QuickConnect = Backbone.View.extend({
     }
   },
 
+
   onSetupExit: function() {
     var self = this;
-
-    if(!self.reconnect){
-      return self.controller.modal({content:'<h2>Device is now connecting to ' + this.network.ssid + '.</h2><h2>Setup is complete.</h2>'});
-    }
 
     if(navigator.userAgent.indexOf('Android') >= 0) {
       return self.controller.modal({content:'<h2>Auto-discovery is not supported on Android.</h2><h2>Download the <a href="intent://#Intent;scheme=ackme_discovery;action=android.intent.action.VIEW;package=discovery.ack.me.ackme_discovery;end">ACKme Discovery</a> App from the Play store to find your device.</h2>'});
     }
 
-    if(typeof self.setup === 'undefined') {
-      self.setup = {
-        attempt: 0,
-        retries: 30
-      };
-    }
+    return self.controller.modal({content:'<h2>Device is now connecting to ' + this.network.ssid + '.</h2><h2>Setup is complete.</h2>'});
 
-    var host = (navigator.platform === 'Win32') ? self.mdns : self.mdns + '.local';
-
-    $.ajax({
-        url: 'http://' + host + '/command/ver',
-        type: 'GET',
-        contentType: 'application/json',
-        timeout: 2000
-      })
-      .fail(function() {
-        if(self.setup.attempt > self.setup.retries){
-          return self.controller.modal({content:'<h2>Unable to reconnect to device.<br><br> Please check you are connected to<br>\'' + self.network.ssid + '\'</h2>'});
-        }
-
-        self.setup.attempt += 1;
-        $('.progress').css({width: String((self.setup.attempt / self.setup.retries)*100) + '%'});
-
-        setTimeout(self.onSetupExit, 1000);
-      })
-      .done(function() {
-        top.location = 'http://' + host + '/';
-      });
   }
 });
