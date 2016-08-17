@@ -117,7 +117,7 @@ App.Views.Console = Backbone.View.extend({
 
     self.output = $(self.el).find('output')[0];
 
-    self.printLine('ZentriOS Web App Console - v' + _webapp.version);
+    self.printLine('ZentriOS-W Web App Console - v' + _webapp.version);
 
     if(self.device.commands.length > 0 && Object.keys(self.device.variables).length > 0){
       //commands and variables already loaded, nothing to do
