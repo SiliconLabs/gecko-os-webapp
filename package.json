@@ -4,7 +4,7 @@
   "version": "3.0.3",
   "author": {
     "name": "Andrew Mitchell",
-    "email": "brew@zentri.me"
+    "email": "brew@zentri.com"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,8 @@
     "async": "^1.5.2",
     "express": "^4.13.4",
     "less": "^2.7.1",
-    "pug": "^2.0.0-alpha7"
+    "pug": "^2.0.0-alpha7",
+    "zentriosjs": "git+ssh://git@bitbucket.org/zentri/zentriosjs.git#W"
   },
   "devDependencies": {
     "async": "^1.5.2",
