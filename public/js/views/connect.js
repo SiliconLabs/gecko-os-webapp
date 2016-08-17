@@ -117,7 +117,7 @@ App.Views.Connect = Backbone.View.extend({
     self.device.issueCommand(
       {property: 'mdns', cmd: 'get', args: {args: 'md n', ret: false}},
       function(err, res) {
-        self.device.wiconnect.scan({args: '-v', timeout: 20000}, scanComplete);
+        self.device.zentrios.scan({args: '-v', timeout: 20000}, scanComplete);
       });
 
   },
@@ -225,13 +225,13 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 <div class="right show-password">\
 <h5>show password</h5>\
-<div class="wiconnect-cbx secondary small">\
+<div class="zentri-cbx secondary small">\
 <input type="checkbox" value="show-password" id="show-password" name="show-password" />\
 <label for="show-password"></label>\
 </div>\
 </div>\
 <div class="reconnect">\
-<div class="wiconnect-cbx small-margin">\
+<div class="zentri-cbx small-margin">\
 <input type="checkbox" value="None" id="reconnect" name="reconnect"/>\
 <label for="reconnect"></label>\
 </div>\
@@ -244,7 +244,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 </div>\
 <div>\
-<div class="wiconnect-cbx">\
+<div class="zentri-cbx">\
 <input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
 <label for="show-advanced"></label>\
 </div>\
@@ -490,7 +490,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     var attempt = 1;
 
     var verifyCredentials = function() {
-      self.device.wiconnect.nve(
+      self.device.zentrios.nve(
         {args: 'wifi \"' + self.network.ssid + '\" ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((self.device.securityTypes[self.network.security.toLowerCase()] > 0) ? ' ' + self.device.securityTypes[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(password, self.network.ssid) : '')},
         function(err, res){
           if(res.response.replace('\r\n','') !== 'Success') {

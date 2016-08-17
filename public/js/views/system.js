@@ -227,6 +227,6 @@ App.Views.System = Backbone.View.extend({
           });
     };
 
-    self.device.wiconnect.ver(parseVersion);
+    self.device.zentrios.ver(parseVersion);
   }
 });

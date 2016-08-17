@@ -127,7 +127,7 @@ App.Views.Console = Backbone.View.extend({
     async.waterfall([
       function(next) {
         self.printLine('loading commands...');
-        self.device.wiconnect.help({args: 'commands'}, function(err, res){
+        self.device.zentrios.help({args: 'commands'}, function(err, res){
           if(err) {
             return next(err);
           }
@@ -136,7 +136,7 @@ App.Views.Console = Backbone.View.extend({
       },
       function(next) {
         self.printLine('loading variables...');
-        self.device.wiconnect.help({args: 'variables'}, function(err, res){
+        self.device.zentrios.help({args: 'variables'}, function(err, res){
           if(err) {
             return next(err);
           }
@@ -376,7 +376,7 @@ App.Views.Console = Backbone.View.extend({
           args = args.join(' ');
           re = /(\'(.+)\')|(\"(.+)\")/;
           var alias = args.substring(0, args.indexOf('='));
-          if(self.device.wiconnect.hasOwnProperty(alias) || self.cmdMask.hasOwnProperty(alias)) {
+          if(self.device.zentrios.hasOwnProperty(alias) || self.cmdMask.hasOwnProperty(alias)) {
             self.printOutput(['Invalid alias name']);
             break;
           }
@@ -565,7 +565,7 @@ App.Views.Console = Backbone.View.extend({
     var self = this;
 
     setTimeout(function(){
-      self.device.wiconnect.ver(
+      self.device.zentrios.ver(
         {retries: 1, timeout: self.reconnect.timeout},
         function(err, res) {
           if(err){

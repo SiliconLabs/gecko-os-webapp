@@ -49,7 +49,7 @@ App.Views.Firmware = Backbone.View.extend({
 </div>\
 <div class="right">\
 <h5>force update</h5>\
-<div class="wiconnect-cbx secondary small">\
+<div class="zentri-cbx secondary small">\
 <input type="checkbox" value="force" id="force" name="force" />\
 <label for="force"></label>\
 </div>\
@@ -173,7 +173,7 @@ App.Views.Firmware = Backbone.View.extend({
 
     self.controller.loading(true);
 
-    self.device.wiconnect.ota(
+    self.device.zentrios.ota(
       {args: '-a ' + activation_id + ' ' + activation_password },
       function(err, res) {
 

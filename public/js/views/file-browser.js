@@ -61,7 +61,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 <div class="add-btn">Click to add files<input type="file" multiple="multiple" name="file-select" class="file-select"></div>\
 <div class="overwrite">\
 <h4>overwrite existing files</h4>\
-<div class="wiconnect-cbx secondary small">\
+<div class="zentri-cbx secondary small">\
 <input type="checkbox" value="overwrite" id="overwrite" name="overwrite" />\
 <label for="overwrite"></label>\
 </div>\
@@ -183,7 +183,7 @@ App.Views.FileBrowser = Backbone.View.extend({
       next();
     };
 
-    self.device.wiconnect.ls({args: '-v'}, done);
+    self.device.zentrios.ls({args: '-v'}, done);
   },
 
   showDir: function(dir) {
