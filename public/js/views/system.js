@@ -181,8 +181,13 @@ App.Views.System = Backbone.View.extend({
     var parseVersion = function(err, res) {
       var product_version = res.response.split(',')[0].trim(),
           date = res.response.split(',')[1].trim(),
-          os_version = res.response.split(',')[2].trim(),
-          board = res.response.split(',')[3].replace('Board:','');
+          os_version = res.response.split(',')[2].trim();
+
+      var board = 'N/A';
+
+      if(res.response.split(',').length === 4) {
+        board = res.response.split(',')[3].replace('Board:','');
+      }
 
       self.device.set({
         product_version: product_version,
