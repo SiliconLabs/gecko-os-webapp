@@ -106,11 +106,9 @@ App.Models.Controller = Backbone.Model.extend({
     }
 
     if(_.contains(['large', 'extra'], size)) {
-      $('.main').css({width: width - parseInt($('.nav').width())});
       $('.nav').show();
     } else {
       $('.main')
-        .removeAttr('style')
         .find('>div:not(.loader, .system-modal)')
           .removeAttr('style');
       if(!App.menu) {
