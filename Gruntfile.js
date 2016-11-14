@@ -481,7 +481,7 @@ module.exports = function(grunt) {
       'tagrelease',
       's3:clean', 's3:latest', 's3:ver',
       'invalidate_cloudfront:latest',
-      'shell:pushTags'
+//      'shell:pushTags'
     ]);
 
     grunt.log.writeln('--------------------------------------');
