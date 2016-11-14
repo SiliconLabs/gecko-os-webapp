@@ -83,6 +83,12 @@ App.Views.Connect = Backbone.View.extend({
     this.$('.wifi-scan').addClass('scanning');
 
     var scanComplete = function(err, resp) {
+      if(err) {
+        return self.controller.modal({
+          systemModal: true,
+          content:'<h2><div class="error"></div>Error communicating with device.</h2>'
+        });
+      }
       _.each(resp.response.split('\r\n'), function(line) {
         if(line.length === 0) {
           return;
@@ -492,8 +498,14 @@ App.Views.QuickConnect = Backbone.View.extend({
     var verifyCredentials = function() {
       self.device.zentrios.nve(
         {args: 'wifi \"' + self.network.ssid + '\" ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((self.device.securityTypes[self.network.security.toLowerCase()] > 0) ? ' ' + self.device.securityTypes[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(password, self.network.ssid) : '')},
-        function(err, res){
-          if(res.response.replace('\r\n','') !== 'Success') {
+        function(err, res) {
+          if(err && attempt >= 3) {
+            return self.controller.modal({
+              systemModal: true,
+              content:'<h2><div class="error"></div>Error communicating with device.</h2>'
+            });
+          }
+          if(err || res.response.replace('\r\n','') !== 'Success') {
             //timeout or Command Failed
             if(attempt >= 3){
               return credentialFail();

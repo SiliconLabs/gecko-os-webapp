@@ -51,11 +51,11 @@ App.Models.Controller = Backbone.Model.extend({
     $(window).on('keyup', this.onKey);
 
     if(typeof (Storage) !== 'undefined'){
-      this.ls=localStorage;
+      this.ls = localStorage;
     }
 
     $(document).ajaxError(function(event, jqxhr, settings, exception ) {
-      if ( jqxhr.status === 401 ) {
+      if(jqxhr.status === 401) {
         self.modal({content: 'Operation not allowed'});
       }
     });

@@ -77,6 +77,19 @@
 
       h2 {
         text-align: center;
+
+        .error {
+          display: inline-block;
+          width: 1.5em;
+          height: 1.5em;
+          background: @red;
+          margin: 0 16px;
+
+          &:before {
+            content: '!';
+            color: #fff;
+          }
+        }
       }
 
       .modal-close {
