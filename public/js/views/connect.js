@@ -88,6 +88,12 @@ App.Views.Connect = Backbone.View.extend({
     this.$('.wifi-scan').addClass('scanning');
 
     var scanComplete = function(err, resp) {
+      if(err) {
+        return self.controller.modal({
+          systemModal: true,
+          content:'<h2><div class="error"></div>Error communicating with device.</h2>'
+        });
+      }
       _.each(resp.response.split('\r\n'), function(line) {
         if(line.length === 0) {
           return;
