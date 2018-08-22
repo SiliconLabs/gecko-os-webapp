@@ -23,7 +23,7 @@
     "express": "^4.13.4",
     "less": "^2.7.1",
     "pug": "^2.0.0-alpha7",
-    "zentriosjs": "git+ssh://git@bitbucket.org/zentri/zentriosjs.git#WL"
+    "geckoosjs": "git+ssh://git@stash.silabs.com/gos/gecko_os_js.git#AMW007"
   },
   "devDependencies": {
     "async": "^1.5.2",
