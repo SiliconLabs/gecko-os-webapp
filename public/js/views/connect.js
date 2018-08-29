@@ -125,7 +125,7 @@ App.Views.Connect = Backbone.View.extend({
       self.onResults();
     };
 
-    self.device.zentrios.scan({args: '-v', timeout: 20000}, scanComplete);
+    self.device.geckoOS.scan({args: '-v', timeout: 20000}, scanComplete);
   },
 
 
@@ -238,13 +238,13 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 <div class="right show-password">\
 <h5>show password</h5>\
-<div class="zentri-cbx secondary small">\
+<div class="gecko-cbx secondary small">\
 <input type="checkbox" value="show-password" id="show-password" name="show-password" />\
 <label for="show-password"></label>\
 </div>\
 </div>\
 <div>\
-<div class="zentri-cbx">\
+<div class="gecko-cbx">\
 <input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
 <label for="show-advanced"></label>\
 </div>\

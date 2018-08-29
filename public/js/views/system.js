@@ -214,6 +214,6 @@ App.Views.System = Backbone.View.extend({
           });
     };
 
-    self.device.zentrios.ver(parseVersion);
+    self.device.geckoOS.ver(parseVersion);
   }
 });

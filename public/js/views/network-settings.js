@@ -38,7 +38,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
 <input name="ssid" value="<%- ssid %>" disabled></input>\
 </div>\
 <div class="auto-connect">\
-<div class="zentri-cbx">\
+<div class="gecko-cbx">\
 <input type="checkbox" value="None" id="auto-connect" name="auto-connect" <%= (auto_join) ? "checked" : ""%> />\
 <label for="auto-connect"></label>\
 </div>\

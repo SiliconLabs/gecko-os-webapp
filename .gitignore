@@ -2,10 +2,10 @@
 /node_modules/
 /out/index.html
 /out/webapp/version.json
-/out/webapp/geckoos.js
-/out/webapp/geckoos.js.gz
-/out/webapp/geckoos.css
-/out/webapp/geckoos.css.gz
+/out/webapp/geckoOS.js
+/out/webapp/geckoOS.js.gz
+/out/webapp/geckoOS.css
+/out/webapp/geckoOS.css.gz
 /out/webapp/index.html
 /out/webapp/unauthorized.html
 /out/webapp/recovery.html

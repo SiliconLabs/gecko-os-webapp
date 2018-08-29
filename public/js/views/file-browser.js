@@ -61,7 +61,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 <div class="add-btn">Click to add files<input type="file" multiple="multiple" name="file-select" class="file-select"></div>\
 <div class="overwrite">\
 <h4>overwrite existing files</h4>\
-<div class="zentri-cbx secondary small">\
+<div class="gecko-cbx secondary small">\
 <input type="checkbox" value="overwrite" id="overwrite" name="overwrite" />\
 <label for="overwrite"></label>\
 </div>\
@@ -183,7 +183,7 @@ App.Views.FileBrowser = Backbone.View.extend({
       next();
     };
 
-    self.device.zentrios.ls({args: '-v'}, done);
+    self.device.geckoOS.ls({args: '-v'}, done);
   },
 
   showDir: function(dir) {
@@ -232,7 +232,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
         // do not let web app delete itself
         if(_.contains(['/webapp', '/webapp/' + _webapp.version], self.device.fs.cwd().path)) {
-          if(_.contains(['index.html', 'zentrios.js.gz', 'zentrios.css.gz', 'unauthorized.html'], file.name)){
+          if(_.contains(['index.html', 'geckoOS.js.gz', 'geckoOS.css.gz', 'unauthorized.html'], file.name)){
             file.state = _.without(file.state, 'deletable');
           }
         }
