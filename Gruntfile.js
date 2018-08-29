@@ -34,7 +34,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/webapp/zentrios.css': 'public/less/*.less',
+          'out/webapp/geckoos.css': 'public/less/*.less',
           'public/views/css/recovery.css': 'public/views/less/recovery.less',
           'public/views/css/unauthorized.css': 'public/views/less/unauthorized.less',
         }
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/webapp/zentrios.css': 'public/css/zentrios.css'
+          'out/webapp/geckoos.css': 'public/css/geckoos.css'
         }
       },
       basicDev: {
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
           compress: false
         },
         files: {
-          './public/css/zentrios.css': 'public/less/*.less'
+          './public/css/geckoos.css': 'public/less/*.less'
         }
       }
     },
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
           // sourceMap: true
         },
         files: [{
-            dest: 'out/webapp/zentrios.js',
+            dest: 'out/webapp/geckoos.js',
             src: [
                 'public/vendor/jquery/dist/jquery.min.js',
                 // 'public/vendor/zepto.js/src/zepto.js',
@@ -133,8 +133,8 @@ module.exports = function(grunt) {
         },
         expand: true,
         files: {
-          'out/webapp/zentrios.js.gz': 'out/webapp/zentrios.js',
-          'out/webapp/zentrios.css.gz': 'out/webapp/zentrios.css'
+          'out/webapp/geckoos.js.gz': 'out/webapp/geckoos.js',
+          'out/webapp/geckoos.css.gz': 'out/webapp/geckoos.css'
         }
       },
       release: {
@@ -150,8 +150,8 @@ module.exports = function(grunt) {
             src: [
               'out/webapp/index.html',
               'out/webapp/unauthorized.html',
-              'out/webapp/zentrios.js.gz',
-              'out/webapp/zentrios.css.gz',
+              'out/webapp/geckoos.js.gz',
+              'out/webapp/geckoos.css.gz',
               'out/webapp/version.json'
             ]
           }
@@ -171,8 +171,8 @@ module.exports = function(grunt) {
               'out/webapp/index.html',
               'out/webapp/unauthorized.html',
               'out/webapp/recovery.html',
-              'out/webapp/zentrios.js.gz',
-              'out/webapp/zentrios.css.gz',
+              'out/webapp/geckoos.js.gz',
+              'out/webapp/geckoos.css.gz',
               'out/webapp/version.json'
             ]
           }
@@ -250,8 +250,8 @@ module.exports = function(grunt) {
     http: {
       commands:[
         {name: 'index', url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/index.html%20webapp/2.2.0/index.html'},
-        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/zentrios.js.gz%20webapp/2.2.0/zentrios.js.gz'},
-        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/zentrios.css.gz%20webapp/2.2.0/zentrios.css.gz'},
+        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/geckoos.js.gz%20webapp/2.2.0/geckoos.js.gz'},
+        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/geckoos.css.gz%20webapp/2.2.0/geckoos.css.gz'},
         {name: 'unauth',url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/unauthorized.html%20webapp/2.2.0/unauthorized.html'},
         {name: 'root',  url: 'http://<%= device.host %>/command/set%20ht%20s%20r%20webapp/index.html'},
         {name: 'denied',url: 'http://<%= device.host %>/command/set%20ht%20s%20d%20webapp/unauthorized.html'},
@@ -270,16 +270,16 @@ module.exports = function(grunt) {
         del: [
           {src: 'webapp/3.0/latest/version.json'},
           {src: 'webapp/3.0/latest/index.html'},
-          {src: 'webapp/3.0/latest/zentrios.js.gz'},
-          {src: 'webapp/3.0/latest/zentrios.css.gz'},
+          {src: 'webapp/3.0/latest/geckoos.js.gz'},
+          {src: 'webapp/3.0/latest/geckoos.css.gz'},
           {src: 'webapp/3.0/latest/unauthorized.html'}
         ]
       },
       latest: {
         upload: [
           {src: 'out/index.html',               dest: 'webapp/3.0/latest/index.html'},
-          {src: 'out/webapp/zentrios.js.gz',   dest: 'webapp/3.0/latest/zentrios.js.gz'},
-          {src: 'out/webapp/zentrios.css.gz',  dest: 'webapp/3.0/latest/zentrios.css.gz'},
+          {src: 'out/webapp/geckoos.js.gz',   dest: 'webapp/3.0/latest/geckoos.js.gz'},
+          {src: 'out/webapp/geckoos.css.gz',  dest: 'webapp/3.0/latest/geckoos.css.gz'},
           {src: 'out/webapp/unauthorized.html', dest: 'webapp/3.0/latest/unauthorized.html'},
           {src: 'out/webapp/version.json',      dest: 'webapp/3.0/latest/version.json'}
         ]
@@ -287,8 +287,8 @@ module.exports = function(grunt) {
       ver: {
         upload: [
           {src: 'out/index.html',               dest: 'webapp/3.0/<%= pkg.version %>/index.html'},
-          {src: 'out/webapp/zentrios.js.gz',   dest: 'webapp/3.0/<%= pkg.version %>/zentrios.js.gz'},
-          {src: 'out/webapp/zentrios.css.gz',  dest: 'webapp/3.0/<%= pkg.version %>/zentrios.css.gz'},
+          {src: 'out/webapp/geckoos.js.gz',   dest: 'webapp/3.0/<%= pkg.version %>/geckoos.js.gz'},
+          {src: 'out/webapp/geckoos.css.gz',  dest: 'webapp/3.0/<%= pkg.version %>/geckoos.css.gz'},
           {src: 'out/webapp/unauthorized.html', dest: 'webapp/3.0/<%= pkg.version %>/unauthorized.html'},
           {src: 'out/webapp/version.json',      dest: 'webapp/3.0/<%= pkg.version %>/version.json'}
         ]
@@ -304,8 +304,8 @@ module.exports = function(grunt) {
         files: [
           {dest: 'webapp/3.0/latest/version.json'},
           {dest: 'webapp/3.0/latest/index.html'},
-          {dest: 'webapp/3.0/latest/zentrios.js.gz'},
-          {dest: 'webapp/3.0/latest/zentrios.css.gz'},
+          {dest: 'webapp/3.0/latest/geckoos.js.gz'},
+          {dest: 'webapp/3.0/latest/geckoos.css.gz'},
           {dest: 'webapp/3.0/latest/unauthorized.html'}
         ]
       }
@@ -362,8 +362,8 @@ module.exports = function(grunt) {
     ver += '"version":"' + pkg.version + '",';
     ver += '"files":[';
     ver +=    '{"name":"index.html","size":' + fs.statSync('out/index.html').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/index.html")) + '"},';
-    ver +=    '{"name":"zentrios.js.gz","size":' + fs.statSync('out/webapp/zentrios.js.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/zentrios.js.gz")) + '"},';
-    ver +=    '{"name":"zentrios.css.gz","size":' + fs.statSync('out/webapp/zentrios.css.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/zentrios.css.gz")) + '"},';
+    ver +=    '{"name":"geckoos.js.gz","size":' + fs.statSync('out/webapp/geckoos.js.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/geckoos.js.gz")) + '"},';
+    ver +=    '{"name":"geckoos.css.gz","size":' + fs.statSync('out/webapp/geckoos.css.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/geckoos.css.gz")) + '"},';
     ver +=    '{"name":"unauthorized.html","size":' + fs.statSync('out/webapp/unauthorized.html').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/unauthorized.html")) + '"}';
     ver += ']}';
 

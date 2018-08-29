@@ -1,7 +1,7 @@
 var assetsLoaded = 0;
 var assets = {
-  '/webapp/#{path}zentrios.css': {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}zentrios.css'}, attempt: 1},
-  '/webapp/#{path}zentrios.js': {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}zentrios.js'}, attempt: 1}
+  '/webapp/#{path}geckoos.css': {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}geckoos.css'}, attempt: 1},
+  '/webapp/#{path}geckoos.js': {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}geckoos.js'}, attempt: 1}
 };
 function loadAsset(asset) {
   asset.el = document.createElement(asset.tag);
