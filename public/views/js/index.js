@@ -1,7 +1,7 @@
 var assetsLoaded = 0;
 var assets = {
-  '/webapp/#{path}geckoOS.css': {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}geckoOS.css'}, attempt: 1},
-  '/webapp/#{path}geckoOS.js': {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}geckoOS.js'}, attempt: 1}
+  '/webapp/#{path}gecko-os.css': {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}gecko-os.css'}, attempt: 1},
+  '/webapp/#{path}gecko-os.js': {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}gecko-os.js'}, attempt: 1}
 };
 function loadAsset(asset) {
   asset.el = document.createElement(asset.tag);

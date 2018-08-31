@@ -232,7 +232,7 @@ App.Views.FileBrowser = Backbone.View.extend({
 
         // do not let web app delete itself
         if(_.contains(['/webapp', '/webapp/' + _webapp.version], self.device.fs.cwd().path)) {
-          if(_.contains(['index.html', 'geckoOS.js.gz', 'geckoOS.css.gz', 'unauthorized.html'], file.name)){
+          if(_.contains(['index.html', 'gecko-os.js.gz', 'gecko-os.css.gz', 'unauthorized.html'], file.name)){
             file.state = _.without(file.state, 'deletable');
           }
         }

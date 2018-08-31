@@ -34,7 +34,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/webapp/geckoos.css': 'public/less/*.less',
+          'out/webapp/gecko-os.css': 'public/less/*.less',
           'public/views/css/recovery.css': 'public/views/less/recovery.less',
           'public/views/css/unauthorized.css': 'public/views/less/unauthorized.less',
         }
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
           compress: true
         },
         files: {
-          'out/webapp/geckoos.css': 'public/css/geckoos.css'
+          'out/webapp/gecko-os.css': 'public/css/gecko-os.css'
         }
       },
       basicDev: {
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
           compress: false
         },
         files: {
-          './public/css/geckoos.css': 'public/less/*.less'
+          './public/css/gecko-os.css': 'public/less/*.less'
         }
       }
     },
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
           // sourceMap: true
         },
         files: [{
-            dest: 'out/webapp/geckoos.js',
+            dest: 'out/webapp/gecko-os.js',
             src: [
                 'public/vendor/jquery/dist/jquery.min.js',
                 // 'public/vendor/zepto.js/src/zepto.js',
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
                 'public/vendor/backbone/backbone.js',
                 'public/vendor/async/lib/async.js',
                 'public/vendor/superagent/superagent.js',
-                'node_modules/geckoosjs/lib/main.js',
+                'node_modules/gecko-os-js/lib/main.js',
                 'public/js/*.js',
                 'public/js/*/*.js'
               ]
@@ -133,8 +133,8 @@ module.exports = function(grunt) {
         },
         expand: true,
         files: {
-          'out/webapp/geckoos.js.gz': 'out/webapp/geckoos.js',
-          'out/webapp/geckoos.css.gz': 'out/webapp/geckoos.css'
+          'out/webapp/gecko-os.js.gz': 'out/webapp/gecko-os.js',
+          'out/webapp/gecko-os.css.gz': 'out/webapp/gecko-os.css'
         }
       },
       release: {
@@ -150,8 +150,8 @@ module.exports = function(grunt) {
             src: [
               'out/webapp/index.html',
               'out/webapp/unauthorized.html',
-              'out/webapp/geckoos.js.gz',
-              'out/webapp/geckoos.css.gz',
+              'out/webapp/gecko-os.js.gz',
+              'out/webapp/gecko-os.css.gz',
               'out/webapp/version.json'
             ]
           }
@@ -171,8 +171,8 @@ module.exports = function(grunt) {
               'out/webapp/index.html',
               'out/webapp/unauthorized.html',
               'out/webapp/recovery.html',
-              'out/webapp/geckoos.js.gz',
-              'out/webapp/geckoos.css.gz',
+              'out/webapp/gecko-os.js.gz',
+              'out/webapp/gecko-os.css.gz',
               'out/webapp/version.json'
             ]
           }
@@ -250,8 +250,8 @@ module.exports = function(grunt) {
     http: {
       commands:[
         {name: 'index', url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/index.html%20webapp/2.2.0/index.html'},
-        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/geckoos.js.gz%20webapp/2.2.0/geckoos.js.gz'},
-        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/geckoos.css.gz%20webapp/2.2.0/geckoos.css.gz'},
+        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/gecko-os.js.gz%20webapp/2.2.0/gecko-os.js.gz'},
+        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/gecko-os.css.gz%20webapp/2.2.0/gecko-os.css.gz'},
         {name: 'unauth',url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/unauthorized.html%20webapp/2.2.0/unauthorized.html'},
         {name: 'root',  url: 'http://<%= device.host %>/command/set%20ht%20s%20r%20webapp/index.html'},
         {name: 'denied',url: 'http://<%= device.host %>/command/set%20ht%20s%20d%20webapp/unauthorized.html'},
@@ -270,16 +270,16 @@ module.exports = function(grunt) {
         del: [
           {src: 'webapp/3.0/latest/version.json'},
           {src: 'webapp/3.0/latest/index.html'},
-          {src: 'webapp/3.0/latest/geckoos.js.gz'},
-          {src: 'webapp/3.0/latest/geckoos.css.gz'},
+          {src: 'webapp/3.0/latest/gecko-os.js.gz'},
+          {src: 'webapp/3.0/latest/gecko-os.css.gz'},
           {src: 'webapp/3.0/latest/unauthorized.html'}
         ]
       },
       latest: {
         upload: [
           {src: 'out/index.html',               dest: 'webapp/3.0/latest/index.html'},
-          {src: 'out/webapp/geckoos.js.gz',   dest: 'webapp/3.0/latest/geckoos.js.gz'},
-          {src: 'out/webapp/geckoos.css.gz',  dest: 'webapp/3.0/latest/geckoos.css.gz'},
+          {src: 'out/webapp/gecko-os.js.gz',   dest: 'webapp/3.0/latest/gecko-os.js.gz'},
+          {src: 'out/webapp/gecko-os.css.gz',  dest: 'webapp/3.0/latest/gecko-os.css.gz'},
           {src: 'out/webapp/unauthorized.html', dest: 'webapp/3.0/latest/unauthorized.html'},
           {src: 'out/webapp/version.json',      dest: 'webapp/3.0/latest/version.json'}
         ]
@@ -287,8 +287,8 @@ module.exports = function(grunt) {
       ver: {
         upload: [
           {src: 'out/index.html',               dest: 'webapp/3.0/<%= pkg.version %>/index.html'},
-          {src: 'out/webapp/geckoos.js.gz',   dest: 'webapp/3.0/<%= pkg.version %>/geckoos.js.gz'},
-          {src: 'out/webapp/geckoos.css.gz',  dest: 'webapp/3.0/<%= pkg.version %>/geckoos.css.gz'},
+          {src: 'out/webapp/gecko-os.js.gz',   dest: 'webapp/3.0/<%= pkg.version %>/gecko-os.js.gz'},
+          {src: 'out/webapp/gecko-os.css.gz',  dest: 'webapp/3.0/<%= pkg.version %>/gecko-os.css.gz'},
           {src: 'out/webapp/unauthorized.html', dest: 'webapp/3.0/<%= pkg.version %>/unauthorized.html'},
           {src: 'out/webapp/version.json',      dest: 'webapp/3.0/<%= pkg.version %>/version.json'}
         ]
@@ -304,8 +304,8 @@ module.exports = function(grunt) {
         files: [
           {dest: 'webapp/3.0/latest/version.json'},
           {dest: 'webapp/3.0/latest/index.html'},
-          {dest: 'webapp/3.0/latest/geckoos.js.gz'},
-          {dest: 'webapp/3.0/latest/geckoos.css.gz'},
+          {dest: 'webapp/3.0/latest/gecko-os.js.gz'},
+          {dest: 'webapp/3.0/latest/gecko-os.css.gz'},
           {dest: 'webapp/3.0/latest/unauthorized.html'}
         ]
       }
@@ -362,8 +362,8 @@ module.exports = function(grunt) {
     ver += '"version":"' + pkg.version + '",';
     ver += '"files":[';
     ver +=    '{"name":"index.html","size":' + fs.statSync('out/index.html').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/index.html")) + '"},';
-    ver +=    '{"name":"geckoos.js.gz","size":' + fs.statSync('out/webapp/geckoos.js.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/geckoos.js.gz")) + '"},';
-    ver +=    '{"name":"geckoos.css.gz","size":' + fs.statSync('out/webapp/geckoos.css.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/geckoos.css.gz")) + '"},';
+    ver +=    '{"name":"gecko-os.js.gz","size":' + fs.statSync('out/webapp/gecko-os.js.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/gecko-os.js.gz")) + '"},';
+    ver +=    '{"name":"gecko-os.css.gz","size":' + fs.statSync('out/webapp/gecko-os.css.gz').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/gecko-os.css.gz")) + '"},';
     ver +=    '{"name":"unauthorized.html","size":' + fs.statSync('out/webapp/unauthorized.html').size + ',"crc":"' + crc(fs.readFileSync("out/webapp/unauthorized.html")) + '"}';
     ver += ']}';
 
