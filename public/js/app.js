@@ -51,7 +51,7 @@ var App = {
       controller: App.controller
     });
 
-    self.device.set({host: "http://10.1.54.52"});
+    /*deviceHost*/
 
     self.device.init();
 
