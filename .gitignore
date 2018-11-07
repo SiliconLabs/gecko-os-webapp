@@ -2,10 +2,10 @@
 /node_modules/
 /out/index.html
 /out/webapp/version.json
-/out/webapp/zentrios.js
-/out/webapp/zentrios.js.gz
-/out/webapp/zentrios.css
-/out/webapp/zentrios.css.gz
+/out/webapp/gecko-os.js
+/out/webapp/gecko-os.js.gz
+/out/webapp/gecko-os.css
+/out/webapp/gecko-os.css.gz
 /out/webapp/index.html
 /out/webapp/unauthorized.html
 /out/webapp/recovery.html

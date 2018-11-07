@@ -1,5 +1,5 @@
 {
-  "name": "zentrios_webapp",
+  "name": "gecko_os_webapp",
   "description": "ZentriOS Web App",
   "version": "3.1.1",
   "author": {
@@ -23,7 +23,7 @@
     "express": "^4.13.4",
     "less": "^2.7.1",
     "pug": "^2.0.0-alpha7",
-    "zentriosjs": "git+ssh://git@bitbucket.org/zentri/zentriosjs.git#W"
+    "gecko-os-js": "git+ssh://git@stash.silabs.com/gos/gecko_os_js.git#WGM160P"
   },
   "devDependencies": {
     "async": "^1.5.2",

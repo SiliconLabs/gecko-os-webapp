@@ -42,7 +42,7 @@ App.Views.System = Backbone.View.extend({
 <input name="date" value="<%- date %>" disabled></input>\
 </div>\
 <div>\
-<h4>ZentriOS Version</h4>\
+<h4>Gecko OS Version</h4>\
 <input name="module" value="<%- os_version %>" disabled></input>\
 </div>\
 <div>\
@@ -233,6 +233,6 @@ App.Views.System = Backbone.View.extend({
           });
     };
 
-    self.device.zentrios.ver(parseVersion);
+    self.device.geckoOS.ver(parseVersion);
   }
 });
