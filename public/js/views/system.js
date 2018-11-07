@@ -38,15 +38,11 @@ App.Views.System = Backbone.View.extend({
 <input name="version" value="<%- product_version %>" disabled></input>\
 </div>\
 <div>\
-<h4>Build Date</h4>\
-<input name="date" value="<%- date %>" disabled></input>\
-</div>\
-<div>\
 <h4>Gecko OS Version</h4>\
 <input name="module" value="<%- os_version %>" disabled></input>\
 </div>\
 <div>\
-<h4>Board</h4>\
+<h4>Platform License</h4>\
 <input name="board" value="<%- board %>" disabled></input>\
 </div>\
 <div>\
@@ -180,10 +176,8 @@ App.Views.System = Backbone.View.extend({
 
     var parseVersion = function(err, res) {
       var product_version = res.response.split(',')[0].trim(),
-          date = res.response.split(',')[1].trim(),
-          os_version = res.response.split(',')[2].trim();
-
-      var board = 'N/A';
+          os_version = res.response.split(',')[1].trim(),
+          board = res.response.split(',')[2];
 
       if(res.response.split(',').length === 4) {
         board = res.response.split(',')[3].replace('Board:','');
@@ -191,9 +185,8 @@ App.Views.System = Backbone.View.extend({
 
       self.device.set({
         product_version: product_version,
-        date: date,
         os_version: os_version,
-        board: board.trim().replace('Board:', '')
+        board: board.trim()
       });
 
       var cmds = [
