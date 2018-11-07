@@ -290,7 +290,7 @@ App.Models.FileSystem = Backbone.Model.extend({
       // 'this     is my/dumb/directory/////path.avi'
       // => 'this is my/dumb/directory/path.avi'
       // => ['this is my', 'dumb', 'directory', 'path.avi']
-      var splitpath = _.rest(f, 7).join(' ').replace(/\/{2,}/g, '/').split('/');
+      var splitpath = _.rest(f, 11).join(' ').replace(/\/{2,}/g, '/').split('/');
 
       var filename = _.last(splitpath);
 
@@ -314,10 +314,10 @@ App.Models.FileSystem = Backbone.Model.extend({
       dir.files[filename] = {
         name: filename,
         id: Number(f[1]),
-        type: f[2],
-        flags: parseInt(f[3], 16),
+        type: f[4],
+        flags: parseInt(f[5], 16),
         size: size,
-        version: f[6]
+        version: f[10]
       };
     });
 
