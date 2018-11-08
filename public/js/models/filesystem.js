@@ -285,7 +285,7 @@ App.Models.FileSystem = Backbone.Model.extend({
         return;
       }
 
-      var size = Number(f[5]);
+      var size = Number(f[8]);
 
       // 'this     is my/dumb/directory/////path.avi'
       // => 'this is my/dumb/directory/path.avi'
@@ -340,7 +340,6 @@ App.Models.FileSystem = Backbone.Model.extend({
 
     var handleFile = function(commands, thisFile, next) {
       return function(e) {
-
         var filename = '';
 
         if(self.device.fs.cwd().path.length > 1) {
