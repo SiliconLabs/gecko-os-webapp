@@ -14,12 +14,7 @@ function loadAsset(asset) {
 }
 function assetLoad(e){assetsLoaded++;if(assetsLoaded === assets.length && (typeof _webapp === 'undefined')){top.location = '/.recovery.html';}}
 function assetErr(e){
-  var asset = assets[(e.target.src||e.target.href).replace(window.location.origin,'')];
-  if(asset.attempt < 3) {
-    asset.attempt++;
-    document[asset.pos].removeChild(this);
-    return setTimeout(loadAsset, 1000, asset);
-  }
-  top.location = '/.recovery.html';
+  // webapp error
+  console.error('webapp error!');
 }
 Object.keys(assets).forEach(function(asset){loadAsset(assets[asset])});
