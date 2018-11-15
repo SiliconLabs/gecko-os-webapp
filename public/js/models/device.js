@@ -82,7 +82,6 @@ App.Models.Device = Backbone.Model.extend({
       'issueCommand', 'postCommand',
       'parseCommands', 'parseVariables', 'parseStreams', 'parseGPIO',
       'basicInfo',
-      'checkVersion', 'webAppUpgrade',
       'hashCredentials'
       );
 
@@ -117,9 +116,10 @@ App.Models.Device = Backbone.Model.extend({
           setTimeout(self.checkIn, self.checkInInterval * 1000);
         }
 
-        if(self.get('interface') === 'wlan'){
-          self.checkVersion();
-        }
+        // Taking upgrade and recovery functionality out.
+        // if(self.get('interface') === 'wlan'){
+        //   self.checkVersion();
+        // }
 
       });
   },
@@ -671,7 +671,7 @@ App.Models.Device = Backbone.Model.extend({
     async.series([
       getWebAppDir,
       checkStreams, checkFreeSpace,
-      readFS, checkRecovery,
+      readFS,
       getFiles,
       readFS, verifyFiles,
       switchRoot

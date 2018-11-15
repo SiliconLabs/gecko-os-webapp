@@ -33,7 +33,7 @@ App.Views.Cloud = Backbone.View.extend({
   template: _.template('\
 <div class="content">\
 <h1>Zentri Device Management Service</h1>\
-<p>Zentri Device Management Service instantly allows ZentriOS and GeckoOS powered devices to be provisioned with a unique secure identity and configuration.</p>\
+<p>Zentri Device Management Service instantly allows ZentriOS and Gecko OS powered devices to be provisioned with a unique secure identity and configuration.</p>\
 <p>The service is built to deliver secure, encrypted, product-specific over the air (OTA) updates to products that are in-market.</p>\
 <p>A product inventory view is built into the service displaying real-time product updates including geo-location and status of the product.</p>\
 <p>Visit <a href="https://www.zentri.com/products#zentri-device">Zentri Device Management Service</a> for more information.</p>\
