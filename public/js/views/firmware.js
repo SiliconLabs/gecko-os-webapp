@@ -34,8 +34,8 @@ App.Views.Firmware = Backbone.View.extend({
 <div class="content">\
 <h1>Firmware Management</h1>\
 <div>\
-<p>The applications, resources and GeckoOS running on this device can be wirelessly updated using the Zentri Device Management Service.</p>\
-<p>Custom applications can also be developed using the GeckoOS Software Development Kit.</p>\
+<p>The applications, resources and Gecko OS running on this device can be wirelessly updated using the Zentri Device Management Service.</p>\
+<p>Custom applications can also be developed using the Gecko OS Software Development Kit.</p>\
 <p>For more information and to gain access to development tools, visit the <a href="https://zentri.com/developers">Zentri developer page</a>.</p>\
 </div>\
 <hr>\
