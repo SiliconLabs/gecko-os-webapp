@@ -34,8 +34,8 @@ App.Views.Firmware = Backbone.View.extend({
 <div class="content">\
 <h1>Firmware Management</h1>\
 <div>\
-<p>The applications, resources and ZentriOS running on this device can be wirelessly updated using the Zentri Device Management Service.</p>\
-<p>Custom applications can also be developed using the ZentriOS Software Development Kit.</p>\
+<p>The applications, resources and Gecko OS running on this device can be wirelessly updated using the Zentri Device Management Service.</p>\
+<p>Custom applications can also be developed using the Gecko OS Software Development Kit.</p>\
 <p>For more information and to gain access to development tools, visit the <a href="https://zentri.com/developers">Zentri developer page</a>.</p>\
 </div>\
 <hr>\
@@ -49,7 +49,7 @@ App.Views.Firmware = Backbone.View.extend({
 </div>\
 <div class="right">\
 <h5>force update</h5>\
-<div class="zentri-cbx secondary small">\
+<div class="gecko-cbx secondary small">\
 <input type="checkbox" value="force" id="force" name="force" />\
 <label for="force"></label>\
 </div>\
@@ -173,7 +173,7 @@ App.Views.Firmware = Backbone.View.extend({
 
     self.controller.loading(true);
 
-    self.device.zentrios.ota(
+    self.device.geckoOS.ota(
       {args: '-a ' + activation_id + ' ' + activation_password },
       function(err, res) {
 

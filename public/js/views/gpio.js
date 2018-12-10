@@ -109,7 +109,7 @@ App.Views.GPIO = Backbone.View.extend({
 
     $(e.currentTarget).addClass('active pressed');
 
-    self.device.zentrios.gpio_set({args: gpio + ' ' + $(e.currentTarget).data('value')}, function(err, res) {
+    self.device.geckoOS.gpio_set({args: gpio + ' ' + $(e.currentTarget).data('value')}, function(err, res) {
       self.controller.loading(false);
     });
   },
@@ -195,7 +195,7 @@ App.Views.GPIO = Backbone.View.extend({
 
     this.$el.html(this.template({filter: self.filter})).addClass('active');
 
-    self.device.zentrios.get({args: 'gpio.usage'}, function(err, res) {
+    self.device.geckoOS.get({args: 'gpio.usage'}, function(err, res) {
 
       self.device.parseGPIO(res, self.getGPIO);
     });
