@@ -1,4 +1,4 @@
-/*global $:true, Backbone:true, _:true, async:true, App:true, ZentriOSDevice:true, _webapp:true */
+/*global $:true, Backbone:true, _:true, async:true, App:true, Gecko_OSDevice:true, _webapp:true */
 /*jshint browser:true */
 /*jshint strict:false */
 
@@ -65,7 +65,7 @@ App.Models.Device = Backbone.Model.extend({
     wlan: ''
   },
   checkInInterval: 45,
-  zentrios: null,
+  geckoOS: null,
   securityTypes: {
     'open':       0,
     'wep':        1,
@@ -82,7 +82,6 @@ App.Models.Device = Backbone.Model.extend({
       'issueCommand', 'postCommand',
       'parseCommands', 'parseVariables', 'parseStreams', 'parseGPIO',
       'basicInfo',
-      'checkVersion', 'webAppUpgrade',
       'hashCredentials'
       );
 
@@ -98,7 +97,7 @@ App.Models.Device = Backbone.Model.extend({
 
     self.controller.loading(true);
 
-    self.zentrios = new ZentriOSDevice({
+    self.geckoOS = new Gecko_OSDevice({
       host: self.get('host'),
       timeout: 20000,
       retries: 3
@@ -117,9 +116,10 @@ App.Models.Device = Backbone.Model.extend({
           setTimeout(self.checkIn, self.checkInInterval * 1000);
         }
 
-        if(self.get('interface') === 'wlan'){
-          self.checkVersion();
-        }
+        // Taking upgrade and recovery functionality out.
+        // if(self.get('interface') === 'wlan'){
+        //   self.checkVersion();
+        // }
 
       });
   },
@@ -127,7 +127,7 @@ App.Models.Device = Backbone.Model.extend({
   checkIn: function() {
     var self = this;
 
-    self.zentrios.ver(function() {
+    self.geckoOS.ver(function() {
       setTimeout(self.checkIn, self.checkInInterval * 1000);
     });
   },
@@ -155,8 +155,8 @@ App.Models.Device = Backbone.Model.extend({
       return next();
     }
 
-    if(!self.zentrios.hasOwnProperty(cmd.cmd)) {
-      //not supported by ZentriOSJS
+    if(!self.geckoOS.hasOwnProperty(cmd.cmd)) {
+      //not supported by gecko_OSJS
       var command = cmd.cmd;
       if(cmd.args) {
         command += (cmd.args.args) ? ' ' + cmd.args.args : '';
@@ -167,7 +167,7 @@ App.Models.Device = Backbone.Model.extend({
 
     cmd.args = cmd.args || {};
 
-    var xhr = self.zentrios[cmd.cmd](cmd.args, function(err, res) {
+    var xhr = self.geckoOS[cmd.cmd](cmd.args, function(err, res) {
       if(err) {
         return next(err, res);
       }
@@ -254,7 +254,7 @@ App.Models.Device = Backbone.Model.extend({
           //handle err
         }
 
-        self.zentrios.get({args: 'all'}, function(err, res) {
+        self.geckoOS.get({args: 'all'}, function(err, res) {
 
           var extractVar = function(str, filter) {
             return _.filter(str.split('\r\n'), function(line){return (line.indexOf(filter) >= 0);})[0].replace(filter + ' ','');
@@ -466,7 +466,7 @@ App.Models.Device = Backbone.Model.extend({
     var webappDir;
 
     var getWebAppDir = function(next) {
-      self.zentrios.get({args: 'ht s r'}, function(err, res) {
+      self.geckoOS.get({args: 'ht s r'}, function(err, res) {
         if(err){
           return next(err);
         }
@@ -478,13 +478,13 @@ App.Models.Device = Backbone.Model.extend({
 
     var checkStreams = function(next) {
       // check for open f.fc
-      self.zentrios.list(function(err, res){
+      self.geckoOS.list(function(err, res){
         if(err){return next(err);}
 
         self.parseStreams(res, function(){
           var openStream = _.filter(self.streams, function(stream) {return stream.info.indexOf('f.fc-1.0.0.0') >= 0;})[0];
           if(openStream) {
-            return self.zentrios.close({args: openStream.id}, next);
+            return self.geckoOS.close({args: openStream.id}, next);
           }
           next();
         });
@@ -508,7 +508,7 @@ App.Models.Device = Backbone.Model.extend({
           return next(new Error('Not Enough Free Space'));
         }
 
-        self.zentrios.close({args: streamID}, next);
+        self.geckoOS.close({args: streamID}, next);
       });
     };
 
@@ -527,7 +527,7 @@ App.Models.Device = Backbone.Model.extend({
     var getRecovery = function(next, attempt) {
       attempt = attempt || 1;
 
-      self.zentrios.http_download({
+      self.geckoOS.http_download({
         args: ' http://resources.zentri.com/webapp/3.0/release/recovery.html .recovery.html'
       }, function(err, res){
         if(err || (res.response.replace('\r\n', '').toLowerCase() === 'command failed')) {
@@ -550,7 +550,7 @@ App.Models.Device = Backbone.Model.extend({
 
           var httpDownload = function(f, cb, attempt) {
             attempt = attempt || 1;
-            self.zentrios.http_download({
+            self.geckoOS.http_download({
               args: '-c ' + f.crc + ' http://resources.zentri.com/webapp/3.0/latest/' + f.name + ' webapp/' + _webapp.upgradeManifest.version + '/' + f.name
             }, function(err, res) {
               if(err || (res.response.replace('\r\n', '').toLowerCase() === 'command failed')) {
@@ -574,7 +574,7 @@ App.Models.Device = Backbone.Model.extend({
     };
 
     var readFS = function(next) {
-      self.zentrios.ls({args: '-v'}, function(err, res) {
+      self.geckoOS.ls({args: '-v'}, function(err, res) {
         if(err) {
           return next(err);
         }
@@ -623,11 +623,11 @@ App.Models.Device = Backbone.Model.extend({
       var root = 'webapp/' + _webapp.upgradeManifest.version + '/';
 
       async.series([
-        function(done){ self.zentrios.set({args: 'ht s r ' + root + 'index.html'}, done); },
-        function(done){ self.zentrios.set({args: 'ht s d ' + root + 'unauthorized.html'}, done); },
-        function(done){ self.zentrios.set({args: 'se w r ' + root + 'index.html'}, done); },
-        function(done){ self.zentrios.save({}, done); },
-        function(done){ self.zentrios.network_restart({}, done); }
+        function(done){ self.geckoOS.set({args: 'ht s r ' + root + 'index.html'}, done); },
+        function(done){ self.geckoOS.set({args: 'ht s d ' + root + 'unauthorized.html'}, done); },
+        function(done){ self.geckoOS.set({args: 'se w r ' + root + 'index.html'}, done); },
+        function(done){ self.geckoOS.save({}, done); },
+        function(done){ self.geckoOS.network_restart({}, done); }
       ], function(){
         //wait a second after nre before firing next sequence - found bug where immediate request before interface taken down returned 500
         setTimeout(next, 1000);
@@ -671,7 +671,7 @@ App.Models.Device = Backbone.Model.extend({
     async.series([
       getWebAppDir,
       checkStreams, checkFreeSpace,
-      readFS, checkRecovery,
+      readFS,
       getFiles,
       readFS, verifyFiles,
       switchRoot

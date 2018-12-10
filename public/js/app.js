@@ -108,7 +108,7 @@ var App = {
       if(!appView) {
         return;
       }
-      document.title = 'ZentriOS Web App - ' + appView.nav;
+      document.title = 'Gecko OS Web App - ' + appView.nav;
       if(self.controller.get('ready')){
         self.controller.set('view', route);
       }

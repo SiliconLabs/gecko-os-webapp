@@ -1,7 +1,7 @@
 var assetsLoaded = 0;
 var assets = {
-  '/webapp/#{path}zentrios.css': {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}zentrios.css'}, attempt: 1},
-  '/webapp/#{path}zentrios.js': {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}zentrios.js'}, attempt: 1}
+  '/webapp/#{path}gecko-os.css': {pos: 'head', tag: 'link', attrs: {rel: 'stylesheet', type: 'text/css', href: '/webapp/#{path}gecko-os.css'}, attempt: 1},
+  '/webapp/#{path}gecko-os.js': {pos: 'body', tag: 'script', attrs: { type: 'text/javascript', src: '/webapp/#{path}gecko-os.js'}, attempt: 1}
 };
 function loadAsset(asset) {
   asset.el = document.createElement(asset.tag);
@@ -14,12 +14,7 @@ function loadAsset(asset) {
 }
 function assetLoad(e){assetsLoaded++;if(assetsLoaded === assets.length && (typeof _webapp === 'undefined')){top.location = '/.recovery.html';}}
 function assetErr(e){
-  var asset = assets[(e.target.src||e.target.href).replace(window.location.origin,'')];
-  if(asset.attempt < 3) {
-    asset.attempt++;
-    document[asset.pos].removeChild(this);
-    return setTimeout(loadAsset, 1000, asset);
-  }
-  top.location = '/.recovery.html';
+  // webapp error
+  console.error('webapp error!');
 }
 Object.keys(assets).forEach(function(asset){loadAsset(assets[asset])});

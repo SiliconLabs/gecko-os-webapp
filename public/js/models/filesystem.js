@@ -238,7 +238,7 @@ App.Models.FileSystem = Backbone.Model.extend({
 
     var filepath = '\"' + self.cwd().path.substring(1) + (self.cwd().path.length > 1 ? '/' :'') + _.last(path) + '\"';
 
-    self.device.zentrios.fde({args: filepath}, function() {
+    self.device.geckoOS.fde({args: filepath}, function() {
       self.cd(cwd);
       done();
     });
@@ -285,12 +285,12 @@ App.Models.FileSystem = Backbone.Model.extend({
         return;
       }
 
-      var size = Number(f[5]);
+      var size = Number(f[8]);
 
       // 'this     is my/dumb/directory/////path.avi'
       // => 'this is my/dumb/directory/path.avi'
       // => ['this is my', 'dumb', 'directory', 'path.avi']
-      var splitpath = _.rest(f, 7).join(' ').replace(/\/{2,}/g, '/').split('/');
+      var splitpath = _.rest(f, 11).join(' ').replace(/\/{2,}/g, '/').split('/');
 
       var filename = _.last(splitpath);
 
@@ -314,10 +314,10 @@ App.Models.FileSystem = Backbone.Model.extend({
       dir.files[filename] = {
         name: filename,
         id: Number(f[1]),
-        type: f[2],
-        flags: parseInt(f[3], 16),
+        type: f[4],
+        flags: parseInt(f[5], 16),
         size: size,
-        version: f[6]
+        version: f[10]
       };
     });
 
@@ -340,7 +340,6 @@ App.Models.FileSystem = Backbone.Model.extend({
 
     var handleFile = function(commands, thisFile, next) {
       return function(e) {
-
         var filename = '';
 
         if(self.device.fs.cwd().path.length > 1) {
@@ -409,7 +408,7 @@ App.Models.FileSystem = Backbone.Model.extend({
         });
     };
 
-    self.device.zentrios.list(function(err, res){
+    self.device.geckoOS.list(function(err, res){
       if(err){
         //handle err
         return done(err);

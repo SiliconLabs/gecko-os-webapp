@@ -123,7 +123,7 @@ App.Views.Connect = Backbone.View.extend({
     self.device.issueCommand(
       {property: 'mdns', cmd: 'get', args: {args: 'md n', ret: false}},
       function(err, res) {
-        self.device.zentrios.scan({args: '-v', timeout: 20000}, scanComplete);
+        self.device.geckoOS.scan({args: '-v', timeout: 20000}, scanComplete);
       });
 
   },
@@ -231,13 +231,13 @@ App.Views.QuickConnect = Backbone.View.extend({
 </div>\
 <div class="right show-password">\
 <h5>show password</h5>\
-<div class="zentri-cbx secondary small">\
+<div class="gecko-cbx secondary small">\
 <input type="checkbox" value="show-password" id="show-password" name="show-password" />\
 <label for="show-password"></label>\
 </div>\
 </div>\
 <div class="reconnect">\
-<div class="zentri-cbx small-margin">\
+<div class="gecko-cbx small-margin">\
 <input type="checkbox" value="None" id="reconnect" name="reconnect"/>\
 <label for="reconnect"></label>\
 </div>\
@@ -246,11 +246,11 @@ App.Views.QuickConnect = Backbone.View.extend({
 <div class="mdns">\
 <div>\
 <h4>Device Name</h4>\
-<input name="mdns" placeholder="zentrios-<%= mac %>" value="<%= mdns %>"></input>\
+<input name="mdns" placeholder="gecko_os-<%= mac %>" value="<%= mdns %>"></input>\
 </div>\
 </div>\
 <div>\
-<div class="zentri-cbx">\
+<div class="gecko-cbx">\
 <input type="checkbox" value="None" id="show-advanced" name="show-advanced" />\
 <label for="show-advanced"></label>\
 </div>\
@@ -424,7 +424,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         var mac = self.device.get('mac');
         mac = mac.substring(mac.length - 4).replace(':','');
 
-        mdns = mdns.length > 0 ? mdns : 'zentrios-' + mac;
+        mdns = mdns.length > 0 ? mdns : 'gecko_os-' + mac;
         mdns = mdns.toLowerCase();
 
         self.mdns = mdns;
@@ -496,7 +496,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     var attempt = 1;
 
     var verifyCredentials = function() {
-      self.device.zentrios.nve(
+      self.device.geckoOS.nve(
         {args: 'wifi \"' + self.network.ssid + '\" ' + self.network.bssid.replace(/:/g,'') + ' ' + self.network.channel + ((self.device.securityTypes[self.network.security.toLowerCase()] > 0) ? ' ' + self.device.securityTypes[self.network.security.toLowerCase()] + ' ' + self.device.hashCredentials(password, self.network.ssid) : '')},
         function(err, res) {
           if(err && attempt >= 3) {
