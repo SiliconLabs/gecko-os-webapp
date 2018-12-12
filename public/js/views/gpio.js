@@ -144,7 +144,7 @@ App.Views.GPIO = Backbone.View.extend({
         tmpl = self.templates.basic(gpio);
 
         if(gpio.description.indexOf('GPIO') >= 0) {
-          if(gpio.description.indexOf('input') >= 0) {
+          if(gpio.description.indexOf(' in') >= 0) {
             tmpl = self.templates.gpio_input(gpio);
             gpio_dir = ' in';
           } else {
