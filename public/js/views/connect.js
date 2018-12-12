@@ -526,9 +526,19 @@ App.Views.QuickConnect = Backbone.View.extend({
         });
     };
 
+    // https://jira.silabs.com/browse/WIFISW-1038, we remove verifying credentials functionality.
+    // if(self.device.get('web_setup') && (self.network.security.length > 0) && !_.contains(['Open', 'WEP'], self.network.security)) {
+    //   self.controller.modal({systemModal: true, content:'<h2>Verifying password...</h2>'});
+    //   return verifyCredentials();
+    // }
+
     if(self.device.get('web_setup') && (self.network.security.length > 0) && !_.contains(['Open', 'WEP'], self.network.security)) {
-      self.controller.modal({systemModal: true, content:'<h2>Verifying password...</h2>'});
-      return verifyCredentials();
+      // Change modal text: https://jira.silabs.com/browse/WIFISW-509
+      self.controller.modal({
+        systemModal: true,
+        content: '<h2>Success! <br>Network credentials updated. <br>Trying to connect to the network</h2>'
+      });
+      return setTimeout(saveSettings, 3000);
     }
 
     saveSettings();
