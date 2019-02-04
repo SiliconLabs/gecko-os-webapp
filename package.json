@@ -1,7 +1,7 @@
 {
   "name": "gecko_os_webapp",
   "description": "ZentriOS Web App",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "author": {
     "name": "Andrew Mitchell",
     "email": "brew@zentri.com"
