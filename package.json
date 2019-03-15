@@ -23,7 +23,7 @@
     "express": "^4.13.4",
     "less": "^2.7.1",
     "pug": "^2.0.0-alpha7",
-    "gecko-os-js": "git://github.com/SiliconLabs/gecko_os_js.git#WGM160P"
+    "gecko-os-js": "git://github.com/SiliconLabs/gecko-os-js.git#WGM160P"
   },
   "devDependencies": {
     "async": "^1.5.2",
