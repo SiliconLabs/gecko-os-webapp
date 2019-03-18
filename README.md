@@ -1,4 +1,4 @@
-# Gecko OS Web App
+# Gecko OS Web App for WGM160P
 
 ## Installation
 
