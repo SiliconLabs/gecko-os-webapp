@@ -1,8 +1,8 @@
-# ZentriOS-WL Web App
+# Gecko OS Web App for AMW007
 
 ## Installation
 
-The ZentriOS Web App uses the following development tools:
+The Gecko OS Web App uses the following development tools:
 
 * [Node.js](http://nodejs.org)
 * [Grunt](http://gruntjs.com)
@@ -19,6 +19,22 @@ bower install
 npm install
 ```
 
+## Preparing the Gecko OS Device for Web App Development on a Local Server
+
+To prepare the Gecko OS device to communicate with the local server, open a Gecko OS terminal on the device and issue the following commands:
+
+```
+set wlan.ssid               <NETWORK NAME>
+set wlan.passkey            <NETWORK PASSWORD>
+set wlan.auto_join.enabled  1
+set http.server.enabled     1
+set http.server.cors_origin *
+save
+reboot
+```
+
+For a tutorial in customizing the Gecko OS Web App, see:
+[https://docs.silabs.com/](https://docs.silabs.com/)
 
 ## Development Testing
 
@@ -30,7 +46,7 @@ Will run a local nodejs server on port 5002 for testing
 
 Will start a task that listens for file changes, and compile/compress HTML, CSS and JS
 
-When developing on a local server and communicating with a remote device, set the option `host:'[device IP]'` when creating the device model in `/public/js/app.js`. _N.B. a comma will have to be added between the key value pairs (the line above) as this adds an additional property to the object._ To sucessfully communicate with a remote device, the ZentriOS variable `http.server.cors_origin` needs to be set appropriately.
+When developing on a local server and communicating with a remote device, set the option `host:'[device IP]'` when creating the device model in `/public/js/app.js`. _N.B. a comma will have to be added between the key value pairs (the line above) as this adds an additional property to the object._ To sucessfully communicate with a remote device, the Gecko OS variable `http.server.cors_origin` needs to be set appropriately.
 
 If a grunt task fails to run and an error about missing packages is displayed, you may need to run `npm install` to install any missing packages.
 
@@ -58,17 +74,17 @@ grunt release:patch
 
 ## Licence
 
-ZentriOS Web App, ZentriOS JS API Library & ZentriOS JS Build System
+Gecko OS Web App, Gecko OS JS API Library & Gecko OS JS Build System
 
-Copyright (C) 2015, Sensors.com, Inc.
+Copyright (C) 2019, Silicon Labs
 All Rights Reserved.
 
-The ZentriOS Web App, ZentriOS JavaScript API and ZentriOS JS build system
-are provided free of charge by Sensors.com. The combined source code, and
-all derivatives, are licensed by Sensors.com SOLELY for use with devices
-manufactured by ACKme Networks, or approved by Sensors.com.
+The Gecko OS Web App, Gecko OS JavaScript API and Gecko OS JS build system are
+provided by Silicon Labs. The combined source code, and all derivatives, are licensed
+by Silicon Labs SOLELY for use with devices manufactured by Silicon Labs, or hardware
+authorized by Silicon Labs.
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS AND ANY EXPRESS OR IMPLIED
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR 'AS IS' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
 SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,

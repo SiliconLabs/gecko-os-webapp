@@ -1,10 +1,10 @@
 {
   "name": "gecko_os_webapp",
-  "description": "ZentriOS WL Web App",
+  "description": "Gecko OS Web App",
   "version": "1.0.3",
   "author": {
     "name": "Andrew Mitchell",
-    "email": "brew@zentri.me"
+    "email": "DL.GOS-Webapp@silabs.com"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "express": "^4.13.4",
     "less": "^2.7.1",
     "pug": "^2.0.0-alpha7",
-    "gecko-os-js": "git+ssh://git@stash.silabs.com/gos/gecko_os_js.git#AMW007"
+    "gecko-os-js": "git://github.com/SiliconLabs/gecko-os-js.git#AMW007"
   },
   "devDependencies": {
     "async": "^1.5.2",
