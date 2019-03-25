@@ -4,15 +4,15 @@
 /*jshint strict:false */
 
 /*
-  * Zentri Web App, Zentri JS API Library & Zentri JS Build System
+  * Gecko OS Web App, Gecko OS JS API Library & Gecko OS JS Build System
   *
-  * Copyright (C) 2016, Zentri
+  * Copyright (C) 2019, Silicon Labs
   * All Rights Reserved.
   *
-  * The Zentri Web App, Zentri JavaScript API and Zentri JS build system
-  * are provided by Zentri. The combined source code, and all derivatives, are licensed
-  * by Zentri SOLELY for use with devices manufactured by Zentri, or hardware
-  * authorized by Zentri.
+  * The Gecko OS Web App, Gecko OS JavaScript API and Gecko OS JS build system are
+  * provided by Silicon Labs. The combined source code, and all derivatives, are licensed
+  * by Silicon Labs SOLELY for use with devices manufactured by Silicon Labs, or hardware
+  * authorized by Silicon Labs.
   *
   * THIS SOFTWARE IS PROVIDED BY THE AUTHOR 'AS IS' AND ANY EXPRESS OR IMPLIED
   * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -526,14 +526,7 @@ App.Views.QuickConnect = Backbone.View.extend({
         });
     };
 
-    // https://jira.silabs.com/browse/WIFISW-1038, we remove verifying credentials functionality.
-    // if(self.device.get('web_setup') && (self.network.security.length > 0) && !_.contains(['Open', 'WEP'], self.network.security)) {
-    //   self.controller.modal({systemModal: true, content:'<h2>Verifying password...</h2>'});
-    //   return verifyCredentials();
-    // }
-
     if(self.device.get('web_setup') && (self.network.security.length > 0) && !_.contains(['Open', 'WEP'], self.network.security)) {
-      // Change modal text: https://jira.silabs.com/browse/WIFISW-509
       self.controller.modal({
         systemModal: true,
         content: '<h2>Success! <br>Network credentials updated. <br>Trying to connect to the network</h2>'
