@@ -13,8 +13,7 @@ mkdir gecko-os-webapp
 
 popd
 cp -a . ../.tmp/gecko-os-webapp
-rm -rf ../.tmp/gecko-os-webapp/.git ../.tmp/gecko-os-webapp/node_modules ../.tmp/gecko-os-webapp/out ../.tmp/gecko-os-webapp/package-lock.json ../.tmp/gecko-os-webapp/release-github.sh
+rm -rf ../.tmp/gecko-os-webapp/.git ../.tmp/gecko-os-webapp/node_modules ../.tmp/gecko-os-webapp/out ../.tmp/gecko-os-webapp/release-github.sh
 mv ../.tmp/.git ../.tmp/gecko-os-webapp/.git
 
-# Now manually cd ../.tmp/gecko-os-webapp to do the commits.
-# Github won't be updated with new commits until this is done.
+# Now manually cd ../.tmp/gecko-os-webapp to add custom commit messages.
