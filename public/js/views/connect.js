@@ -391,7 +391,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var advanced = $($(this.el).find('input[name="show-advanced"]')[0]).is(':checked');
 
-    var password = $(this.el).find('input[name="password"]').val();
+    var password = $(this.el).find('input[name="password"]').val().replace(/[\\"]/g, "\\$&");
     cmds = [
       {cmd: 'set', args: {args: 'wl c ' + (self.network.security === 'WEP' ? 'WEP' : 'Auto')}},
       {cmd: 'set', args: {args: 'wl s \"' + self.network.ssid + '\"'}},
