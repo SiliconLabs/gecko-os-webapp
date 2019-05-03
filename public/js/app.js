@@ -56,14 +56,14 @@ var App = {
     self.device.init();
 
     var appViews = [
-      {el: 'connect',           nav: 'Connect',         view: App.Views.Connect,          modes: ['wlan', 'softap', 'setup']},
-      {el: 'network-settings',  nav: 'Network',         view: App.Views.NetworkSettings,  modes: ['wlan', 'softap']},
-      {el: 'gpio-usage',        nav: 'GPIOs',           view: App.Views.GPIO,             modes: ['wlan', 'softap', 'setup']},
-      {el: 'browser',           nav: 'Files',           view: App.Views.FileBrowser,      modes: ['wlan', 'softap', 'setup']},
-      {el: 'console',           nav: 'Console',         view: App.Views.Console,          modes: ['wlan', 'softap', 'setup']},
-      {el: 'system',            nav: 'System',          view: App.Views.System,           modes: ['wlan', 'softap', 'setup']},
-      {el: 'firmware',          nav: 'Firmware',        view: App.Views.Firmware,         modes: ['wlan']},
-      {el: 'cloud',             nav: 'Cloud Services',  view: App.Views.Cloud,            modes: ['wlan']}
+      {el: 'connect',           nav: 'Connect',         view: App.Views.Connect,          modes: ['ethernet', 'wlan', 'softap', 'setup']},
+      {el: 'network-settings',  nav: 'Network',         view: App.Views.NetworkSettings,  modes: ['ethernet', 'wlan', 'softap']},
+      {el: 'gpio-usage',        nav: 'GPIOs',           view: App.Views.GPIO,             modes: ['ethernet', 'wlan', 'softap', 'setup']},
+      {el: 'browser',           nav: 'Files',           view: App.Views.FileBrowser,      modes: ['ethernet', 'wlan', 'softap', 'setup']},
+      {el: 'console',           nav: 'Console',         view: App.Views.Console,          modes: ['ethernet', 'wlan', 'softap', 'setup']},
+      {el: 'system',            nav: 'System',          view: App.Views.System,           modes: ['ethernet', 'wlan', 'softap', 'setup']},
+      {el: 'firmware',          nav: 'Firmware',        view: App.Views.Firmware,         modes: ['ethernet', 'wlan']},
+      {el: 'cloud',             nav: 'Cloud Services',  view: App.Views.Cloud,            modes: ['ethernet', 'wlan']}
     ];
 
     //create menu nav items and content holders for each application view
