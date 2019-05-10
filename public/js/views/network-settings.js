@@ -106,15 +106,12 @@ App.Views.NetworkSettings = Backbone.View.extend({
           //handle err
         }
 
-        var wlan_auto_join = Boolean(Number(self.device.get('w_auto_join')));
-        var wlan_dhcp = Boolean(Number(self.device.get('w_dhcp')));
-        var ethernet_auto_join = Boolean(Number(self.device.get('e_auto_join')));
-        var ethernet_dhcp = Boolean(Number(self.device.get('e_dhcp')));
-
         // The device init functions are most likely complete.
         var interface = self.device.get('interface');
 
         if (interface === 'wlan') {
+          var wlan_auto_join = Boolean(Number(self.device.get('w_auto_join')));
+          var wlan_dhcp = Boolean(Number(self.device.get('w_dhcp')));
           var wlan_ssid = self.device.get('w_ssid');
           self.device.set({ssid: wlan_ssid, auto_join: wlan_auto_join, dhcp: wlan_dhcp});
 
@@ -124,6 +121,8 @@ App.Views.NetworkSettings = Backbone.View.extend({
             rssi: self.device.get('w_rssi')
           }));
         } else {
+          var ethernet_auto_join = Boolean(Number(self.device.get('e_auto_join')));
+          var ethernet_dhcp = Boolean(Number(self.device.get('e_dhcp')));
           self.device.set({ssid: interface, auto_join: ethernet_auto_join, dhcp: ethernet_dhcp});
         }
 
@@ -173,8 +172,8 @@ App.Views.NetworkSettings = Backbone.View.extend({
     var auto_join = $(this.el).find('input[name="auto-connect"]').is(':checked') ? '1' : '0';
     var interface = self.device.get('interface');
 
-    if(self.device.get('dhcp')){
-      if(interface === 'wlan') {
+    if (self.device.get('dhcp')) {
+      if (interface === 'wlan') {
         cmds = [
           {cmd: 'set', args: {args: 'wl d e 1'}},
           {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
