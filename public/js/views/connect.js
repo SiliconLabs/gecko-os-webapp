@@ -390,6 +390,7 @@ App.Views.QuickConnect = Backbone.View.extend({
 
     var advanced = $($(this.el).find('input[name="show-advanced"]')[0]).is(':checked');
 
+    // GOS needs to have " and \ escaped in string to be able to save passwords with " and \ characters.
     var password = $(this.el).find('input[name="password"]').val().replace(/[\\"]/g, "\\$&");
     cmds = [
       {cmd: 'set', args: {args: 'wl c ' + (self.network.security === 'WEP' ? 'WEP' : 'Auto')}},
