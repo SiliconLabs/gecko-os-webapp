@@ -33,7 +33,7 @@ App.Views.NetworkSettings = Backbone.View.extend({
 <div class="content">\
 <h1>Network Settings</h1>\
 <div>\
-<h4>Network Name (SSID)</h4>\
+<h4>Connected to</h4>\
 <div class="signal"></div>\
 <input name="ssid" value="<%- ssid %>" disabled></input>\
 </div>\
@@ -86,11 +86,16 @@ App.Views.NetworkSettings = Backbone.View.extend({
     //draw empty
     this.$el.html(this.template(this.device.toJSON())).addClass('active');
 
+    // Before device is setup, we don't know which network interface it's using,
+    // so we try to get information for both wlan and ethernet. Keeping the property
+    // names short in order to minify better. w_ for wlan, e_ for ethernet.
     var cmds = [
-      {property: 'ssid', cmd: 'get',      args: {args: 'wl s'},   ret: false },
-      {property: 'rssi', cmd: 'rssi',                             ret: false },
-      {property: 'dhcp', cmd: 'get',      args: {args: 'wl d e'}, ret: false },
-      {property: 'auto_join', cmd: 'get', args: {args: 'wl o e'}, ret: false }
+      {property: 'w_ssid', cmd: 'get',         args: {args: 'wl s'},   ret: false },
+      {property: 'w_rssi', cmd: 'rssi',                                ret: false },
+      {property: 'w_dhcp', cmd: 'get',         args: {args: 'wl d e'}, ret: false },
+      {property: 'w_auto_join', cmd: 'get',    args: {args: 'wl o e'}, ret: false },
+      {property: 'e_dhcp', cmd: 'get',         args: {args: 'et d e'}, ret: false },
+      {property: 'e_auto_join', cmd: 'get',    args: {args: 'et a e'}, ret: false }
     ];
 
     async.eachSeries(
@@ -101,10 +106,25 @@ App.Views.NetworkSettings = Backbone.View.extend({
           //handle err
         }
 
-        var auto_join = Boolean(Number(self.device.get('auto_join')));
-        var dhcp = Boolean(Number(self.device.get('dhcp')));
+        // The device init functions are most likely complete.
+        var interface = self.device.get('interface');
 
-        self.device.set({auto_join: auto_join, dhcp: dhcp});
+        if (interface === 'wlan') {
+          var wlan_auto_join = Boolean(Number(self.device.get('w_auto_join')));
+          var wlan_dhcp = Boolean(Number(self.device.get('w_dhcp')));
+          var wlan_ssid = self.device.get('w_ssid');
+          self.device.set({ssid: wlan_ssid, auto_join: wlan_auto_join, dhcp: wlan_dhcp});
+
+          // Only display rssi on wlan connections.
+          self.views.push(new App.Views.Signal({
+            el: $(self.el).find('.signal'),
+            rssi: self.device.get('w_rssi')
+          }));
+        } else {
+          var ethernet_auto_join = Boolean(Number(self.device.get('e_auto_join')));
+          var ethernet_dhcp = Boolean(Number(self.device.get('e_dhcp')));
+          self.device.set({ssid: interface, auto_join: ethernet_auto_join, dhcp: ethernet_dhcp});
+        }
 
         //check still active view
         if(self.controller.get('view') !== 'network-settings'){
@@ -113,18 +133,12 @@ App.Views.NetworkSettings = Backbone.View.extend({
         }
         self.$el.html(self.template(self.device.toJSON())).addClass('active');
 
-        self.views.push(new App.Views.Signal({
-          el: $(self.el).find('.signal'),
-          rssi: self.device.get('rssi')
-        }));
-
         self.settings = new App.Views.NetworkSettingsView({
           el: $(self.el).find('.settings'),
           controller: self.controller,
           device: self.device,
           parent: self
         });
-
       });
   },
 
@@ -156,13 +170,22 @@ App.Views.NetworkSettings = Backbone.View.extend({
     var cmds = [];
 
     var auto_join = $(this.el).find('input[name="auto-connect"]').is(':checked') ? '1' : '0';
+    var interface = self.device.get('interface');
 
-    if(self.device.get('dhcp')){
-      cmds = [
-        {cmd: 'set', args: {args: 'wl d e 1'}},
-        {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
-        {cmd:'save'}
-      ];
+    if (self.device.get('dhcp')) {
+      if (interface === 'wlan') {
+        cmds = [
+          {cmd: 'set', args: {args: 'wl d e 1'}},
+          {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
+          {cmd:'save'}
+        ];
+      } else {
+        cmds = [
+          {cmd: 'set', args: {args: 'et d e 1'}},
+          {cmd: 'set', args: {args: 'et a e ' + auto_join}},
+          {cmd:'save'}
+        ];
+      }
     } else {
 
       var ip      = $(this.el).find('input[name="ip"]').val();
@@ -170,15 +193,28 @@ App.Views.NetworkSettings = Backbone.View.extend({
       var dns     = $(this.el).find('input[name="dns"]').val();
       var netmask = $(this.el).find('input[name="netmask"]').val();
 
-      cmds = [
-        {cmd: 'set', args: {args: 'wl d e 0'}},
-        {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
-        {cmd: 'set', args: {args: 'wl t i ' + ip}},
-        {cmd: 'set', args: {args: 'wl t g ' + gateway}},
-        {cmd: 'set', args: {args: 'wl t d ' + dns}},
-        {cmd: 'set', args: {args: 'wl t n ' + netmask}},
-        {cmd:'save'}
-      ];
+      if (interface === 'wlan') {
+        cmds = [
+          {cmd: 'set', args: {args: 'wl d e 0'}},
+          {cmd: 'set', args: {args: 'wl o e ' + auto_join}},
+          {cmd: 'set', args: {args: 'wl t i ' + ip}},
+          {cmd: 'set', args: {args: 'wl t g ' + gateway}},
+          {cmd: 'set', args: {args: 'wl t d ' + dns}},
+          {cmd: 'set', args: {args: 'wl t n ' + netmask}},
+          {cmd:'save'}
+        ];
+      } else {
+        cmds = [
+          {cmd: 'set', args: {args: 'et d e 0'}},
+          {cmd: 'set', args: {args: 'et a e ' + auto_join}},
+          {cmd: 'set', args: {args: 'et s i ' + ip}},
+          {cmd: 'set', args: {args: 'et s g ' + gateway}},
+          {cmd: 'set', args: {args: 'et s d ' + dns}},
+          {cmd: 'set', args: {args: 'et s n ' + netmask}},
+          {cmd:'save'}
+        ];
+      }
+
     }
 
     async.eachSeries(
@@ -237,20 +273,38 @@ App.Views.NetworkSettingsView = Backbone.View.extend({
 
     var cmds;
 
-    if(this.device.get('dhcp')){
-      cmds = [
-        {property: 'netmask', cmd: 'get', args: {args: 'wl n n'}, ret: false },
-        {property: 'ip',      cmd: 'get', args: {args: 'wl n i'}, ret: false },
-        {property: 'gateway', cmd: 'get', args: {args: 'wl n g'}, ret: false }
-      ];
+    if (this.device.get('interface') === 'wlan') {
+      if(this.device.get('dhcp')){
+        cmds = [
+          {property: 'netmask', cmd: 'get', args: {args: 'wl n n'}, ret: false },
+          {property: 'ip',      cmd: 'get', args: {args: 'wl n i'}, ret: false },
+          {property: 'gateway', cmd: 'get', args: {args: 'wl n g'}, ret: false }
+        ];
+      } else {
+        cmds = [
+          {property: 'netmask', cmd: 'get', args: {args: 'wl t n'}, ret: false },
+          {property: 'ip',      cmd: 'get', args: {args: 'wl t i'}, ret: false },
+          {property: 'gateway', cmd: 'get', args: {args: 'wl t g'}, ret: false },
+          {property: 'dns',     cmd: 'get', args: {args: 'wl t d'}, ret: false }
+        ];
+      }
     } else {
-      cmds = [
-        {property: 'netmask', cmd: 'get', args: {args: 'wl t n'}, ret: false },
-        {property: 'ip',      cmd: 'get', args: {args: 'wl t i'}, ret: false },
-        {property: 'gateway', cmd: 'get', args: {args: 'wl t g'}, ret: false },
-        {property: 'dns',     cmd: 'get', args: {args: 'wl t d'}, ret: false }
-      ];
+      if(this.device.get('dhcp')){
+        cmds = [
+          {property: 'netmask', cmd: 'get', args: {args: 'et n n'}, ret: false },
+          {property: 'ip',      cmd: 'get', args: {args: 'et n i'}, ret: false },
+          {property: 'gateway', cmd: 'get', args: {args: 'et n g'}, ret: false }
+        ];
+      } else {
+        cmds = [
+          {property: 'netmask', cmd: 'get', args: {args: 'et s n'}, ret: false },
+          {property: 'ip',      cmd: 'get', args: {args: 'et s i'}, ret: false },
+          {property: 'gateway', cmd: 'get', args: {args: 'et s g'}, ret: false },
+          {property: 'dns',     cmd: 'get', args: {args: 'et s d'}, ret: false }
+        ];
+      }
     }
+
 
 
     async.eachSeries(
