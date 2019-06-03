@@ -16,7 +16,7 @@ git clone https://github.com/SiliconLabs/gecko-os-webapp.git
 git checkout AMW007
 ```
 
-For more information, see [https://docs.silabs.com/](https://docs.silabs.com/).
+Detailed instructions for installing, building, and configuring the webapp can be found in the README of the the specific platforms: [AMW007](https://github.com/SiliconLabs/gecko-os-webapp/blob/AMW007/README.md), [WGM160P](https://github.com/SiliconLabs/gecko-os-webapp/blob/WGM160P/README.md). For more information, see [https://docs.silabs.com/](https://docs.silabs.com/).
 
 ## Licence
 
