@@ -28,8 +28,6 @@ set wlan.ssid               <NETWORK NAME>
 set wlan.passkey            <NETWORK PASSWORD>
 set wlan.auto_join.enabled  1
 set http.server.enabled     1
-set mdns.name               mymodule
-set mdns.enabled            1
 set http.server.cors_origin *
 save
 reboot
