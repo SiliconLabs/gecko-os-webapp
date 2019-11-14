@@ -392,7 +392,9 @@ module.exports = function(grunt) {
 
     var release = {path: ''};
 
-    // release command is broken.
+    // Instead of saving the newly deployed webapp in its own
+    // version folder, we replace the one already there to reduce
+    // complexity.
     // if(type === 'release'){
     //   release = {path: pkg.version + '/'};
     // }
