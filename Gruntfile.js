@@ -249,12 +249,11 @@ module.exports = function(grunt) {
     },
     http: {
       commands:[
-        {name: 'index', url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/index.html%20webapp/2.2.0/index.html'},
-        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/gecko-os.js.gz%20webapp/2.2.0/gecko-os.js.gz'},
-        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/gecko-os.css.gz%20webapp/2.2.0/gecko-os.css.gz'},
-        {name: 'unauth',url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/unauthorized.html%20webapp/2.2.0/unauthorized.html'},
+        {name: 'index', url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/index.html%20webapp/index.html'},
+        {name: 'js',    url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/gecko-os.js.gz%20webapp/gecko-os.js.gz'},
+        {name: 'css',   url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/gecko-os.css.gz%20webapp/gecko-os.css.gz'},
+        {name: 'unauth',url: 'http://<%= device.host %>/command/http_download%20http://<%= local.ip %>:<%= local.port%>/webapp/unauthorized.html%20webapp/unauthorized.html'},
         {name: 'root',  url: 'http://<%= device.host %>/command/set%20ht%20s%20r%20webapp/index.html'},
-        {name: 'denied',url: 'http://<%= device.host %>/command/set%20ht%20s%20d%20webapp/unauthorized.html'},
         {name: 'save',  url: 'http://<%= device.host %>/command/save'},
         {name: 'reboot',url: 'http://<%= device.host %>/command/reboot'}
       ]
@@ -392,9 +391,12 @@ module.exports = function(grunt) {
 
     var release = {path: ''};
 
-    if(type === 'release'){
-      release = {path: pkg.version + '/'};
-    }
+    // Instead of saving the newly deployed webapp in its own
+    // version folder, we replace the one already there to reduce
+    // complexity.
+    // if(type === 'release'){
+    //   release = {path: pkg.version + '/'};
+    // }
 
     grunt.config.set('release', release);
 
@@ -479,9 +481,9 @@ module.exports = function(grunt) {
       'build:release',
       'compress:release',
       'tagrelease',
-      's3:clean', 's3:latest', 's3:ver',
-      'invalidate_cloudfront:latest',
-      'shell:pushTags'
+      // 's3:clean', 's3:latest', 's3:ver',
+      // 'invalidate_cloudfront:latest',
+      // 'shell:pushTags'
     ]);
 
     grunt.log.writeln('--------------------------------------');
