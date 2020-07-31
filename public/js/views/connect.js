@@ -417,7 +417,7 @@ App.Views.QuickConnect = Backbone.View.extend({
     }
 
     if(self.device.get('web_setup')) {
-        cmds.push({cmd: 'set', args: {args: 'wl o e 1'}});
+      cmds.push({cmd: 'set', args: {args: 'wl o e 1'}});
     }
 
     cmds.push({cmd: 'save'});
