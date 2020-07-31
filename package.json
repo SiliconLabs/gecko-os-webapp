@@ -1,7 +1,7 @@
 {
   "name": "gecko_os_webapp",
   "description": "Gecko OS Web App",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "Andrew Mitchell",
     "email": "DL.GOS-Webapp@silabs.com"
